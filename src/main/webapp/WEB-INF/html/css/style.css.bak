@@ -1,0 +1,278 @@
+body{
+		margin:0px;
+		background:url("../image/bg-1.jpg");
+		background-size:100% 100%;
+	}
+.main{
+	margin:0px auto;
+	padding:20px;
+	background:white;
+	width:1100px;
+	border:1px solid lightgreen;
+	border-radius:20px;
+	-webkit-border-radius:20px;
+	-moz-border-radius:20px;
+}
+.head{
+	margin:10px auto;
+	background:black;
+	color:white;
+	width:1100px;
+}
+.head h1{
+	float:left;
+	color:white;
+}
+.head ul{
+	float:right;
+	list-style:none;
+	margin-top:45px;
+	margin-right:50px;
+}
+.head ul li{
+	float:left;
+	font-size:20px;
+	margin-right:20px;
+}
+.head ul li a{
+	text-decoration:none;
+	color:white;
+}
+.logo{
+	width:70px;
+	height:70px;
+	border-radius:35px;
+	-webkit-border-radius:35px;
+	-moz-border-radius:35px;
+	vertical-align:middle;
+}
+.clear{
+	clear:both;
+}
+#current{
+	color:red;
+}
+.footer{
+	color:white;
+}
+.footer p a{
+	text-decoration:none;
+	margin-right:10px;
+	color:lightblue;
+} 
+.main-left{
+	width:250px;
+	float:left;
+}
+.latest{
+	width:800px;
+	margin-left:30px;
+	background:#e3e3e3;
+	float:left;
+	border-radius:10px;
+	-webkit-border-radius:10px;
+	-moz-border-radius:10px;
+	padding:6px;
+	padding-top:10px;
+}
+.by-category{
+	border-radius:5px;
+	-webkit-border-radius:5px;
+	-moz-border-radius:5px;
+	background:#e3e3e3;
+	padding:6px;
+	padding-top:10px;
+}
+.latest span {
+	float: left;
+}
+.by ul{
+	list-style:none;
+	margin-left:-10px;
+}
+.by ul li{
+	margin-bottom:5px;
+}
+.by ul li a{
+	text-decoration:none;
+	color:blue;
+}
+.by p img{
+	width:18px;
+	height:18px;
+	vertical-align:middle;
+}
+.search-box {
+	float:right;
+	margin-right:20px;
+}
+.search-box #search-text {
+	height:26px;
+	border:1px solid lightgreen;
+	vertical-align:middle;
+	background:white;
+	color:black;
+}
+.search-box input {
+	height:25px;
+	border-radius:5px;
+	-webkit-border-radius:5px;
+	-moz-border-radius:5px;
+	background:black;
+	color:white;
+	font-size:14px;
+	font-weight:bold;
+	border:none;
+}
+.by-date{
+	margin-top:20px;
+	border-radius:5px;
+	-webkit-border-radius:5px;
+	-moz-border-radius:5px;
+	background:#e3e3e3;
+	padding:6px;
+	padding-top:10px;
+}
+.mini-title{
+	font-weight:bold;
+}
+.blog{
+	color:black;
+	background:white;
+	padding:10px;
+	padding-top:1px;
+	border-radius:10px;
+	-webkit-border-radius:10px;
+	-moz-border-radius:10px;
+	margin-left:-10px;
+	margin-right:20px;
+	margin-bottom:10px;
+
+}
+.blog p{
+	color:gray;
+	font-size:13px;
+}
+.blog img{
+	height:100px;
+	margin-right:10px;
+}
+.blog hr{
+	height:0px;
+	border: 1px solid #e3e3e3;
+}
+.page ul .wider{
+	width:40px;
+}
+.page ul li{
+	float:left;
+	border:1px solid gray;
+	margin-right:8px;
+	width:30px;
+	height:25px;
+	background:white;
+	cursor:pointer;
+	text-align:center;
+}
+.page ul li a{
+	color:black;
+}
+.page ul .cur-page{
+	background:black;
+	border:1px solid white;
+}
+.page ul .cur-page a{
+	color:white;
+}
+.row-container{
+	width:1100px;
+	margin-top:10px;
+	padding:0px;
+}
+.row-left{
+	float:left;
+	width:750px;
+}
+
+.row-left .class-item{
+	background:silver;
+	border-radius:5px;
+	color:black;
+	font-size:18px;
+	padding:8px;
+	margin-right:10px;
+	margin-top:10px;
+	float:left;
+}
+.row-left .class-item:hover{
+	background:gray;
+}
+.sort-blog li{
+	float:left;
+	padding:5px;
+	font-size:17px;
+	color:white;
+	background:black;
+	border:solid 1px white;
+	border-radius:5px;
+	margin-right:5px;
+	cursor:pointer;
+}
+.sort-blog .cur{
+	background:white;
+	color:black;
+	border:1px solid black;
+	font-weight:bold;
+}
+.sort-blog{
+	margin-bottom:30px;
+}
+.sort-blog li:hover{
+	background:gray;
+}
+.sort-blog .cur:hover{
+	background:white;
+}
+.person-info ul{
+	list-style:none;
+}
+.person-info ul li{
+	margin-bottom:15px;
+	font-size:18px;
+}
+.experience ul li{
+	font-size:17px;
+	margin-bottom:10px;
+}
+.twoDCode{
+	float:left;
+}
+.rowElem{
+	margin-bottom:10px;
+}
+.rowElem input{
+	border:1px solid #e3e3e3;
+	width:300px;
+}
+.rowElem textarea{
+	border:1px solid #e3e3e3;
+	resize:none;
+}
+.message{
+	float:right;
+	margin-right:80px;
+}
+.message button{
+	width:90px;
+	height:40px;
+	border-radius:10px;
+	margin-top:20px;
+	border:none;
+	margin-right:20px;
+	font-size:17px;
+	color:white;
+	background:black;
+}
+.contact-info li{
+	margin-bottom:10px;
+}
