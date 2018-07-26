@@ -16,8 +16,8 @@
     <!-- 自动扫描 -->
     <context:component-scan base-package="top.huqj.blog"/>
 
-
-    <!--<context:property-placeholder location="classpath:jdbc.properties" ignore-unresolvable="true"/>-->
+    <!--引入shiro-->
+    <import resource="spring-shiro-web.xml"/>
 
     <!-- 使用druid引入配置数据源 -->
     <import resource="druid.xml"/>
