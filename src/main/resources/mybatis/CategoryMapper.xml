@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.huqj.blog.dao.CategoryDao">
+
+    <resultMap type="categoryMap" id="Category">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+    </resultMap>
+
+    <!--增加一条记录-->
+    <insert id="insertOne" parameterType="Category">
+        INSERT INTO category VALUES (NULL,#{id},#{name},#{createTime},#{updateTime})
+    </insert>
+
+    <!--按照id查询记录-->
+    <select id="findById" parameterType="java.lang.String" resultType="Category">
+      SELECT * FROM category WHERE id=#{_param}
+    </select>
+
+    <!--更新记录-->
+    <update id="updateOne" parameterType="Category">
+        UPDATE category SET name=#{name} WHERE id=#{id}
+    </update>
+
+</mapper>
