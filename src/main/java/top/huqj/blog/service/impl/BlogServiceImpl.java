@@ -1,0 +1,116 @@
+package top.huqj.blog.service.impl;
+
+import lombok.extern.log4j.Log4j;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import top.huqj.blog.constant.BlogConstant;
+import top.huqj.blog.dao.BlogDao;
+import top.huqj.blog.dao.CategoryDao;
+import top.huqj.blog.exception.CategoryNotFoundException;
+import top.huqj.blog.model.Blog;
+import top.huqj.blog.model.Category;
+import top.huqj.blog.service.IBlogService;
+import top.huqj.blog.utils.MarkDownUtil;
+
+import java.sql.Time;
+import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * @author huqj
+ */
+@Service("blogService")
+@Log4j
+public class BlogServiceImpl implements IBlogService {
+
+    @Autowired
+    private BlogDao blogDao;
+
+    @Autowired
+    private CategoryDao categoryDao;
+
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+    public Blog findBlogById(int id) {
+        List<Blog> blogs = blogDao.findById(id);
+        if (blogs.size() == 1) {
+            Blog blog = blogs.get(0);
+            //设置显示日期格式
+            blog.setPublishTimeStr(dateFormat.format(blog.getPublishTime()));
+            return blog;
+        }
+        return null;
+    }
+
+    @Override
+    public void insertBlog(Blog blog) throws Exception {
+        blog.setPublishTime(new Time(System.currentTimeMillis()));
+        blog.setUpdateTime(new Time(System.currentTimeMillis()));
+        Category category = categoryDao.findById(blog.getCategoryId());
+        //当找不到类别的时候抛出异常提示
+        if (category == null) {
+            log.error("can not find category by id when insert blog.");
+            throw new CategoryNotFoundException("error: can not find category");
+        }
+        blog.setCategory(category);
+        //如果是markdown语法写的博客，需要转换格式存储，如果使用ue编辑器会在前端提取text
+        if (blog.getType() == BlogConstant.BLOG_TYPE_MD) {
+            String md = blog.getMdContent();
+            blog.setText(MarkDownUtil.md2text(md));
+            blog.setHtmlContent(MarkDownUtil.md2html(md));
+        }
+        //提取图片链接
+        blog.setImgUrlList(extractImgUrls(blog));
+
+        blogDao.insertOne(blog);
+    }
+
+    @Override
+    public List<Blog> findLatestBlogByPage(Map<String, Integer> page) {
+        if (page == null || page.get(BlogConstant.PAGE_NO) == null
+                || page.get(BlogConstant.PAGE_NUM) == null) {  //参数错误
+            return Collections.emptyList();
+        }
+        List<Blog> blogList = blogDao.findLatestByPage(page);
+        if (CollectionUtils.isEmpty(blogList)) {  //没有博客列表，说明不是正常点击而是篡改了url，这时返回首页即可
+            page.put(BlogConstant.PAGE_NO, 1);
+            blogList = blogDao.findLatestByPage(page);
+        }
+        return blogList;
+    }
+
+    /**
+     * 从表单提交的原始文本中提取图片链接并存储到blog中
+     *
+     * @param blog
+     */
+    private String extractImgUrls(Blog blog) {
+        StringBuilder imgs = new StringBuilder();
+        String html = blog.getHtmlContent();
+        int index = html.indexOf("<img");
+        while (index != -1) {
+            int urlStart = html.indexOf("\"", index);
+            if (urlStart == -1 || urlStart == html.length() - 1) {
+                break;
+            }
+            int urlEnd = html.indexOf("\"", urlStart + 1);
+            if (urlEnd == -1) {
+                break;
+            }
+            imgs.append(html.substring(urlStart + 1, urlEnd));
+            imgs.append("|");
+            html = html.substring(urlEnd);
+            index = html.indexOf("<img");
+        }
+        if (imgs.length() > 0) {
+            imgs.deleteCharAt(imgs.length() - 1);
+        }
+        return imgs.toString();
+    }
+
+
+}

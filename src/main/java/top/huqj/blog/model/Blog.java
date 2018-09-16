@@ -3,7 +3,6 @@ package top.huqj.blog.model;
 import lombok.Data;
 
 import java.sql.Time;
-import java.util.List;
 
 /**
  * 博客
@@ -19,7 +18,17 @@ public class Blog {
 
     private Time publishTime;
 
+    /**
+     * 发布时间的字符串格式，用于显示
+     */
+    private String publishTimeStr;
+
     private Category category;
+
+    /**
+     * 用于在插入时表单提交参数
+     */
+    private int categoryId;
 
     private int scanNum;
 
@@ -39,7 +48,7 @@ public class Blog {
     private String htmlContent;
 
     /**
-     * 博客内容的记录方式。0：图文编辑器  1:markdown
+     * 博客内容的记录方式。1：图文编辑器  0:markdown
      */
     private int type;
 
@@ -51,7 +60,7 @@ public class Blog {
     private String tag;
 
     /**
-     * 博客摘要封面图链接，以 | 分隔
+     * 博客摘要封面图链接，以 | 分隔，在创建博客时提取并存储在数据库中
      */
     private String imgUrlList;
 
