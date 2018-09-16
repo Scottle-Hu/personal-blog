@@ -1,6 +1,7 @@
 package top.huqj.blog.model;
 
 import lombok.Data;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.sql.Date;

@@ -1,0 +1,29 @@
+package top.huqj.blog.realm;
+
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.AuthenticationInfo;
+import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.realm.Realm;
+
+/**
+ * shiro自定义realm
+ *
+ * @author huqj
+ */
+public class MyRealm implements Realm {
+
+    @Override
+    public String getName() {
+        return null;
+    }
+
+    @Override
+    public boolean supports(AuthenticationToken authenticationToken) {
+        return false;
+    }
+
+    @Override
+    public AuthenticationInfo getAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
+        return null;
+    }
+}

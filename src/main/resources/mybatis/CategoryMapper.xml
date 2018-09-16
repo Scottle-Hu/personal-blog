@@ -4,24 +4,32 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.huqj.blog.dao.CategoryDao">
 
-    <resultMap type="categoryMap" id="Category">
+    <resultMap type="category" id="categoryMap">
         <id property="id" column="id"/>
         <result property="name" column="name"/>
     </resultMap>
 
     <!--增加一条记录-->
     <insert id="insertOne" parameterType="Category">
-        INSERT INTO category VALUES (NULL,#{id},#{name},#{createTime},#{updateTime})
+        INSERT INTO category VALUES (NULL,#{name},#{createTime},#{updateTime})
     </insert>
 
     <!--按照id查询记录-->
-    <select id="findById" parameterType="java.lang.String" resultType="Category">
-      SELECT * FROM category WHERE id=#{_param}
+    <select id="findById" parameterType="Integer" resultType="Category">
+      SELECT * FROM category WHERE id=#{id}
     </select>
 
     <!--更新记录-->
     <update id="updateOne" parameterType="Category">
         UPDATE category SET name=#{name} WHERE id=#{id}
     </update>
+
+    <delete id="deleteById" parameterType="Integer">
+      DELETE FROM category WHERE id=#{id}
+    </delete>
+
+    <select id="findAll" resultMap="categoryMap">
+        SELECT * FROM category
+    </select>
 
 </mapper>

@@ -2,6 +2,8 @@ package top.huqj.blog.dao;
 
 import top.huqj.blog.model.Category;
 
+import java.util.List;
+
 /**
  * @author huqj
  */
@@ -12,5 +14,9 @@ public interface CategoryDao {
     int insertOne(Category category);
 
     int updateOne(Category category);
+
+    int deleteById(int id);
+
+    List<Category> findAll();
 
 }

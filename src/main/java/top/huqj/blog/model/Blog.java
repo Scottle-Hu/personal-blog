@@ -3,6 +3,7 @@ package top.huqj.blog.model;
 import lombok.Data;
 
 import java.sql.Time;
+import java.util.List;
 
 /**
  * 博客
@@ -48,5 +49,10 @@ public class Blog {
      * 博客标签，用逗号隔开
      */
     private String tag;
+
+    /**
+     * 博客摘要封面图链接，以 | 分隔
+     */
+    private String imgUrlList;
 
 }
