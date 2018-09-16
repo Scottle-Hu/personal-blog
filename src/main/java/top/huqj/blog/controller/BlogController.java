@@ -9,9 +9,11 @@ import top.huqj.blog.constant.BlogConstant;
 import top.huqj.blog.dao.CategoryDao;
 import top.huqj.blog.model.Blog;
 import top.huqj.blog.model.Category;
+import top.huqj.blog.model.ext.CategoryAndBlogNum;
 import top.huqj.blog.service.IBlogService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,9 +30,6 @@ public class BlogController {
     @Autowired
     private IBlogService blogService;
 
-    @Autowired
-    private CategoryDao categoryDao;
-
     private int ARTICLE_NUM_PER_PAGE = 10;
 
     @RequestMapping("/")
@@ -43,7 +42,11 @@ public class BlogController {
         String pageStr = request.getParameter("page");
         int page = 1;
         if (!StringUtils.isEmpty(pageStr)) {
-            page = Integer.parseInt(pageStr);
+            try {
+                page = Integer.parseInt(pageStr);
+            } catch (Exception e) {
+                log.error("error when parse param page.", e);
+            }
         }
         //根据分页信息获取最新博客列表，一页最多10篇
         Map<String, Integer> pageInfo = new HashMap<>();
@@ -51,12 +54,18 @@ public class BlogController {
         pageInfo.put(BlogConstant.PAGE_NUM, ARTICLE_NUM_PER_PAGE);
         List<Blog> blogList = blogService.findLatestBlogByPage(pageInfo);
         request.setAttribute("blogList", blogList);
+        //给前端返回当前页数和总页数
+        request.setAttribute("curPage", page);
+        int totalBlogNum = blogService.count();
+        request.setAttribute("totalPage",
+                totalBlogNum % ARTICLE_NUM_PER_PAGE == 0 ?
+                        totalBlogNum / ARTICLE_NUM_PER_PAGE : (totalBlogNum / ARTICLE_NUM_PER_PAGE) + 1);
 
-        //获取所有博客类别
-        List<Category> categoryList = categoryDao.findAll();
-        request.setAttribute("categoryList", categoryList);
+        //获取所有博客类别和对应的博客数量
+        request.setAttribute("categoryList", blogService.getAllCategoryList());
 
         //获取所有有博客的月份以及对应的博客篇数
+        request.setAttribute("monthList", blogService.getAllMonthList());
 
         return "index";
     }

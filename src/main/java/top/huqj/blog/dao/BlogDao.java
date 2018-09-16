@@ -21,5 +21,10 @@ public interface BlogDao {
     //用于查找各种指标下的博客，使用redis存储id列表
     List<Blog> findByIdList(List<Integer> ids);
 
+    //获取总条数
+    int count();
+
+    //根据类别获取数量
+    int countByCategoryId(int categoryId);
 
 }

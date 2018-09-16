@@ -11,14 +11,15 @@ import top.huqj.blog.dao.CategoryDao;
 import top.huqj.blog.exception.CategoryNotFoundException;
 import top.huqj.blog.model.Blog;
 import top.huqj.blog.model.Category;
+import top.huqj.blog.model.ext.CategoryAndBlogNum;
+import top.huqj.blog.model.ext.MonthAndBlogNum;
 import top.huqj.blog.service.IBlogService;
 import top.huqj.blog.utils.MarkDownUtil;
 
+import javax.annotation.PostConstruct;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author huqj
@@ -33,7 +34,30 @@ public class BlogServiceImpl implements IBlogService {
     @Autowired
     private CategoryDao categoryDao;
 
+    /**
+     * 避免频繁count(*)
+     * 记录博客数目的缓存,为了保险起见定期更新
+     */
+    private volatile int TOTAL_BLOG_NUM = -1;
+
+    private static final long AN_HOUR_MILLIS = 60 * 60 * 1000;
+
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+    @PostConstruct
+    public void init() {
+        //初始化博客数量
+        TOTAL_BLOG_NUM = blogDao.count();
+        log.info("init total blog num:" + TOTAL_BLOG_NUM);
+        //定期更新
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                TOTAL_BLOG_NUM = blogDao.count();
+                log.info("update total blog num:" + TOTAL_BLOG_NUM);
+            }
+        }, AN_HOUR_MILLIS, AN_HOUR_MILLIS);
+    }
 
     public Blog findBlogById(int id) {
         List<Blog> blogs = blogDao.findById(id);
@@ -81,6 +105,33 @@ public class BlogServiceImpl implements IBlogService {
             blogList = blogDao.findLatestByPage(page);
         }
         return blogList;
+    }
+
+    @Override
+    public int count() {
+        if (TOTAL_BLOG_NUM < 0) {
+            TOTAL_BLOG_NUM = blogDao.count();
+        }
+        return TOTAL_BLOG_NUM;
+    }
+
+    @Override
+    public List<CategoryAndBlogNum> getAllCategoryList() {
+        List<Category> categoryList = categoryDao.findAll();
+        if (CollectionUtils.isEmpty(categoryList)) {
+            return Collections.emptyList();
+        }
+        List<CategoryAndBlogNum> result = new ArrayList<>();
+        for (Category category : categoryList) {
+            result.add(new CategoryAndBlogNum(category, blogDao.countByCategoryId(category.getId())));
+        }
+        return result;
+    }
+
+    @Override
+    public List<MonthAndBlogNum> getAllMonthList() {
+        //TODO
+        return null;
     }
 
     /**
