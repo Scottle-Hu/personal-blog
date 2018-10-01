@@ -11,6 +11,8 @@
     <!-- 使用注解的包，包括子集 -->
     <context:component-scan base-package="top.huqj.blog.controller"/>
 
+    <context:property-placeholder location="classpath:server.properties"/>
+
     <!-- 视图解析器 -->
     <bean id="viewResolver"
           class="org.springframework.web.servlet.view.InternalResourceViewResolver">

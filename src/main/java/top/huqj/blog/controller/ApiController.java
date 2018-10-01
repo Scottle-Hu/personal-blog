@@ -9,7 +9,7 @@ import top.huqj.blog.service.IBlogService;
 import java.util.HashMap;
 import java.util.Map;
 
-import static top.huqj.blog.controller.BlogController.ARTICLE_NUM_PER_PAGE;
+import static top.huqj.blog.controller.BlogController.Blog_NUM_PER_PAGE;
 
 /**
  * 非页面跳转类的api，包括md转html等ajax接口
@@ -24,13 +24,13 @@ public class ApiController {
     @Autowired
     private IBlogService blogService;
 
-    @RequestMapping("/page")
+    @RequestMapping("/blog/page")
     public Object getTotalPage() {
         Map<String, Integer> result = new HashMap<>();
         //给前端返回总页数
         int totalBlogNum = blogService.count();
-        result.put("totalPage", totalBlogNum % ARTICLE_NUM_PER_PAGE == 0 ?
-                totalBlogNum / ARTICLE_NUM_PER_PAGE : (totalBlogNum / ARTICLE_NUM_PER_PAGE) + 1);
+        result.put("totalPage", totalBlogNum % Blog_NUM_PER_PAGE == 0 ?
+                totalBlogNum / Blog_NUM_PER_PAGE : (totalBlogNum / Blog_NUM_PER_PAGE) + 1);
         return result;
     }
 

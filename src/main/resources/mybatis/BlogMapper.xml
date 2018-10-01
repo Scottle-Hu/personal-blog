@@ -36,4 +36,11 @@
         SELECT * FROM blog ORDER BY id DESC LIMIT #{pageOffset}, #{pageNum}
     </select>
 
+    <select id="findByIdList" parameterType="java.util.List" resultMap="blogMap">
+        SELECT * FROM blog WHERE id IN
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
+
 </mapper>

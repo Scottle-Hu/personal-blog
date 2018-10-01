@@ -2,19 +2,16 @@ package top.huqj.blog.controller;
 
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import top.huqj.blog.constant.BlogConstant;
-import top.huqj.blog.dao.CategoryDao;
 import top.huqj.blog.model.Blog;
-import top.huqj.blog.model.Category;
-import top.huqj.blog.model.ext.CategoryAndBlogNum;
 import top.huqj.blog.service.IBlogService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +28,11 @@ public class BlogController {
     @Autowired
     private IBlogService blogService;
 
-    public static int ARTICLE_NUM_PER_PAGE = 10;
+    @Value("${maxBlogNumPerPage}")
+    public static int Blog_NUM_PER_PAGE;
+
+    @Value("${maxEssayNumPerPage}")
+    public static int Essay_NUM_PER_PAGE;
 
     @RequestMapping("/")
     public String homePage(HttpServletRequest request) {
@@ -52,8 +53,8 @@ public class BlogController {
             }
             //根据分页信息获取最新博客列表，一页最多10篇
             Map<String, Integer> pageInfo = new HashMap<>();
-            pageInfo.put(BlogConstant.PAGE_OFFSET, (page - 1) * ARTICLE_NUM_PER_PAGE);
-            pageInfo.put(BlogConstant.PAGE_NUM, ARTICLE_NUM_PER_PAGE);
+            pageInfo.put(BlogConstant.PAGE_OFFSET, (page - 1) * Blog_NUM_PER_PAGE);
+            pageInfo.put(BlogConstant.PAGE_NUM, Blog_NUM_PER_PAGE);
             List<Blog> blogList = blogService.findLatestBlogByPage(pageInfo);
             request.setAttribute("blogList", blogList);
 
@@ -108,7 +109,7 @@ public class BlogController {
             if (id == -1) {
                 return gotoHome();
             }
-            if (type == null || BlogConstant.BLOG_TYPE.equals(type)) {  //是博客
+            if (type == null || BlogConstant.BLOG_TYPE.equals(type)) {  //博客
                 Blog blog = blogService.findBlogById(id);
                 if (blog == null) {
                     return gotoHome();
@@ -116,8 +117,10 @@ public class BlogController {
                 request.setAttribute("blog", blog);
                 request.setAttribute("categoryList", blogService.getAllCategoryList());
                 request.setAttribute("monthList", blogService.getAllMonthList());
+                request.setAttribute("previousBlog", blogService.getPrevious(id));
+                request.setAttribute("nextBlog", blogService.getNext(id));
                 request.setAttribute("type", BlogConstant.BLOG_TYPE_ID);
-            } else if (BlogConstant.ESSAY_TYPE.equals(type)) {  //是随笔
+            } else if (BlogConstant.ESSAY_TYPE.equals(type)) {  //随笔
                 //TODO
             } else {
                 return gotoHome();

@@ -1,8 +1,8 @@
 package top.huqj.blog.service.impl;
 
 import lombok.extern.log4j.Log4j;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -18,7 +18,6 @@ import top.huqj.blog.service.IBlogService;
 import top.huqj.blog.utils.MarkDownUtil;
 
 import javax.annotation.PostConstruct;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -35,6 +34,51 @@ public class BlogServiceImpl implements IBlogService {
 
     @Autowired
     private CategoryDao categoryDao;
+
+    @Autowired
+    private RedisManager redisManager;
+
+    /**
+     * redis中存储最新博客id的列表名称
+     */
+    @Value("${redis.list.blog.top.new}")
+    private String topNewsBlogIdListKey;
+
+    /**
+     * redis中存储浏览量最多的博客id的列表
+     */
+    @Value("${redis.list.blog.top.scan}")
+    private String topScanBlogIdListKey;
+
+    /**
+     * redis中存储的评论最多的博客id列表
+     */
+    @Value("${redis.list.blog.top.remark}")
+    private String topRemarkBlogIdListKey;
+
+    /**
+     * 博主推荐博客id集合
+     */
+    @Value("${redis.set.blog.recommend}")
+    private String recommendBlogIdSetKey;
+
+    /**
+     * 一篇博客上下两篇博客id，中间用“-”分割
+     */
+    @Value("${redis.hash.blog.brothers}")
+    private String brothersBlogIdHashKey;
+
+    /**
+     * 博客类别到博客id的对应关系列表名称的前缀，后面还需要加上类别id
+     */
+    @Value("${redis.list.blog.category2blog.prefix}")
+    private String category2BlogIdsKeyPrefix;
+
+    /**
+     * 博客发布时间到博客id列表的名称前缀,后缀形如 ： 201809,201812
+     */
+    @Value("${redis.list.blog.month2blog.prefix}")
+    private String month2BlogIdsKeyPrefix;
 
     /**
      * 避免频繁count(*)
@@ -80,7 +124,7 @@ public class BlogServiceImpl implements IBlogService {
     @Override
     public void insertBlog(Blog blog) throws Exception {
         blog.setPublishTime(new Timestamp(System.currentTimeMillis()));
-        blog.setUpdateTime(new Time(System.currentTimeMillis()));
+        blog.setUpdateTime(new Timestamp(System.currentTimeMillis()));
         Category category = categoryDao.findById(blog.getCategoryId());
         //当找不到类别的时候抛出异常提示
         if (category == null) {
@@ -96,6 +140,8 @@ public class BlogServiceImpl implements IBlogService {
         }
         //提取图片链接
         blog.setImgUrlList(extractImgUrls(blog));
+
+        //TODO 同步redis
 
         blogDao.insertOne(blog);
     }
@@ -138,25 +184,61 @@ public class BlogServiceImpl implements IBlogService {
         }
         List<CategoryAndBlogNum> result = new ArrayList<>();
         for (Category category : categoryList) {
-            result.add(new CategoryAndBlogNum(category, blogDao.countByCategoryId(category.getId())));
+            //从redis中读取该类别的博客数量
+            int num = (int) redisManager.getListLength(category2BlogIdsKeyPrefix + category.getId());
+            if (num > 0) {
+                result.add(new CategoryAndBlogNum(category, num));
+            }
         }
         return result;
     }
 
     @Override
     public List<MonthAndBlogNum> getAllMonthList() {
-        //TODO
-        return null;
+        Set<String> month2BlogKeys = redisManager.listKeysByPrefix(month2BlogIdsKeyPrefix);
+        List<MonthAndBlogNum> result = new ArrayList<>();
+        month2BlogKeys.forEach(e -> {
+            int num = (int) redisManager.getListLength(e);
+            if (num > 0) {
+                result.add(new MonthAndBlogNum(e.substring(e.indexOf("-") + 1, e.length()), num));
+            }
+        });
+        return result;
     }
 
     @Override
     public Blog getPrevious(int id) {
-        return null;
+        return getBrother(id, 0);
     }
 
     @Override
     public Blog getNext(int id) {
-        return null;
+        return getBrother(id, 1);
+    }
+
+    /**
+     * 根据博客id获取上下两篇博客，0代表上一篇，1代表下一篇
+     *
+     * @param id
+     * @param previousOrNext
+     * @return
+     */
+    private Blog getBrother(int id, int previousOrNext) {
+        Optional<String> brotherIds = redisManager.getHashValueByKey(brothersBlogIdHashKey, String.valueOf(id));
+        Blog blog = null;
+        if (brotherIds.isPresent()) {
+            String[] split = brotherIds.get().split("-");
+            if (split.length != 2) {
+                log.error("the brother ids of {" + id + "} is not equals two.");
+            } else {
+                try {
+                    blog = findBlogById(Integer.parseInt(split[previousOrNext]));
+                } catch (Exception e) {
+                    log.error("error when parse brother blogs' id.", e);
+                }
+            }
+        }
+        return blog;
     }
 
     /**

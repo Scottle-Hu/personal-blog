@@ -25,6 +25,7 @@ public interface BlogDao {
     int count();
 
     //根据类别获取数量
+    @Deprecated
     int countByCategoryId(int categoryId);
 
 }

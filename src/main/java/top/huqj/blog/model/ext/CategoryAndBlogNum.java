@@ -11,7 +11,6 @@ import top.huqj.blog.model.Category;
  * @author huqj
  */
 @Data
-@Log4j
 @AllArgsConstructor
 public class CategoryAndBlogNum {
 

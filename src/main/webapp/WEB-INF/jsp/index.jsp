@@ -102,7 +102,7 @@
                 var totalPage = 1;
                 $.ajax(
                     {
-                        url: "api/page",
+                        url: "api/blog/page",
                         type: 'json',
                         method: "GET",
                         success: function (res) {

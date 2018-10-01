@@ -2,7 +2,6 @@ package top.huqj.blog.model;
 
 import lombok.Data;
 
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -54,7 +53,7 @@ public class Blog {
      */
     private int type;
 
-    private Time updateTime;
+    private Timestamp updateTime;
 
     /**
      * 博客标签，用逗号隔开

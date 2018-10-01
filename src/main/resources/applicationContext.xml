@@ -16,6 +16,9 @@
     <!-- 自动扫描 -->
     <context:component-scan base-package="top.huqj.blog"/>
 
+    <!--全局项目配置-->
+    <context:property-placeholder location="classpath:server.properties"/>
+
     <!--引入shiro-->
     <import resource="spring-shiro-web.xml"/>
 
