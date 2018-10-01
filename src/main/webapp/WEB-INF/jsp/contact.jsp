@@ -8,13 +8,13 @@
 </head>
 <body>
 <div class="head">
-    <a href="index.jspindex.html"><h1><img src="image/logo.jpg" class="logo" alt=""/>&nbsp;&nbsp;&nbsp;HuQJ's Blog</h1></a>
+    <a href="index"><h1><img src="image/logo.jpg" class="logo" alt=""/>&nbsp;&nbsp;&nbsp;HuQJ's Blog</h1></a>
     <ul>
-        <li><a href="index.jsp">首页</a></li>
-        <li><a href="blog.jsp">博客</a></li>
-        <li><a href="essay.jsp">随笔</a></li>
-        <li><a href="about.jsp">关于我</a></li>
-        <li><a href="contact.jsp" id="current">联系我</a></li>
+        <li><a href="index">首页</a></li>
+        <li><a href="blog">博客</a></li>
+        <li><a href="essay">随笔</a></li>
+        <li><a href="about">关于我</a></li>
+        <li><a href="contact" id="current">联系我</a></li>
     </ul>
 </div>
 <div class="clear"></div>

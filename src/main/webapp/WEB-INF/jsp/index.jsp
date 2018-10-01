@@ -8,7 +8,7 @@
 </head>
 <body>
 <div class="head">
-    <a href="index.jspindex.html"><h1><img src="image/logo.jpg" class="logo" alt=""/>&nbsp;&nbsp;&nbsp;HuQJ's Blog</h1>
+    <a href="index"><h1><img src="image/logo.jpg" class="logo" alt=""/>&nbsp;&nbsp;&nbsp;HuQJ's Blog</h1>
     </a>
     <ul>
         <li><a href="index" id="current">首页</a></li>
@@ -25,26 +25,11 @@
             <span><img src="image/byType_icon.png"/><font class="mini-title">&nbsp;&nbsp;按博客类别</font></span>
             <hr/>
             <ul>
-                <li><a href="#">java基础(20)</a></li>
-                <li><a href="#">javaweb(10)</a></li>
-                <li><a href="#">linux(10)</a></li>
-                <li><a href="#">spark(6)</a></li>
-                <li><a href="#">前端(30)</a></li>
-                <li><a href="#">java基础(20)</a></li>
-                <li><a href="#">javaweb(10)</a></li>
-                <li><a href="#">linux(10)</a></li>
-                <li><a href="#">spark(6)</a></li>
-                <li><a href="#">前端(30)</a></li>
-                <li><a href="#">java基础(20)</a></li>
-                <li><a href="#">javaweb(10)</a></li>
-                <li><a href="#">linux(10)</a></li>
-                <li><a href="#">spark(6)</a></li>
-                <li><a href="#">前端(30)</a></li>
-                <li><a href="#">java基础(20)</a></li>
-                <li><a href="#">javaweb(10)</a></li>
-                <li><a href="#">linux(10)</a></li>
-                <li><a href="#">spark(6)</a></li>
-                <li><a href="#">前端(30)</a></li>
+                <c:forEach items="${categoryList }" var="category">
+                    <li>
+                        <a href="category?id=${category.category.id }">${category.category.name }(${category.blogNum })</a>
+                    </li>
+                </c:forEach>
             </ul>
         </div>
         <div class="by-date by">
@@ -52,10 +37,11 @@
             <hr/>
             <ul>
                 <li><a href="#">2017年12月(20)</a></li>
-                <li><a href="#">2018年1月(10)</a></li>
-                <li><a href="#">2018年4月(10)</a></li>
-                <li><a href="#">2018年5月(6)</a></li>
-                <li><a href="#">2018年6月(30)</a></li>
+                <c:forEach items="${monthList }" var="month">
+                    <li>
+                        <a href="month?period=${month.publishTime }">${month.publishTime }(${month.blogNum })</a>
+                    </li>
+                </c:forEach>
             </ul>
         </div>
         <div class="clear"></div>
@@ -69,56 +55,95 @@
         <div class="clear"></div>
         <hr/>
         <ul>
-            <li>
-                <a href="#">
-                    <div class="blog">
-                        <h4>使用vmware搭建centos虚拟机集群记录</h4>
-                        <p>因为课程任务需要搭建服务器集群，然后尝试分布式程序来进行聚类分析，但是贫穷如我，买不起那么多云服务器，只能尝试在本地用虚拟机搭建一个虚拟集群......</p>
-                        <img src="image/logo.jpg"/>
-                        <img src="image/list_icon.png"/>
-                        <hr/>
-                        <small>2018-03-21 10:34</small>
-                        <small style="float:right;">浏览（123）</small>
-                    </div>
-                </a>
-            </li>
-            <li>
-                <a href="#">
-                    <div class="blog">
-                        <h4>使用vmware搭建centos虚拟机集群记录</h4>
-                        <p>因为课程任务需要搭建服务器集群，然后尝试分布式程序来进行聚类分析，但是贫穷如我，买不起那么多云服务器，只能尝试在本地用虚拟机搭建一个虚拟集群......</p>
-                        <img src="image/logo.jpg"/>
-                        <img src="image/list_icon.png"/>
-                        <hr/>
-                        <small>2018-03-21 10:34</small>
-                        <small style="float:right;">浏览（123）</small>
-                    </div>
-                </a>
-            </li>
-            <li>
-                <a href="#">
-                    <div class="blog">
-                        <h4>使用vmware搭建centos虚拟机集群记录</h4>
-                        <p>因为课程任务需要搭建服务器集群，然后尝试分布式程序来进行聚类分析，但是贫穷如我，买不起那么多云服务器，只能尝试在本地用虚拟机搭建一个虚拟集群......</p>
-                        <img src="image/logo.jpg"/>
-                        <img src="image/list_icon.png"/>
-                        <hr/>
-                        <small>2018-03-21 10:34</small>
-                        <small style="float:right;">浏览（123）</small>
-                    </div>
-                </a>
-            </li>
+            <c:forEach items="${blogList }" var="blog">
+                <li>
+                    <a href="article?id=${blog.id }">
+                        <div class="blog">
+                            <h4>${blog.title }</h4>
+                            <p>${blog.text }</p>
+                            <c:forEach items="${blog.imgUrls }" var="img">
+                                <img src="${img }"/>
+                            </c:forEach>
+                            <hr/>
+                            <small>${blog.publishTimeStr }</small>
+                            <small style="float:right;">浏览（${blog.scanNum }）</small>
+                        </div>
+                    </a>
+                </li>
+            </c:forEach>
         </ul>
         <hr/>
         <div class="page">
-            <ul>
-                <li class="wider"><a href="#">首页</a></li>
+            <ul id="pageUl">
+                <li class="wider"><a href="index">首页</a></li>
                 <li class="cur-page"><a href="#">1</a></li>
                 <li><a href="#">2</a></li>
                 <li><a href="#">3</a></li>
-                <li class="wider"><a href="#">尾页</a></li>
+                <li class="wider"><a href="index?page=${totalPage }">尾页</a></li>
             </ul>
         </div>
+        <script type="application/javascript" src="js/jquery.min.js"></script>
+        <script type="application/javascript">
+            $(document).ready(function () {
+                var url = window.location.href;
+                var pageIndex = url.indexOf("page=");
+                var curPage = 1;
+                if (pageIndex != -1) {
+                    var endIndex;
+                    var t = url.indexOf("&", pageIndex);
+                    if (t != -1) {
+                        endIndex = t;
+                    } else {
+                        endIndex = url.length;
+                    }
+                    curPage = url.substring(pageIndex + 5, Math.min(url.length, endIndex));
+                }
+                //ajax取得总页面数目
+                var totalPage = 1;
+                $.ajax(
+                    {
+                        url: "api/page",
+                        type: 'json',
+                        method: "GET",
+                        success: function (res) {
+                            var result = eval(res);
+                            totalPage = result.totalPage;
+                            if (totalPage < curPage) {  //当有人篡改page参数时
+                                curPage = 1;
+                            }
+                            paintPageNavigator(curPage, totalPage);
+                        },
+                        error: function () {
+                            console.error("error when send ajax request to get total page num.")
+                            paintPageNavigator(curPage, 0);
+                        }
+                    }
+                );
+
+            });
+
+            //画分页
+            function paintPageNavigator(curPage, totalPage) {
+                var delta = 1;  //当前页前后显示的页数，可调节
+                var liStr = '<li class="wider"><a href="index">首页</a></li>';
+                if (curPage - delta > 2) {
+                    liStr += '<li><a href="#">...</a></li>';
+                }
+                for (var i = curPage - delta; i < curPage + delta; i++) {
+                    if (i == curPage) {
+                        liStr += '<li class="cur-page"><a href="#">' + curPage + '</a></li>';
+                    } else if (i > 1 && i < totalPage) {
+                        liStr += '<li><a href="index?page=' + i + '">' + i + '</a></li>';
+                    }
+                }
+                if (curPage + delta + 1 < totalPage) {
+                    liStr += '<li><a href="#">...</a></li>';
+                }
+                liStr += '<li class="wider"><a href="index?page=' + totalPage + '">尾页</a></li>';
+                $("#pageUl").html(liStr);
+            }
+
+        </script>
     </div>
     <div class="clear"></div>
 </div>

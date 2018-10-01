@@ -18,6 +18,7 @@
         <property name="suffix" value=".jsp"></property>
     </bean>
 
+    <!--支持静态资源-->
     <mvc:default-servlet-handler/>
     <mvc:annotation-driven/>
 

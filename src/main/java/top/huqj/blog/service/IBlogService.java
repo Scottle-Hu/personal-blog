@@ -45,4 +45,20 @@ public interface IBlogService {
      */
     List<MonthAndBlogNum> getAllMonthList();
 
+    /**
+     * 获取前一篇博客
+     *
+     * @param id
+     * @return
+     */
+    Blog getPrevious(int id);
+
+    /**
+     * 获取后一篇博客
+     *
+     * @param id
+     * @return
+     */
+    Blog getNext(int id);
+
 }

@@ -24,13 +24,13 @@
 </script>
 <body>
 <div class="head">
-    <a href="index.jspindex.html"><h1><img src="image/logo.jpg" class="logo" alt=""/>&nbsp;&nbsp;&nbsp;HuQJ's Blog</h1></a>
+    <a href="index"><h1><img src="image/logo.jpg" class="logo" alt=""/>&nbsp;&nbsp;&nbsp;HuQJ's Blog</h1></a>
     <ul>
-        <li><a href="index.jsp">首页</a></li>
-        <li><a href="blog.jsp" id="current">博客</a></li>
-        <li><a href="essay.jsp">随笔</a></li>
-        <li><a href="about.jsp">关于我</a></li>
-        <li><a href="contact.jsp">联系我</a></li>
+        <li><a href="index">首页</a></li>
+        <li><a href="blog" id="current">博客</a></li>
+        <li><a href="essay">随笔</a></li>
+        <li><a href="about">关于我</a></li>
+        <li><a href="contact">联系我</a></li>
     </ul>
 </div>
 <div class="clear"></div>

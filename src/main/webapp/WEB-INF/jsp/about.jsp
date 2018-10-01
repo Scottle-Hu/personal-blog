@@ -8,14 +8,14 @@
 </head>
 <body>
 <div class="head">
-    <a href="index.jspindex.html"><h1><img src="image/logo.jpg" class="logo" alt=""/>&nbsp;&nbsp;&nbsp;HuQJ's Blog</h1>
+    <a href="index"><h1><img src="image/logo.jpg" class="logo" alt=""/>&nbsp;&nbsp;&nbsp;HuQJ's Blog</h1>
     </a>
     <ul>
-        <li><a href="index.jsp">首页</a></li>
-        <li><a href="blog.jsp">博客</a></li>
-        <li><a href="essay.jsp">随笔</a></li>
-        <li><a href="about.jsp" id="current">关于我</a></li>
-        <li><a href="contact.jsp">联系我</a></li>
+        <li><a href="index">首页</a></li>
+        <li><a href="blog">博客</a></li>
+        <li><a href="essay">随笔</a></li>
+        <li><a href="about" id="current">关于我</a></li>
+        <li><a href="contact">联系我</a></li>
     </ul>
 </div>
 <div class="clear"></div>
@@ -64,6 +64,44 @@
         <ul>
             <li>2018.4~2018.10 网易有道实习 计算广告组后台研发</li>
             <li>2017.12~2018.3 科大讯飞武汉研发中心实习 从事后台开发</li>
+        </ul>
+    </div>
+    <hr/>
+    <div class="row-container experience">
+        <h3>作品展示</h3>
+        <ul>
+            <li>2018.9 Jpet服务端远程代码执行工具（<a target="_blank" href="https://github.com/Scottle-Hu/Jpet">github</a>）</li>
+            <li>2018.8 个人博客（<a target="_blank" href="https://github.com/Scottle-Hu/personal-blog">github</a>）</li>
+            <li>2018.3~2018.6 地理纬度医疗信息推荐接口（<a target="_blank"
+                                              href="https://github.com/Scottle-Hu/geo-hostpital">github</a>）
+            </li>
+            <li>2018.3~2018.6 网络舆情分析系统（<a target="_blank" href="http://elitist.huqj.top">elitist</a>）（<a target="_blank"
+                                                                                                         href="https://github.com/Scottle-Hu/news-analyse-1.0">github</a>）
+            </li>
+            <li>2017.7~2017.8 君科沃特合唱团网站前后端（<a target="_blank" href="http://www.simchoir.com">simchoir.com</a>） （<a
+                    target="_blank" href="https://github.com/Scottle-Hu/simchoir">github</a>）
+            </li>
+        </ul>
+    </div>
+    <hr/>
+    <div class="row-container experience">
+        <h3>参与项目</h3>
+        <ul>
+            <li>2018.4~2018.10 网易有道计算广告组 广告投放系统</li>
+            <li>2017.12~2018.3 科大讯飞智能汽车事业部 奇瑞汽车车载4S店保养系统</li>
+        </ul>
+    </div>
+    <hr/>
+    <div class="row-container experience">
+        <h3>常用技术</h3>
+        <ul>
+            <li>java web(ssm框架、spring boot、mvc模式、dubbo、shiro、jvm)</li>
+            <li>数据库：mysql, redis, mongodb</li>
+            <li>数据分析：spark, hadoop, druid</li>
+            <li>中间件：zookeeper, kafka</li>
+            <li>容器：tomcat, resin, docker</li>
+            <li>前端：html/css/js, jquery, bootstrap</li>
+            <li>其它：python, c/c++, matlab, c#, scala, nginx, git, svn, maven, ant/ivy</li>
         </ul>
     </div>
     <div class="clear"></div>

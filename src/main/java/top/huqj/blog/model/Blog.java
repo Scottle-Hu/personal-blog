@@ -3,6 +3,8 @@ package top.huqj.blog.model;
 import lombok.Data;
 
 import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.List;
 
 /**
  * 博客
@@ -16,7 +18,7 @@ public class Blog {
 
     private String title;
 
-    private Time publishTime;
+    private Timestamp publishTime;
 
     /**
      * 发布时间的字符串格式，用于显示
@@ -63,5 +65,10 @@ public class Blog {
      * 博客摘要封面图链接，以 | 分隔，在创建博客时提取并存储在数据库中
      */
     private String imgUrlList;
+
+    /**
+     * 解析出来的list，用于传给前端展示
+     */
+    private List<String> imgUrls;
 
 }

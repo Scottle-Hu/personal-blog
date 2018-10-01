@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import top.huqj.blog.constant.BlogConstant;
 import top.huqj.blog.dao.BlogDao;
 import top.huqj.blog.dao.CategoryDao;
@@ -18,6 +19,7 @@ import top.huqj.blog.utils.MarkDownUtil;
 
 import javax.annotation.PostConstruct;
 import java.sql.Time;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -41,6 +43,11 @@ public class BlogServiceImpl implements IBlogService {
     private volatile int TOTAL_BLOG_NUM = -1;
 
     private static final long AN_HOUR_MILLIS = 60 * 60 * 1000;
+
+    /**
+     * 首页最多预览的图片数目
+     */
+    private static final int MAX_PREVIEW_IMG_NUM = 3;
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -72,7 +79,7 @@ public class BlogServiceImpl implements IBlogService {
 
     @Override
     public void insertBlog(Blog blog) throws Exception {
-        blog.setPublishTime(new Time(System.currentTimeMillis()));
+        blog.setPublishTime(new Timestamp(System.currentTimeMillis()));
         blog.setUpdateTime(new Time(System.currentTimeMillis()));
         Category category = categoryDao.findById(blog.getCategoryId());
         //当找不到类别的时候抛出异常提示
@@ -95,15 +102,23 @@ public class BlogServiceImpl implements IBlogService {
 
     @Override
     public List<Blog> findLatestBlogByPage(Map<String, Integer> page) {
-        if (page == null || page.get(BlogConstant.PAGE_NO) == null
+        if (page == null || page.get(BlogConstant.PAGE_OFFSET) == null
                 || page.get(BlogConstant.PAGE_NUM) == null) {  //参数错误
             return Collections.emptyList();
         }
         List<Blog> blogList = blogDao.findLatestByPage(page);
         if (CollectionUtils.isEmpty(blogList)) {  //没有博客列表，说明不是正常点击而是篡改了url，这时返回首页即可
-            page.put(BlogConstant.PAGE_NO, 1);
+            page.put(BlogConstant.PAGE_OFFSET, 0);
             blogList = blogDao.findLatestByPage(page);
         }
+        //设置日期字符串和图片列表
+        blogList.forEach(blog -> {
+            blog.setPublishTimeStr(dateFormat.format(blog.getPublishTime()));
+            if (!StringUtils.isEmpty(blog.getImgUrlList())) {
+                List<String> imgList = Arrays.asList(blog.getImgUrlList().split("\\|"));
+                blog.setImgUrls(imgList.subList(0, Math.min(MAX_PREVIEW_IMG_NUM, imgList.size())));
+            }
+        });
         return blogList;
     }
 
@@ -134,6 +149,16 @@ public class BlogServiceImpl implements IBlogService {
         return null;
     }
 
+    @Override
+    public Blog getPrevious(int id) {
+        return null;
+    }
+
+    @Override
+    public Blog getNext(int id) {
+        return null;
+    }
+
     /**
      * 从表单提交的原始文本中提取图片链接并存储到blog中
      *
@@ -160,7 +185,7 @@ public class BlogServiceImpl implements IBlogService {
         if (imgs.length() > 0) {
             imgs.deleteCharAt(imgs.length() - 1);
         }
-        return imgs.toString();
+        return imgs.toString().trim();
     }
 
 
