@@ -200,10 +200,22 @@ public class BlogServiceImpl implements IBlogService {
         month2BlogKeys.forEach(e -> {
             int num = (int) redisManager.getListLength(e);
             if (num > 0) {
-                result.add(new MonthAndBlogNum(e.substring(e.indexOf("-") + 1, e.length()), num));
+                String monthName = e.substring(e.indexOf("-") + 1, e.length());
+                if (monthName.length() == 6) {
+                    monthName = parseChineseNameOfMonth(monthName);
+                    result.add(new MonthAndBlogNum(monthName, num));
+                }
             }
         });
         return result;
+    }
+
+    private String parseChineseNameOfMonth(String month) {
+        if (month.charAt(4) == '0') {
+            return month.substring(0, 4) + "年" + month.charAt(5) + "月";
+        } else {
+            return month.substring(0, 4) + "年" + month.substring(4, 6) + "月";
+        }
     }
 
     @Override

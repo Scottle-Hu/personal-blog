@@ -36,7 +36,6 @@
             <span><img src="image/byDate_icon.png"/><font class="mini-title">&nbsp;&nbsp;按博客日期</font></span>
             <hr/>
             <ul>
-                <li><a href="#">2017年12月(20)</a></li>
                 <c:forEach items="${monthList }" var="month">
                     <li>
                         <a href="month?period=${month.publishTime }">${month.publishTime }(${month.blogNum })</a>

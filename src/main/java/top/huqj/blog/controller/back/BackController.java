@@ -56,5 +56,10 @@ public class BackController {
         return "back/console";
     }
 
+    @RequestMapping("/publish")
+    public String publishArticle(HttpServletRequest request) {
+        return "back/publish";
+    }
+
 
 }
