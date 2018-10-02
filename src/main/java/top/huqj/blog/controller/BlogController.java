@@ -29,10 +29,10 @@ public class BlogController {
     private IBlogService blogService;
 
     @Value("${maxBlogNumPerPage}")
-    public static int Blog_NUM_PER_PAGE;
+    public int Blog_NUM_PER_PAGE;
 
     @Value("${maxEssayNumPerPage}")
-    public static int Essay_NUM_PER_PAGE;
+    public int Essay_NUM_PER_PAGE;
 
     @RequestMapping("/")
     public String homePage(HttpServletRequest request) {

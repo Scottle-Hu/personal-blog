@@ -19,13 +19,13 @@
           class="org.apache.shiro.web.filter.authc.FormAuthenticationFilter">
         <property name="usernameParam" value="username"/>
         <property name="passwordParam" value="password"/>
-        <property name="loginUrl" value="/check"/>
-        <property name="successUrl" value="/main"/>
+        <property name="loginUrl" value="/back/check"/>
+        <property name="successUrl" value="/back/console"/>
     </bean>
 
     <!--退出过滤器-->
     <bean id="logoutFilter" class="org.apache.shiro.web.filter.authc.LogoutFilter">
-        <property name="redirectUrl" value="/login"/>
+        <property name="redirectUrl" value="/back/login"/>
     </bean>
 
     <!-- Shiro过滤器 -->
@@ -33,9 +33,9 @@
         <!-- Shiro的核心安全接口,这个属性是必须的 -->
         <property name="securityManager" ref="securityManager"/>
         <!-- 身份认证失败，则跳转到登录页面的配置 -->
-        <property name="loginUrl" value="/login"/>
+        <property name="loginUrl" value="/back/login"/>
         <!-- 权限认证失败，则跳转到指定页面 -->
-        <property name="unauthorizedUrl" value="/unauthor"/>
+        <property name="unauthorizedUrl" value="/back/unauthor"/>
         <!--表单验证filter-->
         <property name="filters">
             <util:map>
@@ -46,12 +46,13 @@
         <!-- Shiro连接约束配置,即过滤链的定义 -->
         <property name="filterChainDefinitions">
             <value>
-                /login.do=anon
-                /check.do=authc
-                /logout.do=logout
-                /main.do=authc
-                /student=roles[teacher]
-                /teacher=perms["user:create"]
+                /back=anon
+                /back/login=anon
+                /back/console=authc
+                /back/check=authc
+                /back/article=authc
+                /back/category=authc
+                /back/logout=logout
             </value>
         </property>
     </bean>

@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.huqj.blog.dao.CategoryDao">
 
-    <resultMap type="category" id="categoryMap">
+    <resultMap type="Category" id="categoryMap">
         <id property="id" column="id"/>
         <result property="name" column="name"/>
     </resultMap>

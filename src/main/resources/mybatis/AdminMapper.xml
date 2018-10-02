@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.huqj.blog.dao.back.AdminDao">
+
+    <resultMap type="Admin" id="adminMap">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <select id="findById" parameterType="java.lang.Integer" resultType="Admin">
+        SELECT * FROM admin WHERE id=#{id}
+    </select>
+
+    <select id="findByUsernameAndPassword" parameterType="Admin" resultType="java.lang.Integer">
+      SELECT COUNT(*) FROM admin WHERE username=#{username} AND password=#{password}
+    </select>
+
+    <insert id="insertOne" parameterType="Admin">
+        INSERT INTO admin VALUES (null,#{username},#{password},#{createTime},#{updateTime})
+    </insert>
+
+    <!-- 只支持改密码 -->
+    <update id="updateOne" parameterType="Admin">
+        UPDATE admin SET password=#{password}, update_time=#{updateTime} WHERE id=#{id}
+    </update>
+
+    <delete id="deleteOne" parameterType="java.lang.Integer">
+        DELETE FROM admin WHERE id=#{id}
+    </delete>
+    
+</mapper>
