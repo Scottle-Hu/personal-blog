@@ -35,4 +35,10 @@ public interface BlogDao {
      */
     int maxId();
 
+    List<String> getTopNewBlog(int limit);
+
+    List<Blog> getTopScanBlog(int limit);
+
+    List<Blog> getTopRemarkBlog(int limit);
+
 }

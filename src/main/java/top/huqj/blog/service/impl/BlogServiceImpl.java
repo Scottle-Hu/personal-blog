@@ -147,13 +147,123 @@ public class BlogServiceImpl implements IBlogService {
         //添加类别与博客id的对应
         redisManager.addList(category2BlogIdsKeyPrefix + blog.getCategoryId(), String.valueOf(blog.getId()));
         //添加时间与博客id的对应
-        redisManager.addList(month2BlogIdsKeyPrefix + dateFormat.format(blog.getPublishTime()), String.valueOf(blog.getId()));
+        redisManager.addList(month2BlogIdsKeyPrefix + monthDateFormat.format(blog.getPublishTime()), String.valueOf(blog.getId()));
         //更新上下篇博客id对应关系
         updateBrotherBlog(blog.getId(), BlogUpdateOperation.ADD);
         //更新top博客
-
+        updateTopBlog(blog, BlogUpdateOperation.ADD);
 
         blogDao.insertOne(blog);
+    }
+
+    /**
+     * 更新各个维度的top博客列表，添加、删除、修改都可能变化
+     * 每个纬度的列表默认最多十篇（博主推荐除外）
+     *
+     * @param blog
+     * @param op
+     */
+    private void updateTopBlog(Blog blog, BlogUpdateOperation op) {
+        String id = String.valueOf(blog.getId());
+        switch (op) {
+            case ADD: {
+                if (blog.isRecommend()) {  //更新博主推荐
+                    redisManager.addList(recommendBlogIdSetKey, String.valueOf(blog.getId()));
+                }
+                if (redisManager.getListLength(topRemarkBlogIdListKey) < 10) {  //更新最多评论
+                    redisManager.addList(topRemarkBlogIdListKey, blog.getId() + "-0"); //默认0评论，添加在末尾
+                }
+                if (redisManager.getListLength(topScanBlogIdListKey) < 10) {  //更新最多浏览
+                    redisManager.addList(topScanBlogIdListKey, blog.getId() + "-0"); //默认0浏览，添加在末尾
+                }
+                //更新最新博客
+                while (redisManager.getListLength(topNewsBlogIdListKey) >= 10) {
+                    redisManager.removeListTail(topNewsBlogIdListKey);
+                }
+                redisManager.addListOnHead(topNewsBlogIdListKey, String.valueOf(blog.getId()));
+                break;
+            }
+            case DELETE: {  //注意：应该先从数据库中删除，再执行更新redis的操作
+                if (blog.isRecommend()) {
+                    //更新博主推荐
+                    List<String> recommendIds = redisManager.getListValues(recommendBlogIdSetKey);
+                    Iterator<String> iterator = recommendIds.iterator();
+                    while (iterator.hasNext()) {
+                        String ele = iterator.next();
+                        if (ele.equals(String.valueOf(blog.getId()))) {
+                            iterator.remove();
+                            break;
+                        }
+                    }
+                    redisManager.deleteListAllValue(recommendBlogIdSetKey);
+                    redisManager.addListValueBatch(recommendBlogIdSetKey, recommendIds);
+                    //更新最新文章
+                    List<String> topNewBlogIds = redisManager.getListValues(topNewsBlogIdListKey);
+                    if (topNewBlogIds.contains(String.valueOf(blog.getId()))) {
+                        Iterator<String> topIterator = topNewBlogIds.iterator();
+                        while (topIterator.hasNext()) {
+                            String ele = topIterator.next();
+                            if (ele.equals(String.valueOf(blog.getId()))) {
+                                topIterator.remove();
+                                break;
+                            }
+                        }
+                        List<String> candidateIds = blogDao.getTopNewBlog(topNewBlogIds.size() + 1);
+                        String newCandidateId = candidateIds.get(candidateIds.size() - 1);
+                        if (!topNewBlogIds.contains(newCandidateId)) {
+                            topNewBlogIds.add(newCandidateId);
+                            redisManager.deleteListAllValue(topNewsBlogIdListKey);
+                            redisManager.addListValueBatch(topNewsBlogIdListKey, topNewBlogIds);
+                        } else {
+                            log.error("top new blog is not correct.topNewCandidateId=" + newCandidateId);
+                        }
+                    }
+                    //更新浏览最多
+                    List<String> topScanBlogIds = redisManager.getListValues(topScanBlogIdListKey);
+                    String mark = id + "-";
+                    if (hasValueStartWithAndRemoveOnce(topScanBlogIds, mark)) {
+                        List<Blog> scanCandidates = blogDao.getTopScanBlog(topScanBlogIds.size() + 1);
+                        Blog newScanCandidate = scanCandidates.get(scanCandidates.size() - 1);
+                        topScanBlogIds.add(newScanCandidate.getId() + "-" + newScanCandidate.getScanNum());
+                        redisManager.deleteListAllValue(topScanBlogIdListKey);
+                        redisManager.addListValueBatch(topScanBlogIdListKey, topScanBlogIds);
+                    }
+                    //更新浏览最多
+                    List<String> topRemarkBlogIds = redisManager.getListValues(topRemarkBlogIdListKey);
+                    if (hasValueStartWithAndRemoveOnce(topRemarkBlogIds, mark)) {
+                        List<Blog> remarkCandidates = blogDao.getTopRemarkBlog(topRemarkBlogIds.size() + 1);
+                        Blog newRemarkCandidate = remarkCandidates.get(remarkCandidates.size() - 1);
+                        topRemarkBlogIds.add(newRemarkCandidate.getId() + "-" + newRemarkCandidate.getScanNum());
+                        redisManager.deleteListAllValue(topRemarkBlogIdListKey);
+                        redisManager.addListValueBatch(topRemarkBlogIdListKey, topRemarkBlogIds);
+                    }
+                }
+                break;
+            }
+            case UPDATE: {
+                //TODO
+                break;
+            }
+        }
+    }
+
+    /**
+     * 在列表中查找有没有以prefix开头的字符串，如果有则删除并返回查找结果
+     *
+     * @param list
+     * @param prefix
+     * @return
+     */
+    private boolean hasValueStartWithAndRemoveOnce(List<String> list, String prefix) {
+        Iterator<String> it = list.iterator();
+        while (it.hasNext()) {
+            String ele = it.next();
+            if (ele.startsWith(prefix)) {
+                it.remove();
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

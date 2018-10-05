@@ -96,7 +96,7 @@ public class BlogController {
     }
 
     @RequestMapping("/article")
-    public String articlePage(HttpServletRequest request, HttpServletResponse response) {
+    public String articlePage(HttpServletRequest request) {
         try {
             String articleId = request.getParameter("id");
             String type = request.getParameter("type");

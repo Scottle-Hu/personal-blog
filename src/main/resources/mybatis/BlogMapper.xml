@@ -52,4 +52,16 @@
       SELECT MAX(id) FROM blog;
     </select>
 
+    <select id="getTopNewBlog" parameterType="Integer" resultMap="blogMap">
+      SELECT id FROM blog ORDER BY publish_time DESC LIMIT 0,#{limit}
+    </select>
+
+    <select id="getTopScanBlog" parameterType="Integer" resultMap="blogMap">
+      SELECT * FROM blog ORDER BY scan_num DESC LIMIT 0,#{limit}
+    </select>
+
+    <select id="getTopRemarkBlog" parameterType="Integer" resultMap="blogMap">
+      SELECT * FROM blog ORDER BY scan_num DESC LIMIT 0,#{limit}
+    </select>
+
 </mapper>

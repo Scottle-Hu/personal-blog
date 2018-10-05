@@ -141,6 +141,9 @@ public class BackController {
                 checkNotNull(tag);
                 blog.setTag(tag);
                 blog.setUpdateTime(new Timestamp(System.currentTimeMillis()));
+                String recommend = request.getParameter("isRecommend");
+                checkNotNull(recommend);
+                blog.setRecommend(Boolean.parseBoolean(recommend));
                 blog.setId(blogIdProvider.provideId());
                 blogService.insertBlog(blog);
                 request.setAttribute("msg", "发布成功！博客id " + blog.getId());

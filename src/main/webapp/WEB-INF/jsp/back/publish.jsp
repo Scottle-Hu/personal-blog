@@ -63,7 +63,7 @@
     </div>
     <div class="main-board">
 
-        <form action="publish" method="post" class="publish-form">
+        < action="publish" method="post" class="publish-form">
             <label>Title&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</label>
             <input type="text" name="title" class="publish-input" placeholder="input the title" id="title"/>
             <label>Publish time：</label>
@@ -82,9 +82,13 @@
             <input type="text" name="tag" class="publish-input tag-input" placeholder=" input tags seperated by the comma"/>
             <small> for example: java,python,c/c++</small>
             <br/><br/>
+            <label>Recommend&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</label>
+            <input type="checkbox" id="recommendCheckBox" name="recommendCheckBox"/>
+            <br/><br/>
             <input type="hidden" name="htmlContent" id="htmlContent"/>
             <input type="hidden" name="text" id="text"/>
             <input type="hidden" name="mdContent" id="mdContent"/>
+            <input type="hidden" name="isRecommend" id="isRecommend"/>
             <script type="text/plain" id="myEditor" style="width:1000px;height:500px;"></script>
             <br/><br/>
             <input type="button" class="publish-article" value="Publish" id="publish-btn"/>

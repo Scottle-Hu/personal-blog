@@ -70,4 +70,9 @@ public class Blog {
      */
     private List<String> imgUrls;
 
+    /**
+     * 是否为博主推荐文章
+     */
+    private boolean isRecommend;
+
 }

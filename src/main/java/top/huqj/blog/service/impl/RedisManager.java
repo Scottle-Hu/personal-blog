@@ -65,7 +65,26 @@ public class RedisManager {
      * @param value
      */
     public void addList(String listKey, String value) {
+        jedis.rpush(listKey, value);
+    }
+
+    /**
+     * 在列表首部添加一个元素
+     *
+     * @param listKey
+     * @param value
+     */
+    public void addListOnHead(String listKey, String value) {
         jedis.lpush(listKey, value);
+    }
+
+    /**
+     * 移除列表尾部一个元素
+     *
+     * @param listKey
+     */
+    public void removeListTail(String listKey) {
+        jedis.rpop(listKey);
     }
 
     /**
@@ -99,6 +118,25 @@ public class RedisManager {
 
     public long getListLength(String key) {
         return jedis.llen(key);
+    }
+
+    /**
+     * 删除一个列表所有元素，直接删除该列表即可
+     *
+     * @param key
+     */
+    public void deleteListAllValue(String key) {
+        jedis.del(key);
+    }
+
+    /**
+     * 向一个列表中顺序添加多个元素
+     *
+     * @param listKey
+     * @param values
+     */
+    public void addListValueBatch(String listKey, List<String> values) {
+        jedis.rpush(listKey, values.toArray(new String[]{}));
     }
 
     public Optional<String> getHashValueByKey(String hashName, String key) {
