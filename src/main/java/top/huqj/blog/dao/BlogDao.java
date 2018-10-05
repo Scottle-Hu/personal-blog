@@ -28,4 +28,11 @@ public interface BlogDao {
     @Deprecated
     int countByCategoryId(int categoryId);
 
+    /**
+     * 获取当前最大的id
+     *
+     * @return
+     */
+    int maxId();
+
 }

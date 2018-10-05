@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import top.huqj.blog.constant.BlogConstant;
+import top.huqj.blog.constant.BlogUpdateOperation;
 import top.huqj.blog.dao.BlogDao;
 import top.huqj.blog.dao.CategoryDao;
 import top.huqj.blog.exception.CategoryNotFoundException;
@@ -14,11 +15,11 @@ import top.huqj.blog.model.Blog;
 import top.huqj.blog.model.Category;
 import top.huqj.blog.model.ext.CategoryAndBlogNum;
 import top.huqj.blog.model.ext.MonthAndBlogNum;
+import top.huqj.blog.service.IBlogIdProvider;
 import top.huqj.blog.service.IBlogService;
 import top.huqj.blog.utils.MarkDownUtil;
 
 import javax.annotation.PostConstruct;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -37,6 +38,9 @@ public class BlogServiceImpl implements IBlogService {
 
     @Autowired
     private RedisManager redisManager;
+
+    @Autowired
+    private IBlogIdProvider blogIdProvider;
 
     /**
      * redis中存储最新博客id的列表名称
@@ -95,6 +99,8 @@ public class BlogServiceImpl implements IBlogService {
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+    private SimpleDateFormat monthDateFormat = new SimpleDateFormat("yyyyMMdd");
+
     @PostConstruct
     public void init() {
         //初始化博客数量
@@ -122,9 +128,7 @@ public class BlogServiceImpl implements IBlogService {
     }
 
     @Override
-    public void insertBlog(Blog blog) throws Exception {
-        blog.setPublishTime(new Timestamp(System.currentTimeMillis()));
-        blog.setUpdateTime(new Timestamp(System.currentTimeMillis()));
+    public synchronized void insertBlog(Blog blog) throws Exception {
         Category category = categoryDao.findById(blog.getCategoryId());
         //当找不到类别的时候抛出异常提示
         if (category == null) {
@@ -140,10 +144,87 @@ public class BlogServiceImpl implements IBlogService {
         }
         //提取图片链接
         blog.setImgUrlList(extractImgUrls(blog));
+        //添加类别与博客id的对应
+        redisManager.addList(category2BlogIdsKeyPrefix + blog.getCategoryId(), String.valueOf(blog.getId()));
+        //添加时间与博客id的对应
+        redisManager.addList(month2BlogIdsKeyPrefix + dateFormat.format(blog.getPublishTime()), String.valueOf(blog.getId()));
+        //更新上下篇博客id对应关系
+        updateBrotherBlog(blog.getId(), BlogUpdateOperation.ADD);
+        //更新top博客
 
-        //TODO 同步redis
 
         blogDao.insertOne(blog);
+    }
+
+    /**
+     * 添加和删除博客的状态下更新上下博客
+     *
+     * @param id
+     * @param op
+     */
+    private void updateBrotherBlog(int id, BlogUpdateOperation op) {
+        switch (op) {
+            case ADD: {  //添加博客，只需要添加当前博客以及更新上一篇博客
+                int preBlogId = id - 1;
+                while (preBlogId > 0) {
+                    Optional<String> preBlogIdValue = redisManager.getHashValueByKey(brothersBlogIdHashKey, String.valueOf(preBlogId));
+                    if (preBlogIdValue.isPresent() && preBlogIdValue.get().endsWith("-0")) {  //上一篇博客应当没有下一篇id
+                        redisManager.setHash(brothersBlogIdHashKey, String.valueOf(id), preBlogId + "-0");
+                        String oldValue = preBlogIdValue.get();
+                        redisManager.setHash(brothersBlogIdHashKey, String.valueOf(preBlogId),
+                                oldValue.substring(0, oldValue.indexOf("-")) + "-" + id);
+                        break;
+                    }
+                    preBlogId--;
+                }
+                if (preBlogId == 0) { //没找到上一篇博客，只可能在第一次添加博客时出现
+                    log.warn("can not find previous blog, this can be legal only when insert the first blog.");
+                    redisManager.setHash(brothersBlogIdHashKey, String.valueOf(id), "0-0");
+                }
+                break;
+            }
+            case DELETE: {  //删除博客，需要删除当前id，以及更新上下文
+                Optional<String> brotherIds = redisManager.getHashValueByKey(brothersBlogIdHashKey, String.valueOf(id));
+                if (brotherIds.isPresent()) {
+                    redisManager.removeHashKey(brothersBlogIdHashKey, String.valueOf(id));
+                    if ("0-0".equals(brotherIds)) {
+                        break;
+                    }
+                    String[] brotherIdsValueStr = brotherIds.get().split("-");
+                    if (brotherIdsValueStr.length != 2) {
+                        log.error("brotherIdsValueStr is an illegal string: " + brotherIdsValueStr);
+                        break;
+                    }
+                    Optional<String> nextId = redisManager.getHashValueByKey(brothersBlogIdHashKey, brotherIdsValueStr[1]);
+                    if (nextId.isPresent()) {
+                        String nextIdValue = nextId.get();
+                        if (nextIdValue.contains("-")) {
+                            nextIdValue = nextIdValue.substring(nextIdValue.indexOf("-") + 1, nextIdValue.length());
+                        } else {
+                            log.error("illegal brother id string, nextIdValue=" + nextIdValue);
+                            break;
+                        }
+                        redisManager.setHash(brothersBlogIdHashKey, brotherIdsValueStr[1]
+                                , brotherIdsValueStr[0] + "-" + nextIdValue);
+                    }
+                    Optional<String> preId = redisManager.getHashValueByKey(brothersBlogIdHashKey, brotherIdsValueStr[0]);
+                    if (preId.isPresent()) {
+                        String preIdValue = preId.get();
+                        if (preIdValue.contains("-")) {
+                            preIdValue = preIdValue.substring(0, preIdValue.indexOf("-"));
+                        } else {
+                            log.error("illegal brother id string, preIdValue=" + preIdValue);
+                            break;
+                        }
+                        redisManager.setHash(brothersBlogIdHashKey, brotherIdsValueStr[0]
+                                , preIdValue + "-" + brotherIdsValueStr[1]);
+                    }
+                } else {
+                    log.error("try to delete a nonexistent blog id. id=" + id);
+                }
+                break;
+            }
+        }
     }
 
     @Override

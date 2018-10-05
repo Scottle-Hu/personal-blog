@@ -116,5 +116,9 @@ public class RedisManager {
         jedis.hset(hashName, key, value);
     }
 
+    public void removeHashKey(String hashName, String key) {
+        jedis.hdel(hashName, key);
+    }
+
 
 }

@@ -12,6 +12,20 @@
 <script type="text/javascript" charset="utf-8" src="../umeditor/umeditor.config.js"></script>
 <script type="text/javascript" charset="utf-8" src="../umeditor/umeditor.min.js"></script>
 <script type="text/javascript" src="../umeditor/lang/zh-cn/zh-cn.js"></script>
+<%--提交文章--%>
+<script type="application/javascript">
+    $(document).ready(function () {
+        $("#publish-btn").click(function() {
+            $("#htmlContent").val($("myEditor").html());
+            $("#text").val(um.getText());
+            alert($("#htmlContent").val());
+            alert($("#text").val());
+            //TODO
+            return false;
+            //$("#publish-form").submit();
+        });
+    });
+</script>
 <body>
 <div class="top-menu">
     <a target="_blank" href="../index"><img src="../image/logo.jpg" class="logo"/></a>
@@ -50,14 +64,18 @@
     <div class="main-board">
 
         <form action="publish" method="post" class="publish-form">
+            <label>Title&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</label>
+            <input type="text" name="title" class="publish-input" placeholder="input the title" id="title"/>
             <label>Publish time：</label>
-            <input type="text" name="publishTime" class="publish-input" placeholder=" input publish time, optional."/>
+            <input type="text" name="publishTimeStr" class="publish-input" placeholder=" input publish time, optional." id="publishTimeStr"/>
             <small> for example: 2018-10-02 18:55:00</small>
             <br/><br/>
             <label>Category&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</label>
-            <select class="publish-select" name="category">
+            <select class="publish-select" name="categoryId">
                 <option value="0">--------please select blog category--------</option>
-                <option value="1">java</option>
+                <c:forEach items="categoryLis" var="category">
+                    <option value="${category.id }">${category.name }</option>
+                </c:forEach>
             </select>
             <br/><br/>
             <label>Tag&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：</label>
@@ -69,7 +87,7 @@
             <input type="hidden" name="mdContent" id="mdContent"/>
             <script type="text/plain" id="myEditor" style="width:1000px;height:500px;"></script>
             <br/><br/>
-            <input type="button" class="publish-article" value="Publish"/>
+            <input type="button" class="publish-article" value="Publish" id="publish-btn"/>
         </form>
     </div>
 </div>

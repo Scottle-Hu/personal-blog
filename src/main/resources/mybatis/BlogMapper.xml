@@ -43,4 +43,13 @@
         </foreach>
     </select>
 
+    <select id="insertOne" parameterType="Blog">
+        INSERT INTO blog VALUES(id,title,publish_time,category_id,tags,text,md_content,html_content,update_time,`type`,scan_num,img_urls)
+        (#{id},#{title},#{publishTime},#{categoryId},#{tag},#{text},#{mdContent},#{htmlContent},#{updateTime},#{type},#{scanNum},#{imgUrlList})
+    </select>
+
+    <select id="maxId" resultType="Integer">
+      SELECT MAX(id) FROM blog;
+    </select>
+
 </mapper>
