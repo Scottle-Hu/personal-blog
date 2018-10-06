@@ -33,6 +33,14 @@ public interface IBlogService {
     List<Blog> findLatestBlogByPageAndCategory(Map<String, Integer> page);
 
     /**
+     * 根据分页信息和博客所属月份获取博客列表
+     *
+     * @param page
+     * @return
+     */
+    List<Blog> findLatestBlogByPageAndMonth(Map<String, Object> page);
+
+    /**
      * 计算所有博客数量，用于分页
      *
      * @return

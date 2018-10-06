@@ -186,6 +186,44 @@ public class BlogController {
         return "category";
     }
 
+    @RequestMapping("/month")
+    public String monthBlogPage(HttpServletRequest request) {
+        try {
+            String month = request.getParameter("period");
+            //转换中文编码格式
+            month = new String(month.getBytes("iso-8859-1"), "utf-8");
+            if (StringUtils.isEmpty(month)) {
+                return gotoHome();
+            }
+            request.setAttribute("month", month);
+            String pageStr = request.getParameter("page");
+            int page = 1;
+            if (!StringUtils.isEmpty(pageStr)) {
+                try {
+                    page = Integer.parseInt(pageStr);
+                } catch (Exception e) {
+                    log.error("error when parse param page.", e);
+                }
+            }
+            //根据类别和分页信息获取最新博客列表，一页最多10篇
+            Map<String, Object> pageInfo = new HashMap<>();
+            pageInfo.put(BlogConstant.PAGE_OFFSET, (page - 1) * Blog_NUM_PER_PAGE);
+            pageInfo.put(BlogConstant.PAGE_NUM, Blog_NUM_PER_PAGE);
+            pageInfo.put(BlogConstant.TYPE_MONTH, month);
+            List<Blog> blogList = blogService.findLatestBlogByPageAndMonth(pageInfo);
+            request.setAttribute("blogList", blogList);
+
+            //获取所有博客类别和对应的博客数量
+            request.setAttribute("categoryList", blogService.getAllCategoryList());
+            //获取所有有博客的月份以及对应的博客篇数
+            request.setAttribute("monthList", blogService.getAllMonthList());
+
+        } catch (Exception e) {
+            log.error("error when set month-blog page.", e);
+        }
+        return "month-blog";
+    }
+
     /**
      * 用于跳转到home
      *

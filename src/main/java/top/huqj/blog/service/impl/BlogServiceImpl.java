@@ -399,6 +399,32 @@ public class BlogServiceImpl implements IBlogService {
     }
 
     @Override
+    public List<Blog> findLatestBlogByPageAndMonth(Map<String, Object> page) {
+        if (page == null || page.get(BlogConstant.PAGE_OFFSET) == null
+                || page.get(BlogConstant.PAGE_NUM) == null || page.get(BlogConstant.TYPE_MONTH) == null) {
+            return Collections.emptyList();
+        }
+        String monthSuffix = reparseChineseNameOfMonth((String) page.get(BlogConstant.TYPE_MONTH));
+        List<String> monthBlogIds = redisManager.getListValues(month2BlogIdsKeyPrefix + monthSuffix);
+        int offset = (Integer) page.get(BlogConstant.PAGE_OFFSET), size = (Integer) page.get(BlogConstant.PAGE_NUM);
+        if (CollectionUtils.isEmpty(monthBlogIds) || monthBlogIds.size() <= offset) {
+            return Collections.emptyList();
+        }
+        monthBlogIds = monthBlogIds.subList(offset, Math.min(offset + size, monthBlogIds.size()));
+        List<Integer> idList = new ArrayList<>();
+        monthBlogIds.forEach(id -> {
+            try {
+                idList.add(Integer.parseInt(id));
+            } catch (NumberFormatException e1) {
+                log.error("error once when parse blog id.", e1);
+            }
+        });
+        List<Blog> blogList = blogDao.findByIdList(idList);
+        postProcessBlogList(blogList);
+        return blogList;
+    }
+
+    @Override
     public int count() {
         if (TOTAL_BLOG_NUM < 0) {
             TOTAL_BLOG_NUM = blogDao.count();
