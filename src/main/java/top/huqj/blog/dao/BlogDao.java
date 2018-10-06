@@ -33,7 +33,7 @@ public interface BlogDao {
      *
      * @return
      */
-    int maxId();
+    int maxId();  //TODO 当数据库为空时会有问题，注意下
 
     List<String> getTopNewBlog(int limit);
 

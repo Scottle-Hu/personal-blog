@@ -39,9 +39,6 @@ public class BlogServiceImpl implements IBlogService {
     @Autowired
     private RedisManager redisManager;
 
-    @Autowired
-    private IBlogIdProvider blogIdProvider;
-
     /**
      * redis中存储最新博客id的列表名称
      */
@@ -99,7 +96,7 @@ public class BlogServiceImpl implements IBlogService {
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    private SimpleDateFormat monthDateFormat = new SimpleDateFormat("yyyyMMdd");
+    private SimpleDateFormat monthDateFormat = new SimpleDateFormat("yyyyMM");
 
     @PostConstruct
     public void init() {
@@ -145,9 +142,9 @@ public class BlogServiceImpl implements IBlogService {
         //提取图片链接
         blog.setImgUrlList(extractImgUrls(blog));
         //添加类别与博客id的对应
-        redisManager.addList(category2BlogIdsKeyPrefix + blog.getCategoryId(), String.valueOf(blog.getId()));
+        redisManager.addListOnHead(category2BlogIdsKeyPrefix + blog.getCategoryId(), String.valueOf(blog.getId()));
         //添加时间与博客id的对应
-        redisManager.addList(month2BlogIdsKeyPrefix + monthDateFormat.format(blog.getPublishTime()), String.valueOf(blog.getId()));
+        redisManager.addListOnHead(month2BlogIdsKeyPrefix + monthDateFormat.format(blog.getPublishTime()), String.valueOf(blog.getId()));
         //更新上下篇博客id对应关系
         updateBrotherBlog(blog.getId(), BlogUpdateOperation.ADD);
         //更新top博客
@@ -168,7 +165,7 @@ public class BlogServiceImpl implements IBlogService {
         switch (op) {
             case ADD: {
                 if (blog.isRecommend()) {  //更新博主推荐
-                    redisManager.addList(recommendBlogIdSetKey, String.valueOf(blog.getId()));
+                    redisManager.addListOnHead(recommendBlogIdSetKey, String.valueOf(blog.getId()));
                 }
                 if (redisManager.getListLength(topRemarkBlogIdListKey) < 10) {  //更新最多评论
                     redisManager.addList(topRemarkBlogIdListKey, blog.getId() + "-0"); //默认0评论，添加在末尾
@@ -454,15 +451,15 @@ public class BlogServiceImpl implements IBlogService {
         String html = blog.getHtmlContent();
         int index = html.indexOf("<img");
         while (index != -1) {
-            int urlStart = html.indexOf("\"", index);
+            int urlStart = html.indexOf("src=\"", index);
             if (urlStart == -1 || urlStart == html.length() - 1) {
                 break;
             }
-            int urlEnd = html.indexOf("\"", urlStart + 1);
+            int urlEnd = html.indexOf("\"", urlStart + 5);
             if (urlEnd == -1) {
                 break;
             }
-            imgs.append(html.substring(urlStart + 1, urlEnd));
+            imgs.append(html.substring(urlStart + 5, urlEnd));
             imgs.append("|");
             html = html.substring(urlEnd);
             index = html.indexOf("<img");

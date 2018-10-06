@@ -16,13 +16,38 @@
 <script type="application/javascript">
     $(document).ready(function () {
         $("#publish-btn").click(function() {
-            $("#htmlContent").val($("myEditor").html());
-            $("#text").val(um.getText());
-            alert($("#htmlContent").val());
-            alert($("#text").val());
-            //TODO
-            return false;
-            //$("#publish-form").submit();
+            var title = $("#title").val();
+            var publishTimeStr = $("#publishTimeStr").val();
+            var categoryId = $("#categoryId").val();
+            var tag = $("#tag").val();
+            $("#isRecommend").val($("#recommendCheckBox").prop("checked"));
+            var isRecommend = $("#isRecommend").val();
+            $("#htmlContent").val($("#myEditor").html());
+            $("#text").val(um.getContentTxt());
+            var htmlContent = $("#htmlContent").val();
+            var text = $("#text").val();
+            //check
+            if (title == "") {
+                alert("title is blank!");
+                return false;
+            }
+            if (publishTimeStr != "" && publishTimeStr.length != 19) {
+                alert("publish time format is incorrect!");
+                return false;
+            }
+            if (categoryId == "" || categoryId == "-1") {
+                alert("please select category!");
+                return false;
+            }
+            if (isRecommend != "true" && isRecommend != "false") {
+                alert("checkbox result is not boolean: " + isRecommend);
+                return false;
+            }
+            if (text == "") {
+                alert("the content is blank!");
+                return false;
+            }
+            $("#publish-form").submit();
         });
     });
 </script>
@@ -63,27 +88,29 @@
     </div>
     <div class="main-board">
 
-        < action="publish" method="post" class="publish-form">
-            <label>Title&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</label>
-            <input type="text" name="title" class="publish-input" placeholder="input the title" id="title"/>
+        <form action="publish" method="post" class="publish-form" id="publish-form">
+            <input type="hidden" name="type" value="0"/>
+            <label>Title&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</label>
+            <input type="text" name="title" class="publish-input" placeholder=" input the title" id="title"/>
+            <br/><br/>
             <label>Publish time：</label>
             <input type="text" name="publishTimeStr" class="publish-input" placeholder=" input publish time, optional." id="publishTimeStr"/>
             <small> for example: 2018-10-02 18:55:00</small>
             <br/><br/>
             <label>Category&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</label>
-            <select class="publish-select" name="categoryId">
-                <option value="0">--------please select blog category--------</option>
-                <c:forEach items="categoryLis" var="category">
+            <select class="publish-select" name="categoryId" id="categoryId">
+                <option value="-1">--------please select blog category--------</option>
+                <c:forEach items="${categoryList }" var="category">
                     <option value="${category.id }">${category.name }</option>
                 </c:forEach>
             </select>
             <br/><br/>
             <label>Tag&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：</label>
-            <input type="text" name="tag" class="publish-input tag-input" placeholder=" input tags seperated by the comma"/>
+            <input type="text" name="tag" class="publish-input tag-input" placeholder=" input tags seperated by the comma" id="tag"/>
             <small> for example: java,python,c/c++</small>
             <br/><br/>
-            <label>Recommend&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</label>
-            <input type="checkbox" id="recommendCheckBox" name="recommendCheckBox"/>
+            <label>Recommend&nbsp;:</label>
+            <input type="checkbox" id="recommendCheckBox" name="recommendCheckBox" />
             <br/><br/>
             <input type="hidden" name="htmlContent" id="htmlContent"/>
             <input type="hidden" name="text" id="text"/>

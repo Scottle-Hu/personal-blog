@@ -45,13 +45,18 @@
         </property>
         <!-- Shiro连接约束配置,即过滤链的定义 -->
         <property name="filterChainDefinitions">
+            <!--配置各个页面是否需要验证权限-->
             <value>
                 /back=anon
                 /back/login=anon
                 /back/console=authc
                 /back/check=authc
-                /back/article=authc
+                /back/blogs=authc
+                /back/essays=authc
+                /back/publish=authc
                 /back/category=authc
+                /back/about=authc
+                /back/message=authc
                 /back/logout=logout
             </value>
         </property>

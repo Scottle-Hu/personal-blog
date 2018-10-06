@@ -42,7 +42,7 @@ public class BackController {
     @Autowired
     private CategoryDao categoryDao;
 
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd HH:mm:ss");
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private static final int DATE_FORMAT_LENGTH = 19;
 
@@ -147,19 +147,19 @@ public class BackController {
                 blog.setId(blogIdProvider.provideId());
                 blogService.insertBlog(blog);
                 request.setAttribute("msg", "发布成功！博客id " + blog.getId());
-                return "back/blogs";
+                return "redirect:blogs";
             } else if (articleType == BlogConstant.ESSAY_TYPE_ID) {
                 //TODO
-                return "back/essays";
+                return "redirect:essays";
             } else {
                 log.warn("unknown article type: " + articleType);
                 request.setAttribute("errorMsg", "非法的文章类型！");
-                return "back/publish";
+                return publishArticle(request);
             }
         } catch (Exception e) {
             log.error("error when publish article.", e);
             request.setAttribute("errorMsg", "发布文章时发生错误，发布失败！");
-            return "back/publish";
+            return publishArticle(request);
         }
     }
 
