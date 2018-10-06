@@ -163,3 +163,28 @@ body {
 .publish-form small {
     color: gray;
 }
+
+.tab {
+    width: 100%;
+    height: auto;
+    padding: 5px;
+    background: lightgreen;
+}
+
+.tab button {
+    margin-left: 5px;
+    background: silver;
+    color: black;
+    font-size: 20px;
+    width: 150px;
+    height: 40px;
+    border: none;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+}
+
+.tab .now-tab {
+    color: white;
+    background: black;
+}

@@ -35,7 +35,7 @@
         <div class="clear"></div>
     </div>
     <div class="latest by">
-        <span><img src="image/list_icon.png"/><font class="mini-title">&nbsp;&nbsp;最新随笔</font></span>
+        <span><img src="image/list_icon.png"/><font class="mini-title">&nbsp;&nbsp;时间：${month }</font></span>
         <div class="clear"></div>
         <hr/>
         <ul>
@@ -84,6 +84,23 @@
             }
             curPage = url.substring(pageIndex + 5, Math.min(url.length, endIndex));
         }
+        var monthIndex = url.indexOf("period=");
+        var month = "";
+        if (monthIndex == -1) {
+            alert("时间为空！");
+        } else {
+            var endIndex;
+            var t = url.indexOf("&", monthIndex);
+            if (t != -1) {
+                endIndex = t;
+            } else {
+                endIndex = url.length;
+            }
+            month = url.substring(monthIndex + 7, Math.min(url.length, endIndex));
+        }
+        if (month == "") {
+            alert("获取月份出错！");
+        }
         //ajax取得总页面数目
         var totalPage = 1;
         $.ajax(
@@ -91,17 +108,22 @@
                 url: "api/essay/page",
                 type: 'json',
                 method: "GET",
+                dataType: "",
+                data: {
+                    "type": "month",
+                    "month": month
+                },
                 success: function (res) {
                     var result = eval(res);
                     totalPage = result.totalPage;
                     if (totalPage < curPage) {  //当有人篡改page参数时
                         curPage = 1;
                     }
-                    paintPageNavigator(curPage, totalPage);
+                    paintPageNavigator(curPage, totalPage, month);
                 },
                 error: function () {
                     console.error("error when send ajax request to get total page num.")
-                    paintPageNavigator(curPage, 0);
+                    paintPageNavigator(curPage, 0, month);
                 }
             }
         );
@@ -109,9 +131,9 @@
     });
 
     //画分页
-    function paintPageNavigator(curPage, totalPage) {
+    function paintPageNavigator(curPage, totalPage, month) {
         var delta = 1;  //当前页前后显示的页数，可调节
-        var liStr = '<li class="wider"><a href="essay">首页</a></li>';
+        var liStr = '<li class="wider"><a href="monthessay?period="' + month + '>首页</a></li>';
         if (curPage - delta > 2) {
             liStr += '<li><a href="#">...</a></li>';
         }
@@ -119,13 +141,13 @@
             if (i == curPage) {
                 liStr += '<li class="cur-page"><a href="#">' + curPage + '</a></li>';
             } else if (i > 1 && i < totalPage) {
-                liStr += '<li><a href="essay?page=' + i + '">' + i + '</a></li>';
+                liStr += '<li><a href="monthessay?period=' + month + '&page=' + i + '">' + i + '</a></li>';
             }
         }
         if (curPage + delta + 1 < totalPage) {
             liStr += '<li><a href="#">...</a></li>';
         }
-        liStr += '<li class="wider"><a href="essay?page=' + totalPage + '">尾页</a></li>';
+        liStr += '<li class="wider"><a href="monthessay?period=' + month + '&page=' + totalPage + '">尾页</a></li>';
         $("#pageUl").html(liStr);
     }
 

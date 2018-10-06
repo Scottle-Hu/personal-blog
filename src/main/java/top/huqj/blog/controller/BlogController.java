@@ -9,11 +9,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import top.huqj.blog.constant.BlogConstant;
 import top.huqj.blog.model.Blog;
 import top.huqj.blog.model.Category;
+import top.huqj.blog.model.Essay;
 import top.huqj.blog.service.IBlogService;
 import top.huqj.blog.service.ICategoryService;
+import top.huqj.blog.service.IEssayService;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,9 @@ public class BlogController {
 
     @Autowired
     private ICategoryService categoryService;
+
+    @Autowired
+    private IEssayService essayService;
 
     @Value("${maxBlogNumPerPage}")
     public int Blog_NUM_PER_PAGE;
@@ -89,7 +93,25 @@ public class BlogController {
 
     @RequestMapping("/essay")
     public String essayPage(HttpServletRequest request) {
-        //TODO
+        try {
+            String pageStr = request.getParameter("page");
+            int page = 1;
+            if (!StringUtils.isEmpty(pageStr)) {
+                try {
+                    page = Integer.parseInt(pageStr);
+                } catch (Exception e) {
+                    log.error("error when parse param page.", e);
+                }
+            }
+            Map<String, Integer> pageInfo = new HashMap<>();
+            pageInfo.put(BlogConstant.PAGE_OFFSET, (page - 1) * Essay_NUM_PER_PAGE);
+            pageInfo.put(BlogConstant.PAGE_NUM, Essay_NUM_PER_PAGE);
+            List<Essay> essayList = essayService.findLatestEssayListByPageInfo(pageInfo);
+            request.setAttribute("essayList", essayList);
+            request.setAttribute("monthList", essayService.getAllMonthAndEssayNum());
+        } catch (Exception e) {
+            log.error("error when set essay page.", e);
+        }
         return "essay";
     }
 
@@ -131,7 +153,15 @@ public class BlogController {
                 request.setAttribute("nextBlog", blogService.getNext(id));
                 request.setAttribute("type", BlogConstant.BLOG_TYPE_ID);
             } else if (BlogConstant.ESSAY_TYPE.equals(type)) {  //随笔
-                //TODO
+                Essay essay = essayService.findById(id);
+                if (essay == null) {
+                    return gotoHome();
+                }
+                request.setAttribute("essay", essay);
+                request.setAttribute("previousEssay", essayService.getPreviousEssay(id));
+                request.setAttribute("nextEssay", essayService.getNextEssay(id));
+                request.setAttribute("monthList", essayService.getAllMonthAndEssayNum());
+                request.setAttribute("type", BlogConstant.ESSAY_TYPE_ID);
             } else {
                 return gotoHome();
             }
@@ -227,6 +257,39 @@ public class BlogController {
             log.error("error when set month-blog page.", e);
         }
         return "month-blog";
+    }
+
+    @RequestMapping("/monthessay")
+    public String monthEssayPage(HttpServletRequest request) {
+        try {
+            String month = request.getParameter("period");
+            //转换中文编码格式
+            month = new String(month.getBytes("iso-8859-1"), "utf-8");
+            if (StringUtils.isEmpty(month)) {
+                return gotoHome();
+            }
+            request.setAttribute("month", month);
+            String pageStr = request.getParameter("page");
+            int page = 1;
+            if (!StringUtils.isEmpty(pageStr)) {
+                try {
+                    page = Integer.parseInt(pageStr);
+                } catch (Exception e) {
+                    log.error("error when parse param page.", e);
+                }
+            }
+            Map<String, Object> pageInfo = new HashMap<>();
+            pageInfo.put(BlogConstant.PAGE_OFFSET, (page - 1) * Blog_NUM_PER_PAGE);
+            pageInfo.put(BlogConstant.PAGE_NUM, Blog_NUM_PER_PAGE);
+            pageInfo.put(BlogConstant.TYPE_MONTH, month);
+            List<Essay> essayList = essayService.findLatestEssayListByPageInfoAndMonth(pageInfo);
+            request.setAttribute("essayList", essayList);
+            request.setAttribute("monthList", essayService.getAllMonthAndEssayNum());
+
+        } catch (Exception e) {
+            log.error("error when set month-blog page.", e);
+        }
+        return "month-essay";
     }
 
     /**

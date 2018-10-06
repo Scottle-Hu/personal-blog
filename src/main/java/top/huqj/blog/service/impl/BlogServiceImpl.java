@@ -87,7 +87,7 @@ public class BlogServiceImpl implements IBlogService {
      */
     private volatile int TOTAL_BLOG_NUM = -1;
 
-    private static final long AN_HOUR_MILLIS = 60 * 60 * 1000;
+    public static final long AN_HOUR_MILLIS = 60 * 60 * 1000;
 
     /**
      * 首页最多预览的图片数目
@@ -524,7 +524,7 @@ public class BlogServiceImpl implements IBlogService {
         if (monthSuffix.equals(month)) {  //转换出错
             return 0;
         }
-        return (int) redisManager.getListLength(category2BlogIdsKeyPrefix + monthSuffix);
+        return (int) redisManager.getListLength(month2BlogIdsKeyPrefix + monthSuffix);
     }
 
     @Override
@@ -637,6 +637,5 @@ public class BlogServiceImpl implements IBlogService {
         }
         return imgs.toString().trim();
     }
-
 
 }

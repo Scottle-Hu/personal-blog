@@ -2,7 +2,7 @@ package top.huqj.blog.model;
 
 import lombok.Data;
 
-import java.sql.Time;
+import java.sql.Timestamp;
 
 /**
  * 随笔
@@ -16,7 +16,9 @@ public class Essay {
 
     private String title;
 
-    private Time publishTime;
+    private String publishTimeStr;
+
+    private Timestamp publishTime;
 
     private int scanNum;
 
@@ -40,6 +42,6 @@ public class Essay {
      */
     private int type;
 
-    private Time updateTime;
+    private Timestamp updateTime;
 
 }

@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.RestController;
 import top.huqj.blog.constant.BlogConstant;
 import top.huqj.blog.model.Blog;
 import top.huqj.blog.service.IBlogService;
+import top.huqj.blog.service.IEssayService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +38,9 @@ public class ApiController {
 
     @Autowired
     private IBlogService blogService;
+
+    @Autowired
+    private IEssayService essayService;
 
     @RequestMapping("/blog/page")
     public Object getTotalPage(HttpServletRequest request) {
@@ -68,6 +71,34 @@ public class ApiController {
             }
         } catch (Exception e) {
             log.error("error when get count of blogs.", e);
+        }
+        return result;
+    }
+
+    @RequestMapping("/essay/page")
+    public Object getEssayPage(HttpServletRequest request) {
+        Map<String, Integer> result = new HashMap<>();
+        try {
+            String type = request.getParameter("type");
+            int totalEssayNum = -1;
+            if (type == null) {  //所有随笔
+                totalEssayNum = essayService.count();
+            } else if (type.equals(BlogConstant.TYPE_MONTH)) {  //按随笔月份
+                String month = request.getParameter("month");
+                month = URLDecoder.decode(month, "iso-8859-1");
+                month = new String(month.getBytes("iso-8859-1"), "utf-8");
+                if (month != null) {
+                    totalEssayNum = essayService.countByMonth(month);
+                }
+            } else {
+                log.warn("unknown page type, type=" + type);
+            }
+            if (totalEssayNum != -1) {
+                result.put("totalPage", totalEssayNum % Essay_NUM_PER_PAGE == 0 ?
+                        totalEssayNum / Essay_NUM_PER_PAGE : (totalEssayNum / Essay_NUM_PER_PAGE) + 1);
+            }
+        } catch (Exception e) {
+            log.error("error when get count of essay.", e);
         }
         return result;
     }

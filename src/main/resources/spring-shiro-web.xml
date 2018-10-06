@@ -51,12 +51,13 @@
                 /back/login=anon
                 /back/console=authc
                 /back/check=authc
-                /back/blogs=authc
-                /back/essays=authc
+                /back/blog=authc
+                /back/essay=authc
                 /back/publish=authc
                 /back/category=authc
                 /back/about=authc
                 /back/message=authc
+                /back/account=authc
                 /back/logout=logout
             </value>
         </property>

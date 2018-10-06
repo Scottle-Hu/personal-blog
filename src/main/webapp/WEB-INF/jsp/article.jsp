@@ -33,18 +33,32 @@
                 </ul>
             </div>
         </c:if>
-        <div class="by-date by">
-            <span><img src="image/byDate_icon.png"/><font class="mini-title">&nbsp;&nbsp;按<c:if
-                    test="${type == 0 }">博客</c:if><c:if test="${type == 1 }">随笔</c:if>日期</font></span>
-            <hr/>
-            <ul>
-                <c:forEach items="${monthList }" var="month">
-                    <li>
-                        <a href="month?period=${month.publishTime }">${month.publishTime }(${month.blogNum })</a>
-                    </li>
-                </c:forEach>
-            </ul>
-        </div>
+        <c:if test="${type == 0 }">
+            <div class="by-date by">
+                <span><img src="image/byDate_icon.png"/><font class="mini-title">&nbsp;&nbsp;按博客日期</font></span>
+                <hr/>
+                <ul>
+                    <c:forEach items="${monthList }" var="month">
+                        <li>
+                            <a href="month?period=${month.publishTime }">${month.publishTime }(${month.blogNum })</a>
+                        </li>
+                    </c:forEach>
+                </ul>
+            </div>
+        </c:if>
+        <c:if test="${type == 1 }">
+            <div class="by-date by">
+                <span><img src="image/byDate_icon.png"/><font class="mini-title">&nbsp;&nbsp;按随笔日期</font></span>
+                <hr/>
+                <ul>
+                    <c:forEach items="${monthList }" var="month">
+                        <li>
+                            <a href="monthessay?period=${month.month }">${month.month }(${month.num })</a>
+                        </li>
+                    </c:forEach>
+                </ul>
+            </div>
+        </c:if>
         <div class="clear"></div>
     </div>
     <div class="latest by">
@@ -67,7 +81,16 @@
             </div>
         </c:if>
         <c:if test="${type == 1 }">
-            <%--TODO--%>
+            <div>
+                <center><h3>${essay.title }</h3></center>
+                <center>
+                    <small style="color:gray;">
+                        发布时间：[${essay.publishTimeStr }]&nbsp;&nbsp;&nbsp;&nbsp;
+                        浏览数量：（${essay.scanNum }）
+                    </small>
+                </center>
+                <div class="article">${essay.htmlContent }</div>
+            </div>
         </c:if>
         <hr/>
         <c:if test="${type == 0 }">
@@ -86,7 +109,19 @@
             </div>
         </c:if>
         <c:if test="${type == 1 }">
-            <%--TODO--%>
+            <div class="neiborhood">
+                <br/>
+                <b>上一篇:</b><c:if test="${previousEssay != null }">
+                <a href="article?type=essay&id=${previousEssay.id }">${previousEssay.title }</a></c:if>
+                <c:if test="${previousEssay == null }"><a href="#" disabled="true">没有了</a></c:if>
+                <br/>
+                <br/>
+                <b>下一篇:</b><c:if test="${nextEssay != null }">
+                <a href="article?type=essay&id=${nextEssay.id }">${nextEssay.title }</a></c:if>
+                <c:if test="${nextEssay == null }"><a href="#" disabled="true">没有了</a></c:if>
+                <br/>
+                <br/>
+            </div>
         </c:if>
     </div>
     <div class="clear"></div>

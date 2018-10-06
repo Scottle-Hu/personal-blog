@@ -13,8 +13,11 @@ import top.huqj.blog.dao.CategoryDao;
 import top.huqj.blog.exception.ParameterMissingException;
 import top.huqj.blog.model.Blog;
 import top.huqj.blog.model.Category;
+import top.huqj.blog.model.Essay;
 import top.huqj.blog.service.IBlogIdProvider;
 import top.huqj.blog.service.IBlogService;
+import top.huqj.blog.service.IEssayIdProvider;
+import top.huqj.blog.service.IEssayService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
@@ -37,7 +40,13 @@ public class BackController {
     private IBlogService blogService;
 
     @Autowired
+    private IEssayService essayService;
+
+    @Autowired
     private IBlogIdProvider blogIdProvider;
+
+    @Autowired
+    private IEssayIdProvider essayIdProvider;
 
     @Autowired
     private CategoryDao categoryDao;
@@ -147,10 +156,43 @@ public class BackController {
                 blog.setId(blogIdProvider.provideId());
                 blogService.insertBlog(blog);
                 request.setAttribute("msg", "发布成功！博客id " + blog.getId());
-                return "redirect:blogs";
+                return "redirect:blog";
             } else if (articleType == BlogConstant.ESSAY_TYPE_ID) {
-                //TODO
-                return "redirect:essays";
+                Essay essay = new Essay();
+                essay.setType(contentType);
+                Date publishDate = new Date();
+                String publishTimeStr = request.getParameter("publishTimeStr-2");
+                if (!StringUtils.isEmpty(publishTimeStr) && publishTimeStr.length() == DATE_FORMAT_LENGTH) {
+                    try {
+                        publishDate = dateFormat.parse(publishTimeStr);
+                    } catch (ParseException e) {
+                        log.error("error when parse publish time string. str=" + publishTimeStr, e);
+                    }
+                }
+                essay.setPublishTime(new Timestamp(publishDate.getTime()));
+                if (contentType == BlogConstant.BLOG_TYPE_HTML) {
+                    String htmlContent = request.getParameter("htmlContent-2");
+                    checkNotNull(htmlContent);
+                    essay.setHtmlContent(htmlContent);
+                    String text = request.getParameter("text-2");
+                    checkNotNull(text);
+                    essay.setText(text);
+                } else if (contentType == BlogConstant.BLOG_TYPE_MD) {
+                    String mdContent = request.getParameter("mdContent-2");
+                    checkNotNull(mdContent);
+                    essay.setMdContent(mdContent);
+                } else {
+                    log.warn("unknown content type: " + contentType);
+                    request.setAttribute("errorMsg", "非法的文本编辑类型！");
+                    return "back/publish";
+                }
+                String title = request.getParameter("title-2");
+                checkNotNull(title);
+                essay.setTitle(title);
+                essay.setUpdateTime(new Timestamp(System.currentTimeMillis()));
+                essay.setId(essayIdProvider.provideId());
+                essayService.insertOne(essay);
+                return "redirect:essay";
             } else {
                 log.warn("unknown article type: " + articleType);
                 request.setAttribute("errorMsg", "非法的文章类型！");
