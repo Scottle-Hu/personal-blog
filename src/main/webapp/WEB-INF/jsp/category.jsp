@@ -11,8 +11,8 @@
     <a href="index"><h1><img src="image/logo.jpg" class="logo" alt=""/>&nbsp;&nbsp;&nbsp;HuQJ's Blog</h1>
     </a>
     <ul>
-        <li><a href="index" id="current">首页</a></li>
-        <li><a href="blog">博客</a></li>
+        <li><a href="index">首页</a></li>
+        <li><a href="blog" id="current">博客</a></li>
         <li><a href="essay">随笔</a></li>
         <li><a href="about">关于我</a></li>
         <li><a href="contact">联系我</a></li>
@@ -46,11 +46,7 @@
         <div class="clear"></div>
     </div>
     <div class="latest by">
-        <span><img src="image/list_icon.png"/><font class="mini-title">&nbsp;&nbsp;最新博客</font></span>
-        <div class="search-box">
-            <input type="text" id="search-text"/>
-            <input type="button" value="搜索"/>
-        </div>
+        <span><img src="image/list_icon.png"/><font class="mini-title">&nbsp;&nbsp;类别：${category.name }</font></span>
         <div class="clear"></div>
         <hr/>
         <ul>
@@ -92,24 +88,46 @@
                     }
                     curPage = url.substring(pageIndex + 5, Math.min(url.length, endIndex));
                 }
-                //ajax取得总页面数目
+                var idIndex = url.indexOf("id=");
+                var id = -1;
+                if (idIndex == -1) {
+                    alert("类别id为空！");
+                } else {
+                    var endIndex;
+                    var t = url.indexOf("&", idIndex);
+                    if (t != -1) {
+                        endIndex = t;
+                    } else {
+                        endIndex = url.length;
+                    }
+                    id = url.substring(idIndex + 3, Math.min(url.length, endIndex));
+                }
+                if (id == -1) {
+                    alert("获取类别id出错！");
+                }
+                //ajax取得该类别总页面数目
                 var totalPage = 1;
                 $.ajax(
                     {
                         url: "api/blog/page",
                         type: 'json',
                         method: "GET",
+                        dataType: "json",
+                        data: {
+                            "type": "category",
+                            "categoryId": id
+                        },
                         success: function (res) {
                             var result = eval(res);
                             totalPage = result.totalPage;
                             if (totalPage < curPage) {  //当有人篡改page参数时
                                 curPage = 1;
                             }
-                            paintPageNavigator(curPage, totalPage);
+                            paintPageNavigator(curPage, totalPage, id);
                         },
                         error: function () {
                             console.error("error when send ajax request to get total page num.")
-                            paintPageNavigator(curPage, 0);
+                            paintPageNavigator(curPage, 0, id);
                         }
                     }
                 );
@@ -117,9 +135,9 @@
             });
 
             //画分页
-            function paintPageNavigator(curPage, totalPage) {
+            function paintPageNavigator(curPage, totalPage, id) {
                 var delta = 1;  //当前页前后显示的页数，可调节
-                var liStr = '<li class="wider"><a href="index">首页</a></li>';
+                var liStr = '<li class="wider"><a href="category?id=' + id + '">首页</a></li> ';
                 if (curPage - delta > 2) {
                     liStr += '<li><a href="#">...</a></li>';
                 }
@@ -127,13 +145,13 @@
                     if (i == curPage) {
                         liStr += '<li class="cur-page"><a href="#">' + curPage + '</a></li>';
                     } else if (i > 1 && i < totalPage) {
-                        liStr += '<li><a href="index?page=' + i + '">' + i + '</a></li>';
+                        liStr += '<li><a href="category?id=' + id + '&page=' + i + '">' + i + '</a></li>';
                     }
                 }
                 if (curPage + delta + 1 < totalPage) {
                     liStr += '<li><a href="#">...</a></li>';
                 }
-                liStr += '<li class="wider"><a href="index?page=' + totalPage + '">尾页</a></li>';
+                liStr += '<li class="wider"><a href="category?id=' + id + '&page=' + totalPage + '">尾页</a></li>';
                 $("#pageUl").html(liStr);
             }
 

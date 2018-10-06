@@ -21,6 +21,12 @@ public class BlogConstant {
 
     public static String PAGE_NUM = "pageNum";
 
+    /**
+     * 按照博客类别或者博客和随笔的时间查找文章
+     */
+    public static String TYPE_CATEGORY = "category";
+    public static String TYPE_MONTH = "month";
+
     public static String BLOG_TYPE = "blog";
     public static int BLOG_TYPE_ID = 0;
 

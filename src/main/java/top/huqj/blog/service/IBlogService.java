@@ -25,6 +25,14 @@ public interface IBlogService {
     List<Blog> findLatestBlogByPage(Map<String, Integer> page);
 
     /**
+     * 根据分页和博客类别获得博客列表
+     *
+     * @param page
+     * @return
+     */
+    List<Blog> findLatestBlogByPageAndCategory(Map<String, Integer> page);
+
+    /**
      * 计算所有博客数量，用于分页
      *
      * @return
@@ -61,4 +69,19 @@ public interface IBlogService {
      */
     Blog getNext(int id);
 
+    /**
+     * 获取某个类别的全部博客数量
+     *
+     * @param id
+     * @return
+     */
+    int countByCategoryId(int id);
+
+    /**
+     * 获取某个月份博客的数量
+     *
+     * @param month
+     * @return
+     */
+    int countByMonth(String month);
 }

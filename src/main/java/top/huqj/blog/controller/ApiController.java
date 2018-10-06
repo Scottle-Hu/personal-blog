@@ -5,8 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import top.huqj.blog.constant.BlogConstant;
 import top.huqj.blog.service.IBlogService;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,12 +32,33 @@ public class ApiController {
     private IBlogService blogService;
 
     @RequestMapping("/blog/page")
-    public Object getTotalPage() {
+    public Object getTotalPage(HttpServletRequest request) {
         Map<String, Integer> result = new HashMap<>();
-        //给前端返回总页数
-        int totalBlogNum = blogService.count();
-        result.put("totalPage", totalBlogNum % Blog_NUM_PER_PAGE == 0 ?
-                totalBlogNum / Blog_NUM_PER_PAGE : (totalBlogNum / Blog_NUM_PER_PAGE) + 1);
+        try {
+            String type = request.getParameter("type");
+            int totalBlogNum = -1;
+            if (type == null) {  //所有博客
+                totalBlogNum = blogService.count();
+            } else if (type.equals(BlogConstant.TYPE_CATEGORY)) {  //按博客类别
+                String categoryId = request.getParameter("categoryId");
+                if (categoryId != null) {
+                    totalBlogNum = blogService.countByCategoryId(Integer.parseInt(categoryId));
+                }
+            } else if (type.equals(BlogConstant.TYPE_MONTH)) {  //按照博客月份
+                String month = request.getParameter("month");
+                if (month != null) {
+                    totalBlogNum = blogService.countByMonth(month);
+                }
+            } else {
+                log.warn("unknown page type, type=" + type);
+            }
+            if (totalBlogNum != -1) {
+                result.put("totalPage", totalBlogNum % Blog_NUM_PER_PAGE == 0 ?
+                        totalBlogNum / Blog_NUM_PER_PAGE : (totalBlogNum / Blog_NUM_PER_PAGE) + 1);
+            }
+        } catch (NumberFormatException e) {
+            log.error("error when get count of blogs.", e);
+        }
         return result;
     }
 

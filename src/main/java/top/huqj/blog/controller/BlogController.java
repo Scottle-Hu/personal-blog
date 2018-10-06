@@ -8,7 +8,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import top.huqj.blog.constant.BlogConstant;
 import top.huqj.blog.model.Blog;
+import top.huqj.blog.model.Category;
 import top.huqj.blog.service.IBlogService;
+import top.huqj.blog.service.ICategoryService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,6 +29,9 @@ public class BlogController {
 
     @Autowired
     private IBlogService blogService;
+
+    @Autowired
+    private ICategoryService categoryService;
 
     @Value("${maxBlogNumPerPage}")
     public int Blog_NUM_PER_PAGE;
@@ -130,6 +135,55 @@ public class BlogController {
             log.error("error when set article page.", e);
         }
         return "article";
+    }
+
+    @RequestMapping("/category")
+    public String categoryPage(HttpServletRequest request) {
+        try {
+            String categoryId = request.getParameter("id");
+            if (StringUtils.isEmpty(categoryId)) {  //没有id参数
+                return gotoHome();
+            }
+            Category category = null;
+            int cid = -1;
+            try {
+                cid = Integer.parseInt(categoryId);
+                category = categoryService.findCategoryById(cid);
+            } catch (NumberFormatException e) {
+                log.error("error when parse category id.", e);
+                return gotoHome();
+            }
+            if (category == null) {
+                log.error("no such category, id=" + categoryId);
+                return gotoHome();
+            }
+            request.setAttribute("category", category);
+            String pageStr = request.getParameter("page");
+            int page = 1;
+            if (!StringUtils.isEmpty(pageStr)) {
+                try {
+                    page = Integer.parseInt(pageStr);
+                } catch (Exception e) {
+                    log.error("error when parse param page.", e);
+                }
+            }
+            //根据类别和分页信息获取最新博客列表，一页最多10篇
+            Map<String, Integer> pageInfo = new HashMap<>();
+            pageInfo.put(BlogConstant.PAGE_OFFSET, (page - 1) * Blog_NUM_PER_PAGE);
+            pageInfo.put(BlogConstant.PAGE_NUM, Blog_NUM_PER_PAGE);
+            pageInfo.put(BlogConstant.TYPE_CATEGORY, cid);
+            List<Blog> blogList = blogService.findLatestBlogByPageAndCategory(pageInfo);
+            request.setAttribute("blogList", blogList);
+
+            //获取所有博客类别和对应的博客数量
+            request.setAttribute("categoryList", blogService.getAllCategoryList());
+            //获取所有有博客的月份以及对应的博客篇数
+            request.setAttribute("monthList", blogService.getAllMonthList());
+
+        } catch (Exception e) {
+            log.error("error when set category page.", e);
+        }
+        return "category";
     }
 
     /**

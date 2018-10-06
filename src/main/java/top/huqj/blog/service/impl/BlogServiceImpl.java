@@ -151,6 +151,7 @@ public class BlogServiceImpl implements IBlogService {
         updateTopBlog(blog, BlogUpdateOperation.ADD);
 
         blogDao.insertOne(blog);
+        TOTAL_BLOG_NUM++;
     }
 
     /**
@@ -345,7 +346,16 @@ public class BlogServiceImpl implements IBlogService {
             page.put(BlogConstant.PAGE_OFFSET, 0);
             blogList = blogDao.findLatestByPage(page);
         }
-        //设置日期字符串和图片列表
+        postProcessBlogList(blogList);
+        return blogList;
+    }
+
+    /**
+     * 设置日期字符串和图片列表
+     *
+     * @param blogList
+     */
+    private void postProcessBlogList(List<Blog> blogList) {
         blogList.forEach(blog -> {
             blog.setPublishTimeStr(dateFormat.format(blog.getPublishTime()));
             if (!StringUtils.isEmpty(blog.getImgUrlList())) {
@@ -353,6 +363,38 @@ public class BlogServiceImpl implements IBlogService {
                 blog.setImgUrls(imgList.subList(0, Math.min(MAX_PREVIEW_IMG_NUM, imgList.size())));
             }
         });
+    }
+
+    /**
+     * 根据博客类别和分页信息，从redis中获取博客列表
+     *
+     * @param page
+     * @return
+     */
+    @Override
+    public List<Blog> findLatestBlogByPageAndCategory(Map<String, Integer> page) {
+        if (page == null || page.get(BlogConstant.PAGE_OFFSET) == null
+                || page.get(BlogConstant.PAGE_NUM) == null || page.get(BlogConstant.TYPE_CATEGORY) == null) {
+            return Collections.emptyList();
+        }
+        List<String> categoryBlogIds = redisManager
+                .getListValues(category2BlogIdsKeyPrefix + page.get(BlogConstant.TYPE_CATEGORY));
+        int offset = page.get(BlogConstant.PAGE_OFFSET), size = page.get(BlogConstant.PAGE_NUM);
+        if (CollectionUtils.isEmpty(categoryBlogIds) || categoryBlogIds.size() <= offset) {
+            return Collections.emptyList();
+        }
+        //注意：redis中 category2blog-xx 列表中的id更新时是按时间降序的，所以最新的在最前面
+        categoryBlogIds = categoryBlogIds.subList(offset, Math.min(offset + size, categoryBlogIds.size()));
+        List<Integer> idList = new ArrayList<>();
+        categoryBlogIds.forEach(id -> {
+            try {
+                idList.add(Integer.parseInt(id));
+            } catch (NumberFormatException e1) {
+                log.error("error once when parse blog id.", e1);
+            }
+        });
+        List<Blog> blogList = blogDao.findByIdList(idList);
+        postProcessBlogList(blogList);
         return blogList;
     }
 
@@ -398,12 +440,36 @@ public class BlogServiceImpl implements IBlogService {
         return result;
     }
 
+    /**
+     * 将数字形式的月份转换成中文格式
+     *
+     * @param month
+     * @return
+     */
     private String parseChineseNameOfMonth(String month) {
         if (month.charAt(4) == '0') {
             return month.substring(0, 4) + "年" + month.charAt(5) + "月";
         } else {
             return month.substring(0, 4) + "年" + month.substring(4, 6) + "月";
         }
+    }
+
+    /**
+     * 将中文格式的月份转换成数字形式的字符串
+     *
+     * @param month
+     * @return
+     */
+    private String reparseChineseNameOfMonth(String month) {
+        String result = month = month.replace("年", "").replace("月", "");
+        if (result.length() == 5) {  //月份小于10的情况,例如 20189
+            result = result.substring(0, 4) + "0" + result.charAt(4);
+        }
+        if (result.length() != 6) {
+            log.error("error when reparse chinese month string to num format. result=" + result);
+            return month;  //返回原格式
+        }
+        return result;
     }
 
     @Override
@@ -414,6 +480,20 @@ public class BlogServiceImpl implements IBlogService {
     @Override
     public Blog getNext(int id) {
         return getBrother(id, 1);
+    }
+
+    @Override
+    public int countByCategoryId(int id) {
+        return (int) redisManager.getListLength(category2BlogIdsKeyPrefix + id);
+    }
+
+    @Override
+    public int countByMonth(String month) {
+        String monthSuffix = reparseChineseNameOfMonth(month);
+        if (monthSuffix.equals(month)) {  //转换出错
+            return 0;
+        }
+        return (int) redisManager.getListLength(category2BlogIdsKeyPrefix + monthSuffix);
     }
 
     /**

@@ -62,7 +62,7 @@
                         浏览数量：（${blog.scanNum }）
                     </small>
                 </center>
-                <p class="article">${blog.htmlContent }</p>
+                <div class="article">${blog.htmlContent }</div>
                 <small><b>标签：</b>${blog.tag }</small>
             </div>
         </c:if>

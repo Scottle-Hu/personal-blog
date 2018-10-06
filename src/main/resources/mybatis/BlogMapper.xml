@@ -14,7 +14,7 @@
         <result property="htmlContent" column="html_content"/>
         <result property="type" column="type"/>
         <result property="updateTime" column="update_time"/>
-        <result property="tag" column="tag"/>
+        <result property="tag" column="tags"/>
         <result property="imgUrlList" column="img_urls"/>
         <association property="category" column="category_id"
                      select="top.huqj.blog.dao.CategoryDao.findById"/>
@@ -38,9 +38,10 @@
 
     <select id="findByIdList" parameterType="java.util.List" resultMap="blogMap">
         SELECT * FROM blog WHERE id IN
-        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+        <foreach collection="list" item="id" open="(" close=")" separator=",">
             #{id}
         </foreach>
+        ORDER BY id DESC
     </select>
 
     <insert id="insertOne" parameterType="Blog">
