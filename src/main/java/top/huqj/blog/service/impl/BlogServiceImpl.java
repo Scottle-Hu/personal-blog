@@ -362,6 +362,11 @@ public class BlogServiceImpl implements IBlogService {
                 List<String> imgList = Arrays.asList(blog.getImgUrlList().split("\\|"));
                 blog.setImgUrls(imgList.subList(0, Math.min(MAX_PREVIEW_IMG_NUM, imgList.size())));
             }
+            //设置预览文字，不应该太长
+            String pre = blog.getText();
+            if (pre.length() > 100) {
+                blog.setText(pre.substring(0, 100));
+            }
         });
     }
 
@@ -520,6 +525,63 @@ public class BlogServiceImpl implements IBlogService {
             return 0;
         }
         return (int) redisManager.getListLength(category2BlogIdsKeyPrefix + monthSuffix);
+    }
+
+    @Override
+    public List<Blog> getTopNewBlogList() {
+        return getBlogListByRedisKey(topNewsBlogIdListKey);
+    }
+
+    @Override
+    public List<Blog> getTopScanBlogList() {
+        return getBlogListByRedisKey(topScanBlogIdListKey);
+    }
+
+    @Override
+    public List<Blog> getTopRemarkBlogList() {
+        return getBlogListByRedisKey(topRemarkBlogIdListKey);
+    }
+
+    @Override
+    public List<Blog> getRecommendBlogList() {
+        return getBlogListByRedisKey(recommendBlogIdSetKey);
+    }
+
+    /**
+     * 根据在redis中的列表key获取其对应的博客列表
+     * 注意：有些列表的value并非博客id，而是 id-指标
+     *
+     * @param key
+     * @return
+     */
+    private List<Blog> getBlogListByRedisKey(String key) {
+        List<String> idExtList = redisManager.getListValues(key);
+        List<Integer> ids = new ArrayList<>();
+        idExtList.forEach(id -> {
+            try {
+                int segIndex = id.indexOf("-");
+                if (segIndex != -1) {
+                    id = id.substring(0, segIndex);
+                }
+                ids.add(Integer.parseInt(id));
+            } catch (Exception e) {
+                log.error("error when parse blog id.", e);
+            }
+        });
+        //不同的维度排序方式不同
+        List<Blog> blogList;
+        if (key.equals(topScanBlogIdListKey)) {
+            blogList = blogDao.findByIdListOrderedScanNum(ids);
+        } else if (key.equals(topRemarkBlogIdListKey)) {
+            blogList = blogDao.findByIdListOrderedRemarkNum(ids);
+        } else {
+            blogList = blogDao.findByIdList(ids);
+        }
+        if (CollectionUtils.isEmpty(blogList)) {
+            return Collections.emptyList();
+        }
+        postProcessBlogList(blogList);
+        return blogList;
     }
 
     /**

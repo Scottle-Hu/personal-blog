@@ -44,12 +44,28 @@
         ORDER BY id DESC
     </select>
 
+    <select id="findByIdListOrderedScanNum" parameterType="java.util.List" resultMap="blogMap">
+        SELECT * FROM blog WHERE id IN
+        <foreach collection="list" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+        ORDER BY scan_num DESC
+    </select>
+
+    <select id="findByIdListOrderedRemarkNum" parameterType="java.util.List" resultMap="blogMap">
+        SELECT * FROM blog WHERE id IN
+        <foreach collection="list" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+        ORDER BY scan_num DESC
+    </select>
+
     <insert id="insertOne" parameterType="Blog">
         INSERT INTO blog VALUES (#{id},#{title},#{publishTime},#{categoryId},#{tag},#{text},#{mdContent},#{htmlContent},#{updateTime},#{type},#{scanNum},#{imgUrlList})
     </insert>
 
-    <select id="maxId" resultType="Integer">
-      SELECT MAX(id) FROM blog;
+    <select id="maxId" resultType="Integer" resultMap="blogMap">
+      SELECT id FROM blog ORDER BY id DESC LIMIT 0, 1;
     </select>
 
     <select id="getTopNewBlog" parameterType="Integer" resultMap="blogMap">

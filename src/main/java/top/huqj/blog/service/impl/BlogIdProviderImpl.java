@@ -4,9 +4,11 @@ import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import top.huqj.blog.dao.BlogDao;
+import top.huqj.blog.model.Blog;
 import top.huqj.blog.service.IBlogIdProvider;
 
 import javax.annotation.PostConstruct;
+import java.util.List;
 
 /**
  * @author huqj
@@ -25,7 +27,13 @@ public class BlogIdProviderImpl implements IBlogIdProvider {
 
     @PostConstruct
     public void initMaxId() {
-        id = blogDao.maxId();
+        List<Blog> maxIdBlog = blogDao.maxId();
+        if (maxIdBlog.size() == 1) {
+            id = maxIdBlog.get(0).getId();
+        } else {
+            log.info("no blog in db.");
+            id = 0;
+        }
         log.info("set blog max id as " + id);
     }
 

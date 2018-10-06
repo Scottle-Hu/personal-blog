@@ -17,9 +17,27 @@
             $(".sort-blog li[class=cur]").removeClass("cur");
             //添加新的当前面板
             $(this).addClass("cur");
-            //TODO 相应的切换博客列表内容
+            var requestUrl = $(this).attr("url");
+            $.ajax(
+                {
+                    url: requestUrl,
+                    type: 'json',
+                    method: "GET",
+                    success: function (res) {
+                        //alert(res);
+                        //结果是一部分html标签
+                        $("#blog-list").html(res);
+                    },
+                    error: function () {
+                        console.error("error when send ajax request to get total page num.")
+                        alert("请求失败！");
+                    }
+                }
+            );
 
         });
+        //模拟一次点击触发ajax请求
+        document.getElementById("init").click();
     });
 </script>
 <body>
@@ -39,15 +57,10 @@
         <div class="row-left">
             <h3 style="color:black;">所有博客类别</h3>
             <hr/>
-            <a href="#"><span class="class-item">java基础(10)</span></a>
-            <span class="class-item">java web(15)</span>
-            <span class="class-item">Linux(10)</span>
-            <span class="class-item">docker(10)</span>
-            <span class="class-item">hadoop(10)</span>
-            <span class="class-item">舆情分析系统(4)</span>
-            <span class="class-item">java基础(10)</span>
-            <span class="class-item">java基础(10)</span>
-            <span class="class-item">java基础(10)</span>
+            <c:forEach items="${categoryList }" var="category">
+                <a href="category?id=${category.category.id }"><span
+                        class="class-item">${category.category.name }(${category.blogNum })</span></a>
+            </c:forEach>
         </div>
         <div id="calendar" class="calendar"></div>
     </div>
@@ -55,58 +68,16 @@
     <br/>
     <hr/>
     <ul class="sort-blog">
-        <li class="cur">最新博客</li>
-        <li>浏览最多</li>
-        <li>评论最多</li>
-        <li>博主推荐</li>
+        <li url="api/blog/top/new" class="cur" id="init">最新博客</li>
+        <li url="api/blog/top/scan">浏览最多</li>
+        <li url="api/blog/top/remark">评论最多</li>
+        <li url="api/blog/recommend">博主推荐</li>
     </ul>
     <div class="clear"></div>
     <br/>
-    <ul class="blog-list">
-        <li>
-            <a href="#">
-                <div class="blog">
-                    <h4>使用vmware搭建centos虚拟机集群记录</h4>
-                    <p>因为课程任务需要搭建服务器集群，然后尝试分布式程序来进行聚类分析，但是贫穷如我，买不起那么多云服务器，只能尝试在本地用虚拟机搭建一个虚拟集群......</p>
-                    <img src="image/logo.jpg"/>
-                    <img src="image/list_icon.png"/>
-                    <br/><br/>
-                    <small>2018-03-21 10:34</small>
-                    <small style="float:right;">浏览（123）</small>
-                    <hr/>
-                </div>
-            </a>
-        </li>
-        <li>
-            <a href="#">
-                <div class="blog">
-                    <h4>使用vmware搭建centos虚拟机集群记录</h4>
-                    <p>因为课程任务需要搭建服务器集群，然后尝试分布式程序来进行聚类分析，但是贫穷如我，买不起那么多云服务器，只能尝试在本地用虚拟机搭建一个虚拟集群......</p>
-                    <img src="image/logo.jpg"/>
-                    <img src="image/list_icon.png"/>
-                    <br/><br/>
-                    <small>2018-03-21 10:34</small>
-                    <small style="float:right;">浏览（123）</small>
-                    <hr/>
-                </div>
-            </a>
-        </li>
-        <li>
-            <a href="#">
-                <div class="blog">
-                    <h4>使用vmware搭建centos虚拟机集群记录</h4>
-                    <p>因为课程任务需要搭建服务器集群，然后尝试分布式程序来进行聚类分析，但是贫穷如我，买不起那么多云服务器，只能尝试在本地用虚拟机搭建一个虚拟集群......</p>
-                    <img src="image/logo.jpg"/>
-                    <img src="image/list_icon.png"/>
-                    <br/><br/>
-                    <small>2018-03-21 10:34</small>
-                    <small style="float:right;">浏览（123）</small>
-                    <hr/>
-                </div>
-            </a>
-        </li>
+    <ul class="blog-list" id="blog-list">
     </ul>
-    <div class="page">
+    <%--<div class="page">
         <ul>
             <li class="wider"><a href="#">首页</a></li>
             <li class="cur-page"><a href="#">1</a></li>
@@ -114,7 +85,7 @@
             <li><a href="#">3</a></li>
             <li class="wider"><a href="#">尾页</a></li>
         </ul>
-    </div>
+    </div>--%>
     <div class="clear"></div>
 </div>
 <center>

@@ -92,4 +92,33 @@ public interface IBlogService {
      * @return
      */
     int countByMonth(String month);
+
+    /**
+     * 获取最新的博客列表
+     *
+     * @return
+     */
+    List<Blog> getTopNewBlogList();
+
+    /**
+     * 获取浏览最多的博客列表
+     *
+     * @return
+     */
+    List<Blog> getTopScanBlogList();
+
+    /**
+     * 获取评论最多的博客列表
+     *
+     * @return
+     */
+    List<Blog> getTopRemarkBlogList();
+
+    /**
+     * 获取博主推荐博客列表
+     *
+     * @return
+     */
+    List<Blog> getRecommendBlogList();
+    
 }

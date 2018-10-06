@@ -21,6 +21,12 @@ public interface BlogDao {
     //用于查找各种指标下的博客，使用redis存储id列表
     List<Blog> findByIdList(List<Integer> ids);
 
+    //按浏览量降序排列
+    List<Blog> findByIdListOrderedScanNum(List<Integer> ids);
+
+    //TODO 按评论量降序排列
+    List<Blog> findByIdListOrderedRemarkNum(List<Integer> ids);
+
     //获取总条数
     int count();
 
@@ -30,10 +36,11 @@ public interface BlogDao {
 
     /**
      * 获取当前最大的id
+     * 因为数据库为空时会有问题，不能直接返回int
      *
      * @return
      */
-    int maxId();  //TODO 当数据库为空时会有问题，注意下
+    List<Blog> maxId();
 
     List<String> getTopNewBlog(int limit);
 

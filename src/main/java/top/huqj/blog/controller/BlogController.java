@@ -78,7 +78,12 @@ public class BlogController {
 
     @RequestMapping("/blog")
     public String blogPage(HttpServletRequest request) {
-        //TODO
+        try {
+            //获取所有博客类别和对应的博客数量
+            request.setAttribute("categoryList", blogService.getAllCategoryList());
+        } catch (Exception e) {
+            log.error("error when set blog page.", e);
+        }
         return "blog";
     }
 
