@@ -32,5 +32,9 @@
     <delete id="deleteOne" parameterType="java.lang.Integer">
         DELETE FROM admin WHERE id=#{id}
     </delete>
-    
+
+    <select id="getAll" resultMap="adminMap">
+        SELECT * FROM admin
+    </select>
+
 </mapper>

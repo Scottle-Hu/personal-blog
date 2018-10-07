@@ -7,7 +7,7 @@
 </head>
 <script type="application/javascript" src="../js/md5.js"></script>
 <script type="application/javascript" src="../js/jquery.min.js"></script>
-<body>
+<body onkeydown="keyOnClick(event)">
 <div class="login-div">
     <h1>Huqj's Blog</h1>
     <form id="login-form" action="check" method="post">
@@ -33,6 +33,15 @@
                 $("#login-form").submit();
             });
         });
+
+        function keyOnClick(e) {
+            var theEvent = window.event || e;
+            var code = theEvent.keyCode || theEvent.which;
+            if (code == 13) {  //回车键的键值为13
+                $(".login-submit").click();
+                return;
+            }
+        }
     </script>
 </div>
 </body>

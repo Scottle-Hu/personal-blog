@@ -58,6 +58,8 @@
                 /back/about=authc
                 /back/message=authc
                 /back/account=authc
+                /back/account/add=authc
+                /back/delete=authc
                 /back/logout=logout
             </value>
         </property>

@@ -11,10 +11,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import top.huqj.blog.constant.BlogConstant;
 import top.huqj.blog.dao.CategoryDao;
+import top.huqj.blog.dao.back.AdminDao;
 import top.huqj.blog.exception.ParameterMissingException;
 import top.huqj.blog.model.Blog;
 import top.huqj.blog.model.Category;
 import top.huqj.blog.model.Essay;
+import top.huqj.blog.model.back.Admin;
 import top.huqj.blog.model.ext.CategoryAndBlogNum;
 import top.huqj.blog.service.*;
 
@@ -61,6 +63,9 @@ public class BackController {
     @Autowired
     private ICategoryService categoryService;
 
+    @Autowired
+    private AdminDao adminDao;
+
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private static final int DATE_FORMAT_LENGTH = 19;
@@ -95,6 +100,32 @@ public class BackController {
     public String consolePage(HttpServletRequest request) {
         //TODO
         return "back/console";
+    }
+
+    @RequestMapping("/account")
+    public String accountPage(HttpServletRequest request) {
+        try {
+            List<Admin> adminList = adminDao.getAll();
+            request.setAttribute("adminList", adminList);
+        } catch (Exception e) {
+            log.error("error when set account page.", e);
+        }
+        return "back/account";
+    }
+
+    @RequestMapping(value = "/account/add", method = RequestMethod.POST)
+    public String addAccount(Admin admin) {
+        try {
+            if (StringUtils.isEmpty(admin.getPassword()) || StringUtils.isEmpty(admin.getUsername())) {
+                throw new Exception();
+            }
+            admin.setCreateTime(new Timestamp(System.currentTimeMillis()));
+            admin.setUpdateTime(new Timestamp(System.currentTimeMillis()));
+            adminDao.insertOne(admin);
+        } catch (Exception e) {
+            log.error("error when set account page.", e);
+        }
+        return "redirect:../account";
     }
 
     /**
@@ -313,6 +344,9 @@ public class BackController {
             } else if (type.equals(BlogConstant.TYPE_CATEGORY)) {
                 categoryService.deleteCategory(id);
                 return "redirect:category";
+            } else if (type.equals(BlogConstant.ACCOUNT_TYPE)) {
+                adminDao.deleteOne(id);
+                return "redirect:account";
             } else {
                 log.warn("unknown type, type=" + type);
             }

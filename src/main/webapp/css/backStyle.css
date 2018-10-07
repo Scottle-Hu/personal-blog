@@ -280,6 +280,18 @@ body {
     background: gray;
 }
 
+.add-admin-div {
+    position: absolute;
+    left: 40%;
+    top: 40%;
+    padding: 10px;
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    font-size: 17px;
+    background: gray;
+}
+
 .add-category-div #category-add-btn {
     width: 80px;
     height: 30px;
@@ -289,6 +301,22 @@ body {
 }
 
 .add-category-div #category-add-quit-btn {
+    width: 80px;
+    height: 30px;
+    background: red;
+    color: white;
+    border: none;
+}
+
+.add-admin-div #account-add-btn {
+    width: 80px;
+    height: 30px;
+    background: black;
+    color: white;
+    border: none;
+}
+
+.add-admin-div #account-add-quit-btn {
     width: 80px;
     height: 30px;
     background: red;

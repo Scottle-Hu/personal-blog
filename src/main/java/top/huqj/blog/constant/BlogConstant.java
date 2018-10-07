@@ -33,4 +33,6 @@ public class BlogConstant {
     public static String ESSAY_TYPE = "essay";
     public static int ESSAY_TYPE_ID = 1;
 
+    public static String ACCOUNT_TYPE = "account";
+
 }
