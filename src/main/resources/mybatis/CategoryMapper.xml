@@ -16,12 +16,12 @@
 
     <!--按照id查询记录-->
     <select id="findById" parameterType="Integer" resultType="Category">
-      SELECT * FROM category WHERE id=#{id}
+      SELECT id, `name` FROM category WHERE id=#{id}
     </select>
 
     <!--更新记录-->
     <update id="updateOne" parameterType="Category">
-        UPDATE category SET name=#{name} WHERE id=#{id}
+        UPDATE category SET `name`=#{name} WHERE id=#{id}
     </update>
 
     <delete id="deleteById" parameterType="Integer">
@@ -29,7 +29,7 @@
     </delete>
 
     <select id="findAll" resultMap="categoryMap">
-        SELECT * FROM category
+        SELECT id, `name` FROM category
     </select>
 
 </mapper>

@@ -15,10 +15,8 @@ import top.huqj.blog.exception.ParameterMissingException;
 import top.huqj.blog.model.Blog;
 import top.huqj.blog.model.Category;
 import top.huqj.blog.model.Essay;
-import top.huqj.blog.service.IBlogIdProvider;
-import top.huqj.blog.service.IBlogService;
-import top.huqj.blog.service.IEssayIdProvider;
-import top.huqj.blog.service.IEssayService;
+import top.huqj.blog.model.ext.CategoryAndBlogNum;
+import top.huqj.blog.service.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
@@ -59,6 +57,9 @@ public class BackController {
 
     @Autowired
     private CategoryDao categoryDao;
+
+    @Autowired
+    private ICategoryService categoryService;
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -260,6 +261,40 @@ public class BackController {
         return "back/blog";
     }
 
+    @RequestMapping(value = "/category", method = RequestMethod.GET)
+    public String categoryPage(HttpServletRequest request) {
+        try {
+            List<CategoryAndBlogNum> categoryList = categoryService.getAllCategoryList();
+            request.setAttribute("categoryList", categoryList);
+        } catch (Exception e) {
+            log.error("error when set category page of back.", e);
+        }
+        return "back/category";
+    }
+
+    /**
+     * 添加博客类别
+     *
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/category", method = RequestMethod.POST)
+    public String addCategory(HttpServletRequest request) {
+        try {
+            String name = request.getParameter("name");
+            if (!StringUtils.isEmpty(name)) {
+                Category category = new Category();
+                category.setCreateTime(new java.sql.Date(System.currentTimeMillis()));
+                category.setUpdateTime(new java.sql.Date(System.currentTimeMillis()));
+                category.setName(name);
+                categoryService.addCategory(category);
+            }
+        } catch (Exception e) {
+            log.error("error when add category.", e);
+        }
+        return categoryPage(request);
+    }
+
     @RequestMapping("/delete")
     public String deleteBlogOrEssay(HttpServletRequest request) {
         try {
@@ -275,6 +310,9 @@ public class BackController {
             } else if (type.equals(BlogConstant.ESSAY_TYPE)) {
                 essayService.deleteById(id);
                 return "redirect:essay";
+            } else if (type.equals(BlogConstant.TYPE_CATEGORY)) {
+                categoryService.deleteCategory(id);
+                return "redirect:category";
             } else {
                 log.warn("unknown type, type=" + type);
             }
