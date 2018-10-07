@@ -55,6 +55,8 @@ public class Blog {
 
     private Timestamp updateTime;
 
+    private String updateTimeStr;
+
     /**
      * 博客标签，用逗号隔开
      */

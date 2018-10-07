@@ -154,6 +154,7 @@ public class BlogController {
                 request.setAttribute("type", BlogConstant.BLOG_TYPE_ID);
             } else if (BlogConstant.ESSAY_TYPE.equals(type)) {  //随笔
                 Essay essay = essayService.findById(id);
+                essayService.scanOnce(id);  //浏览量++
                 if (essay == null) {
                     return gotoHome();
                 }

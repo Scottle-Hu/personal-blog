@@ -123,10 +123,10 @@
                 if (curPage - delta > 2) {
                     liStr += '<li><a href="#">...</a></li>';
                 }
-                for (var i = curPage - delta; i < curPage + delta; i++) {
+                for (var i = curPage - delta; i <= curPage + delta; i++) {
                     if (i == curPage) {
                         liStr += '<li class="cur-page"><a href="#">' + curPage + '</a></li>';
-                    } else if (i > 1 && i < totalPage) {
+                    } else if (i >= 1 && i <= totalPage) {
                         liStr += '<li><a href="index?page=' + i + '">' + i + '</a></li>';
                     }
                 }

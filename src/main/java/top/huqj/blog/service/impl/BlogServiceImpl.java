@@ -154,6 +154,50 @@ public class BlogServiceImpl implements IBlogService {
         TOTAL_BLOG_NUM++;
     }
 
+    @Override
+    public synchronized void deleteBlog(int id) {
+        Blog blog = findBlogById(id);
+        if (blog == null) {
+            log.warn("try to delete an nonexistent blog, id=" + id);
+            return;
+        }
+        //从数据库删除
+        blogDao.deleteOne(id);
+        //更新redis
+        if (blog.getCategory() == null) {
+            log.error("this blog has no category. id=" + id);
+        } else {
+            int categoryId = blog.getCategory().getId();
+            String categoryKey = category2BlogIdsKeyPrefix + categoryId;
+            List<String> categoryList = redisManager.getListValues(categoryKey);
+            Iterator<String> iterator = categoryList.iterator();
+            while (iterator.hasNext()) {
+                String next = iterator.next();
+                if (next.equals(String.valueOf(id))) {
+                    iterator.remove();
+                }
+            }
+            redisManager.deleteListAllValue(categoryKey);
+            redisManager.addListValueBatch(categoryKey, categoryList);
+
+            String month = monthDateFormat.format(blog.getPublishTime());
+            String monthKey = month2BlogIdsKeyPrefix + month;
+            List<String> monthList = redisManager.getListValues(monthKey);
+            iterator = monthList.iterator();
+            while (iterator.hasNext()) {
+                String next = iterator.next();
+                if (next.equals(String.valueOf(id))) {
+                    iterator.remove();
+                }
+            }
+            redisManager.deleteListAllValue(monthKey);
+            redisManager.addListValueBatch(monthKey, monthList);
+        }
+
+        updateBrotherBlog(id, BlogUpdateOperation.DELETE);
+        updateTopBlog(blog, BlogUpdateOperation.DELETE);
+    }
+
     /**
      * 更新各个维度的top博客列表，添加、删除、修改都可能变化
      * 每个纬度的列表默认最多十篇（博主推荐除外）
@@ -358,6 +402,7 @@ public class BlogServiceImpl implements IBlogService {
     private void postProcessBlogList(List<Blog> blogList) {
         blogList.forEach(blog -> {
             blog.setPublishTimeStr(dateFormat.format(blog.getPublishTime()));
+            blog.setUpdateTimeStr(dateFormat.format(blog.getUpdateTime()));
             if (!StringUtils.isEmpty(blog.getImgUrlList())) {
                 List<String> imgList = Arrays.asList(blog.getImgUrlList().split("\\|"));
                 blog.setImgUrls(imgList.subList(0, Math.min(MAX_PREVIEW_IMG_NUM, imgList.size())));

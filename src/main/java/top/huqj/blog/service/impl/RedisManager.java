@@ -3,6 +3,7 @@ package top.huqj.blog.service.impl;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import redis.clients.jedis.Jedis;
 
 import javax.annotation.PostConstruct;
@@ -136,6 +137,9 @@ public class RedisManager {
      * @param values
      */
     public void addListValueBatch(String listKey, List<String> values) {
+        if (CollectionUtils.isEmpty(values)) {
+            return;
+        }
         jedis.rpush(listKey, values.toArray(new String[]{}));
     }
 

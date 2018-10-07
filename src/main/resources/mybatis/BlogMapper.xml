@@ -80,4 +80,8 @@
       SELECT * FROM blog ORDER BY scan_num DESC LIMIT 0,#{limit}
     </select>
 
+    <delete id="deleteOne" parameterType="Integer">
+        DELETE FROM blog WHERE id=#{id}
+    </delete>
+
 </mapper>

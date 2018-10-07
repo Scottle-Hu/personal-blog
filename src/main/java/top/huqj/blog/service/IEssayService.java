@@ -48,4 +48,6 @@ public interface IEssayService {
 
     Essay getNextEssay(int id);
 
+    void scanOnce(int id);
+
 }

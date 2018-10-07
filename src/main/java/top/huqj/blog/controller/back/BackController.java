@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -24,7 +25,9 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 后台管理主控制器
@@ -35,6 +38,12 @@ import java.util.List;
 @Controller
 @RequestMapping("/back")
 public class BackController {
+
+    @Value("${maxBlogNumPerPage}")
+    public int Blog_NUM_PER_PAGE;
+
+    @Value("${maxEssayNumPerPage}")
+    public int Essay_NUM_PER_PAGE;
 
     @Autowired
     private IBlogService blogService;
@@ -203,6 +212,76 @@ public class BackController {
             request.setAttribute("errorMsg", "发布文章时发生错误，发布失败！");
             return publishArticle(request);
         }
+    }
+
+    @RequestMapping("/essay")
+    public String essayListPage(HttpServletRequest request) {
+        try {
+            String pageStr = request.getParameter("page");
+            int page = 1;
+            if (!StringUtils.isEmpty(pageStr)) {
+                try {
+                    page = Integer.parseInt(pageStr);
+                } catch (Exception e) {
+                    log.error("error when parse param page.", e);
+                }
+            }
+            Map<String, Integer> pageInfo = new HashMap<>();
+            pageInfo.put(BlogConstant.PAGE_OFFSET, (page - 1) * Essay_NUM_PER_PAGE);
+            pageInfo.put(BlogConstant.PAGE_NUM, Essay_NUM_PER_PAGE);
+            List<Essay> essayList = essayService.findLatestEssayListByPageInfo(pageInfo);
+            request.setAttribute("essayList", essayList);
+        } catch (Exception e) {
+            log.error("error when set essay list page of back.", e);
+        }
+        return "back/essay";
+    }
+
+    @RequestMapping("/blog")
+    public String blogListPage(HttpServletRequest request) {
+        try {
+            String pageStr = request.getParameter("page");
+            int page = 1;
+            if (!StringUtils.isEmpty(pageStr)) {
+                try {
+                    page = Integer.parseInt(pageStr);
+                } catch (Exception e) {
+                    log.error("error when parse param page.", e);
+                }
+            }
+            Map<String, Integer> pageInfo = new HashMap<>();
+            pageInfo.put(BlogConstant.PAGE_OFFSET, (page - 1) * Essay_NUM_PER_PAGE);
+            pageInfo.put(BlogConstant.PAGE_NUM, Essay_NUM_PER_PAGE);
+            List<Blog> blogList = blogService.findLatestBlogByPage(pageInfo);
+            request.setAttribute("blogList", blogList);
+        } catch (Exception e) {
+            log.error("error when set blog list page of back.", e);
+        }
+        return "back/blog";
+    }
+
+    @RequestMapping("/delete")
+    public String deleteBlogOrEssay(HttpServletRequest request) {
+        try {
+            String type = request.getParameter("type");
+            String idStr = request.getParameter("id");
+            if (StringUtils.isEmpty(idStr)) {
+                throw new Exception();
+            }
+            int id = Integer.parseInt(idStr);
+            if (type == null || type.equals(BlogConstant.BLOG_TYPE)) {
+                blogService.deleteBlog(id);
+                return "redirect:blog";
+            } else if (type.equals(BlogConstant.ESSAY_TYPE)) {
+                essayService.deleteById(id);
+                return "redirect:essay";
+            } else {
+                log.warn("unknown type, type=" + type);
+            }
+        } catch (Exception e) {
+            log.error("error when delete article.", e);
+        }
+        return "back/login";
     }
 
     /**

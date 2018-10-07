@@ -48,4 +48,8 @@
         DELETE FROM essay WHERE id=#{id}
     </delete>
 
+    <update id="addScanNum" parameterType="Integer">
+        UPDATE essay SET scan_num = scan_num + 1 WHERE id=#{id}
+    </update>
+
 </mapper>

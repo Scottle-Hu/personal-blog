@@ -25,4 +25,6 @@ public interface EssayDao {
     int count();
 
     List<Essay> maxId();
+
+    int addScanNum(int id);
 }

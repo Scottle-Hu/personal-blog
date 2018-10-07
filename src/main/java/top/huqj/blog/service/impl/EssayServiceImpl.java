@@ -194,9 +194,13 @@ public class EssayServiceImpl implements IEssayService {
     public synchronized void deleteById(int id) {
         //更新redis
         Essay essay = findById(id);
+        if (essay == null) {
+            log.warn("try to delete an nonexistent essay, id=" + id);
+            return;
+        }
         updateMonth2Essay(essay.getPublishTime(), id, BlogUpdateOperation.DELETE);
         updateBrotherEssayHash(id, BlogUpdateOperation.DELETE);
-        //从数据库中软删除
+        //从数据库中删除
         essayDao.deleteOne(id);
         TOTAL_ESSAY_NUM--;
     }
@@ -311,6 +315,7 @@ public class EssayServiceImpl implements IEssayService {
     private void postProccess(List<Essay> essayList) {
         essayList.forEach(essay -> {
             essay.setPublishTimeStr(dateFormat.format(essay.getPublishTime()));
+            essay.setUpdateTimeStr(dateFormat.format(essay.getUpdateTime()));
             String pre = essay.getText();
             if (pre.length() > 100) {
                 essay.setText(pre.substring(0, 100));
@@ -326,6 +331,11 @@ public class EssayServiceImpl implements IEssayService {
     @Override
     public Essay getNextEssay(int id) {
         return getBrother(id, 1);
+    }
+
+    @Override
+    public void scanOnce(int id) {
+        essayDao.addScanNum(id);
     }
 
     /**

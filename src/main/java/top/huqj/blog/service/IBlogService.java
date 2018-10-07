@@ -16,6 +16,8 @@ public interface IBlogService {
 
     void insertBlog(Blog blog) throws Exception;
 
+    void deleteBlog(int id);
+
     /**
      * 按照分页获取最新博客
      *
@@ -120,5 +122,5 @@ public interface IBlogService {
      * @return
      */
     List<Blog> getRecommendBlogList();
-    
+
 }

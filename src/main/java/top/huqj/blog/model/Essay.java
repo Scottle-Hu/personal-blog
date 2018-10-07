@@ -44,4 +44,6 @@ public class Essay {
 
     private Timestamp updateTime;
 
+    private String updateTimeStr;
+
 }
