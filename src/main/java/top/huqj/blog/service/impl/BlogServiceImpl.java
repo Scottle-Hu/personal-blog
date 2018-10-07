@@ -15,7 +15,6 @@ import top.huqj.blog.model.Blog;
 import top.huqj.blog.model.Category;
 import top.huqj.blog.model.ext.CategoryAndBlogNum;
 import top.huqj.blog.model.ext.MonthAndBlogNum;
-import top.huqj.blog.service.IBlogIdProvider;
 import top.huqj.blog.service.IBlogService;
 import top.huqj.blog.utils.MarkDownUtil;
 
@@ -87,6 +86,11 @@ public class BlogServiceImpl implements IBlogService {
      */
     private volatile int TOTAL_BLOG_NUM = -1;
 
+    /**
+     * 浏览最多的列表中的最少浏览量
+     */
+    private volatile int minTopScanNum = 0;
+
     public static final long AN_HOUR_MILLIS = 60 * 60 * 1000;
 
     /**
@@ -111,6 +115,15 @@ public class BlogServiceImpl implements IBlogService {
                 log.info("update total blog num:" + TOTAL_BLOG_NUM);
             }
         }, AN_HOUR_MILLIS, AN_HOUR_MILLIS);
+        try {
+            List<String> listValues = redisManager.getListValues(topScanBlogIdListKey);
+            if (!CollectionUtils.isEmpty(listValues)) {
+                minTopScanNum = Integer.parseInt(listValues.get(listValues.size() - 1).split("-")[1]);
+            }
+            log.info("init minTopScanNum as " + minTopScanNum);
+        } catch (Exception e) {
+            log.error("error when init minTopScanNum.", e);
+        }
     }
 
     public Blog findBlogById(int id) {
@@ -196,6 +209,7 @@ public class BlogServiceImpl implements IBlogService {
 
         updateBrotherBlog(id, BlogUpdateOperation.DELETE);
         updateTopBlog(blog, BlogUpdateOperation.DELETE);
+        TOTAL_BLOG_NUM--;
     }
 
     /**
@@ -217,6 +231,7 @@ public class BlogServiceImpl implements IBlogService {
                 }
                 if (redisManager.getListLength(topScanBlogIdListKey) < 10) {  //更新最多浏览
                     redisManager.addList(topScanBlogIdListKey, blog.getId() + "-0"); //默认0浏览，添加在末尾
+                    minTopScanNum = 0;
                 }
                 //更新最新博客
                 while (redisManager.getListLength(topNewsBlogIdListKey) >= 10) {
@@ -226,59 +241,52 @@ public class BlogServiceImpl implements IBlogService {
                 break;
             }
             case DELETE: {  //注意：应该先从数据库中删除，再执行更新redis的操作
-                if (blog.isRecommend()) {
-                    //更新博主推荐
-                    List<String> recommendIds = redisManager.getListValues(recommendBlogIdSetKey);
-                    Iterator<String> iterator = recommendIds.iterator();
-                    while (iterator.hasNext()) {
-                        String ele = iterator.next();
-                        if (ele.equals(String.valueOf(blog.getId()))) {
-                            iterator.remove();
-                            break;
-                        }
+                //更新博主推荐
+                List<String> recommendIds = redisManager.getListValues(recommendBlogIdSetKey);
+                Iterator<String> iterator = recommendIds.iterator();
+                while (iterator.hasNext()) {
+                    String ele = iterator.next();
+                    if (ele.equals(String.valueOf(blog.getId()))) {
+                        iterator.remove();
+                        break;
                     }
-                    redisManager.deleteListAllValue(recommendBlogIdSetKey);
-                    redisManager.addListValueBatch(recommendBlogIdSetKey, recommendIds);
-                    //更新最新文章
-                    List<String> topNewBlogIds = redisManager.getListValues(topNewsBlogIdListKey);
-                    if (topNewBlogIds.contains(String.valueOf(blog.getId()))) {
-                        Iterator<String> topIterator = topNewBlogIds.iterator();
-                        while (topIterator.hasNext()) {
-                            String ele = topIterator.next();
-                            if (ele.equals(String.valueOf(blog.getId()))) {
-                                topIterator.remove();
-                                break;
-                            }
-                        }
-                        List<String> candidateIds = blogDao.getTopNewBlog(topNewBlogIds.size() + 1);
-                        String newCandidateId = candidateIds.get(candidateIds.size() - 1);
-                        if (!topNewBlogIds.contains(newCandidateId)) {
-                            topNewBlogIds.add(newCandidateId);
-                            redisManager.deleteListAllValue(topNewsBlogIdListKey);
-                            redisManager.addListValueBatch(topNewsBlogIdListKey, topNewBlogIds);
-                        } else {
-                            log.error("top new blog is not correct.topNewCandidateId=" + newCandidateId);
-                        }
-                    }
-                    //更新浏览最多
-                    List<String> topScanBlogIds = redisManager.getListValues(topScanBlogIdListKey);
-                    String mark = id + "-";
-                    if (hasValueStartWithAndRemoveOnce(topScanBlogIds, mark)) {
-                        List<Blog> scanCandidates = blogDao.getTopScanBlog(topScanBlogIds.size() + 1);
+                }
+                redisManager.deleteListAllValue(recommendBlogIdSetKey);
+                redisManager.addListValueBatch(recommendBlogIdSetKey, recommendIds);
+                //更新最新文章
+                List<String> topNewBlogIds = redisManager.getListValues(topNewsBlogIdListKey);
+                if (topNewBlogIds.contains(String.valueOf(blog.getId()))) {
+                    List<String> candidateIds = blogDao.getTopNewBlog(10);
+                    redisManager.deleteListAllValue(topNewsBlogIdListKey);
+                    redisManager.addListValueBatch(topNewsBlogIdListKey, candidateIds);
+                }
+                //更新浏览最多
+                List<String> topScanBlogIds = redisManager.getListValues(topScanBlogIdListKey);
+                String mark = id + "-";
+                if (hasValueStartWithAndRemoveOnce(topScanBlogIds, mark)) {
+                    List<Blog> scanCandidates = blogDao.getTopScanBlog(topScanBlogIds.size() + 1);
+                    if (!CollectionUtils.isEmpty(scanCandidates) && scanCandidates.size() > topScanBlogIds.size()) {
                         Blog newScanCandidate = scanCandidates.get(scanCandidates.size() - 1);
                         topScanBlogIds.add(newScanCandidate.getId() + "-" + newScanCandidate.getScanNum());
-                        redisManager.deleteListAllValue(topScanBlogIdListKey);
-                        redisManager.addListValueBatch(topScanBlogIdListKey, topScanBlogIds);
+                        minTopScanNum = newScanCandidate.getScanNum();
+                    } else if (topScanBlogIds.size() > 0) {
+                        minTopScanNum = Integer.parseInt(topScanBlogIds.get(topScanBlogIds.size() - 1).split("-")[1]);
+                    } else {
+                        minTopScanNum = 0;
                     }
-                    //更新浏览最多
-                    List<String> topRemarkBlogIds = redisManager.getListValues(topRemarkBlogIdListKey);
-                    if (hasValueStartWithAndRemoveOnce(topRemarkBlogIds, mark)) {
-                        List<Blog> remarkCandidates = blogDao.getTopRemarkBlog(topRemarkBlogIds.size() + 1);
+                    redisManager.deleteListAllValue(topScanBlogIdListKey);
+                    redisManager.addListValueBatch(topScanBlogIdListKey, topScanBlogIds);
+                }
+                //更新浏览最多
+                List<String> topRemarkBlogIds = redisManager.getListValues(topRemarkBlogIdListKey);
+                if (hasValueStartWithAndRemoveOnce(topRemarkBlogIds, mark)) {
+                    List<Blog> remarkCandidates = blogDao.getTopRemarkBlog(topRemarkBlogIds.size() + 1);
+                    if (!CollectionUtils.isEmpty(remarkCandidates) && remarkCandidates.size() > topRemarkBlogIds.size()) {
                         Blog newRemarkCandidate = remarkCandidates.get(remarkCandidates.size() - 1);
                         topRemarkBlogIds.add(newRemarkCandidate.getId() + "-" + newRemarkCandidate.getScanNum());
-                        redisManager.deleteListAllValue(topRemarkBlogIdListKey);
-                        redisManager.addListValueBatch(topRemarkBlogIdListKey, topRemarkBlogIds);
                     }
+                    redisManager.deleteListAllValue(topRemarkBlogIdListKey);
+                    redisManager.addListValueBatch(topRemarkBlogIdListKey, topRemarkBlogIds);
                 }
                 break;
             }
@@ -339,7 +347,7 @@ public class BlogServiceImpl implements IBlogService {
                 Optional<String> brotherIds = redisManager.getHashValueByKey(brothersBlogIdHashKey, String.valueOf(id));
                 if (brotherIds.isPresent()) {
                     redisManager.removeHashKey(brothersBlogIdHashKey, String.valueOf(id));
-                    if ("0-0".equals(brotherIds)) {
+                    if ("0-0".equals(brotherIds.get())) {
                         break;
                     }
                     String[] brotherIdsValueStr = brotherIds.get().split("-");
@@ -593,6 +601,58 @@ public class BlogServiceImpl implements IBlogService {
     }
 
     /**
+     * 需要加锁，不然多个线程同时执行会导致redis和数据库不同步
+     *
+     * @param id
+     */
+    @Override
+    public synchronized void scanOnce(int id) {
+        try {
+            Blog blog = findBlogById(id);
+            if (blog == null) {
+                log.warn("scan nonexistent blog, id=" + id);
+                return;
+            }
+            blogDao.scanOnce(id);
+            //更新redis
+            if (blog.getScanNum() >= minTopScanNum) {
+                int nowScan = blog.getScanNum() + 1;
+                String nowValue = id + "-" + nowScan;
+                List<String> listValues = redisManager.getListValues(topScanBlogIdListKey);
+                Iterator<String> iterator = listValues.iterator();
+                int index = 0;
+                while (iterator.hasNext()) {
+                    String next = iterator.next();
+                    if (Integer.parseInt(next.split("-")[1]) > nowScan) {
+                        index++;
+                    } else if (next.split("-")[0].equals(String.valueOf(id))) {
+                        iterator.remove();
+                        break;
+                    }
+                }
+                List<String> newValues = new ArrayList<>();
+                for (int i = 0; i < index; i++) {
+                    newValues.add(listValues.get(i));
+                }
+                newValues.add(nowValue);
+                for (int i = index; i < listValues.size(); i++) {
+                    newValues.add(listValues.get(i));
+                }
+                if (newValues.size() > 10) {
+                    newValues = newValues.subList(0, 10);
+                }
+                redisManager.deleteListAllValue(topScanBlogIdListKey);
+                redisManager.addListValueBatch(topScanBlogIdListKey, newValues);
+                //TODO top remark目前保持和 top scan 一致
+                redisManager.deleteListAllValue(topRemarkBlogIdListKey);
+                redisManager.addListValueBatch(topRemarkBlogIdListKey, newValues);
+            }
+        } catch (Exception e) {
+            log.error("error when update scan num.", e);
+        }
+    }
+
+    /**
      * 根据在redis中的列表key获取其对应的博客列表
      * 注意：有些列表的value并非博客id，而是 id-指标
      *
@@ -613,6 +673,9 @@ public class BlogServiceImpl implements IBlogService {
                 log.error("error when parse blog id.", e);
             }
         });
+        if (CollectionUtils.isEmpty(ids)) {
+            return Collections.emptyList();
+        }
         //不同的维度排序方式不同
         List<Blog> blogList;
         if (key.equals(topScanBlogIdListKey)) {

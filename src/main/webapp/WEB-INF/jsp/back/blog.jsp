@@ -110,6 +110,14 @@
                     }
                 );
 
+                //删除
+                $(".op-delete").click(function () {
+                    if (confirm("Be sure to delete this blog?")) {
+                        var id = $(this).attr("opid");
+                        window.location.href = "delete?type=blog&id=" + id;
+                    }
+                });
+
             });
 
             //画分页

@@ -67,7 +67,7 @@
         <div class="clear"></div>
         <hr/>
         <c:if test="${type == 0 }">
-            <div>
+            <div class="article-wrap">
                 <center><h3>${blog.title }</h3></center>
                 <center>
                     <small style="color:gray;">
@@ -81,7 +81,7 @@
             </div>
         </c:if>
         <c:if test="${type == 1 }">
-            <div>
+            <div class="article-wrap">
                 <center><h3>${essay.title }</h3></center>
                 <center>
                     <small style="color:gray;">

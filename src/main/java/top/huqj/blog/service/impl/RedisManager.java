@@ -140,7 +140,7 @@ public class RedisManager {
         if (CollectionUtils.isEmpty(values)) {
             return;
         }
-        jedis.rpush(listKey, values.toArray(new String[]{}));
+        jedis.rpush(listKey, values.toArray(new String[values.size()]));
     }
 
     public Optional<String> getHashValueByKey(String hashName, String key) {

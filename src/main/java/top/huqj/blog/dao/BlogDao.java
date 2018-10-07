@@ -50,4 +50,12 @@ public interface BlogDao {
 
     List<Blog> getTopRemarkBlog(int limit);
 
+    /**
+     * 浏览博客一次
+     *
+     * @param id
+     * @return
+     */
+    int scanOnce(int id);
+
 }

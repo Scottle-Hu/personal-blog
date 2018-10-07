@@ -112,7 +112,7 @@ public class EssayServiceImpl implements IEssayService {
                 Optional<String> brotherIds = redisManager.getHashValueByKey(essayBrothersHashKey, String.valueOf(id));
                 if (brotherIds.isPresent()) {
                     redisManager.removeHashKey(essayBrothersHashKey, String.valueOf(id));
-                    if ("0-0".equals(brotherIds)) {
+                    if ("0-0".equals(brotherIds.get())) {
                         break;
                     }
                     String[] brotherIdsValueStr = brotherIds.get().split("-");

@@ -123,4 +123,9 @@ public interface IBlogService {
      */
     List<Blog> getRecommendBlogList();
 
+    /**
+     * 浏览一次
+     */
+    void scanOnce(int id);
+
 }

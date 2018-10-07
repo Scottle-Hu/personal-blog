@@ -143,6 +143,7 @@ public class BlogController {
             }
             if (type == null || BlogConstant.BLOG_TYPE.equals(type)) {  //博客
                 Blog blog = blogService.findBlogById(id);
+                blogService.scanOnce(id);  //浏览量++
                 if (blog == null) {
                     return gotoHome();
                 }
