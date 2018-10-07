@@ -57,8 +57,6 @@ public class ApiController {
                 }
             } else if (type.equals(BlogConstant.TYPE_MONTH)) {  //按照博客月份
                 String month = request.getParameter("month");
-                month = URLDecoder.decode(month, "iso-8859-1");  //由于是从url中截取的参数，会做url编码，这里需要解码
-                month = new String(month.getBytes("iso-8859-1"), "utf-8");
                 if (month != null) {
                     totalBlogNum = blogService.countByMonth(month);
                 }
@@ -85,8 +83,6 @@ public class ApiController {
                 totalEssayNum = essayService.count();
             } else if (type.equals(BlogConstant.TYPE_MONTH)) {  //按随笔月份
                 String month = request.getParameter("month");
-                month = URLDecoder.decode(month, "iso-8859-1");
-                month = new String(month.getBytes("iso-8859-1"), "utf-8");
                 if (month != null) {
                     totalEssayNum = essayService.countByMonth(month);
                 }

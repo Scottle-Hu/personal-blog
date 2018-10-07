@@ -15,6 +15,8 @@ public class MonthAndEssayNum {
      */
     private String month;
 
+    private String primitiveMonthStr;
+
     private int num;
 
 }

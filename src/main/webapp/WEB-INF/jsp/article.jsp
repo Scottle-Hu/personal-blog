@@ -40,7 +40,7 @@
                 <ul>
                     <c:forEach items="${monthList }" var="month">
                         <li>
-                            <a href="month?period=${month.publishTime }">${month.publishTime }(${month.blogNum })</a>
+                            <a href="month?period=${month.monthStr }">${month.publishTime }(${month.blogNum })</a>
                         </li>
                     </c:forEach>
                 </ul>
@@ -53,7 +53,7 @@
                 <ul>
                     <c:forEach items="${monthList }" var="month">
                         <li>
-                            <a href="monthessay?period=${month.month }">${month.month }(${month.num })</a>
+                            <a href="monthessay?period=${month.primitiveMonthStr }">${month.month }(${month.num })</a>
                         </li>
                     </c:forEach>
                 </ul>

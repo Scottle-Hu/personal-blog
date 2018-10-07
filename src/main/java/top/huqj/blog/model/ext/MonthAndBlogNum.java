@@ -14,6 +14,8 @@ public class MonthAndBlogNum {
 
     private String publishTime;
 
+    private String monthStr;
+
     private int blogNum;
 
 }

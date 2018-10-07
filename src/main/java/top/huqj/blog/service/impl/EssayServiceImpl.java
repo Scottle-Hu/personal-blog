@@ -239,8 +239,8 @@ public class EssayServiceImpl implements IEssayService {
             if (num > 0) {
                 String monthName = e.substring(e.indexOf("-") + 1, e.length());
                 if (monthName.length() == 6) {
-                    monthName = parseChineseNameOfMonth(monthName);
-                    result.add(new MonthAndEssayNum(monthName, num));
+                    String chMonthStr = parseChineseNameOfMonth(monthName);
+                    result.add(new MonthAndEssayNum(chMonthStr, monthName, num));
                 }
             }
         });
@@ -287,7 +287,7 @@ public class EssayServiceImpl implements IEssayService {
                 || map.get(BlogConstant.TYPE_MONTH) == null) {
             return Collections.emptyList();
         }
-        String monthSuffix = reparseChineseNameOfMonth((String) map.get(BlogConstant.TYPE_MONTH));
+        String monthSuffix = (String) map.get(BlogConstant.TYPE_MONTH);
         List<String> monthBlogIds = redisManager.getListValues(month2essayListKeyPrefix + monthSuffix);
         int offset = (Integer) map.get(BlogConstant.PAGE_OFFSET), size = (Integer) map.get(BlogConstant.PAGE_NUM);
         if (CollectionUtils.isEmpty(monthBlogIds) || monthBlogIds.size() <= offset) {

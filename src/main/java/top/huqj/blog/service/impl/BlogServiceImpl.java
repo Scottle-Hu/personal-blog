@@ -462,7 +462,7 @@ public class BlogServiceImpl implements IBlogService {
                 || page.get(BlogConstant.PAGE_NUM) == null || page.get(BlogConstant.TYPE_MONTH) == null) {
             return Collections.emptyList();
         }
-        String monthSuffix = reparseChineseNameOfMonth((String) page.get(BlogConstant.TYPE_MONTH));
+        String monthSuffix = (String) page.get(BlogConstant.TYPE_MONTH);
         List<String> monthBlogIds = redisManager.getListValues(month2BlogIdsKeyPrefix + monthSuffix);
         int offset = (Integer) page.get(BlogConstant.PAGE_OFFSET), size = (Integer) page.get(BlogConstant.PAGE_NUM);
         if (CollectionUtils.isEmpty(monthBlogIds) || monthBlogIds.size() <= offset) {
@@ -516,8 +516,8 @@ public class BlogServiceImpl implements IBlogService {
             if (num > 0) {
                 String monthName = e.substring(e.indexOf("-") + 1, e.length());
                 if (monthName.length() == 6) {
-                    monthName = parseChineseNameOfMonth(monthName);
-                    result.add(new MonthAndBlogNum(monthName, num));
+                    String chMonthStr = parseChineseNameOfMonth(monthName);
+                    result.add(new MonthAndBlogNum(chMonthStr, monthName, num));
                 }
             }
         });

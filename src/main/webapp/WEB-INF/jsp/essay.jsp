@@ -27,7 +27,7 @@
             <ul>
                 <c:forEach items="${monthList }" var="month">
                     <li>
-                        <a href="monthessay?period=${month.month }">${month.month }(${month.num })</a>
+                        <a href="monthessay?period=${month.primitiveMonthStr }">${month.month }(${month.num })</a>
                     </li>
                 </c:forEach>
             </ul>
