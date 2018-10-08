@@ -223,11 +223,7 @@ public class EssayServiceImpl implements IEssayService {
 
     @Override
     public int countByMonth(String month) {
-        String monthSuffix = reparseChineseNameOfMonth(month);
-        if (monthSuffix.equals(month)) {  //转换出错
-            return 0;
-        }
-        return (int) redisManager.getListLength(month2essayListKeyPrefix + monthSuffix);
+        return (int) redisManager.getListLength(month2essayListKeyPrefix + month);
     }
 
     @Override
