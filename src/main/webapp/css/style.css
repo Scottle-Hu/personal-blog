@@ -9,7 +9,7 @@ body {
     padding: 20px;
     background: white;
     width: 1100px;
-    border: 1px solid lightgreen;
+    border: none;
     border-radius: 20px;
     -webkit-border-radius: 20px;
     -moz-border-radius: 20px;
@@ -98,7 +98,7 @@ body {
     padding-top: 10px;
 }
 
-.latest span {
+.latest .latest-span {
     float: left;
 }
 
@@ -172,6 +172,7 @@ body {
     margin-left: -10px;
     margin-right: 20px;
     margin-bottom: 10px;
+    overflow: hidden;
 
 }
 

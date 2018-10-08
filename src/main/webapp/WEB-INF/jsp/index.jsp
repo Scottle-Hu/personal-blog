@@ -46,7 +46,7 @@
         <div class="clear"></div>
     </div>
     <div class="latest by">
-        <span><img src="image/list_icon.png"/><font class="mini-title">&nbsp;&nbsp;最新博客</font></span>
+        <span class="latest-span"><img src="image/list_icon.png"/><font class="mini-title">&nbsp;&nbsp;最新博客</font></span>
         <div class="search-box">
             <input type="text" id="search-text"/>
             <input type="button" value="搜索"/>

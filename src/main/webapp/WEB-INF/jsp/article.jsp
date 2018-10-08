@@ -62,7 +62,7 @@
         <div class="clear"></div>
     </div>
     <div class="latest by">
-        <span><img src="image/blog_show_icon.png"/><font class="mini-title">&nbsp;&nbsp;<c:if
+        <span class="latest-span"><img src="image/blog_show_icon.png"/><font class="mini-title">&nbsp;&nbsp;<c:if
                 test="${type == 0 }">博客</c:if><c:if test="${type == 1 }">随笔</c:if>内容</font></span>
         <div class="clear"></div>
         <hr/>

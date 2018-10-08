@@ -35,7 +35,7 @@
         <div class="clear"></div>
     </div>
     <div class="latest by">
-        <span><img src="image/list_icon.png"/><font class="mini-title">&nbsp;&nbsp;最新随笔</font></span>
+        <span class="latest-span"><img src="image/list_icon.png"/><font class="mini-title">&nbsp;&nbsp;最新随笔</font></span>
         <div class="clear"></div>
         <hr/>
         <ul>

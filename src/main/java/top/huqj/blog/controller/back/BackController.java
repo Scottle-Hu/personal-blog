@@ -39,10 +39,10 @@ import java.util.Map;
 @RequestMapping("/back")
 public class BackController {
 
-    @Value("${maxBlogNumPerPage}")
+    @Value("${backMaxBlogNumPerPage}")
     public int Blog_NUM_PER_PAGE;
 
-    @Value("${maxEssayNumPerPage}")
+    @Value("${backMaxEssayNumPerPage}")
     public int Essay_NUM_PER_PAGE;
 
     @Autowired
