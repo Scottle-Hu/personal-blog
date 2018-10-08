@@ -96,7 +96,7 @@ public class BlogServiceImpl implements IBlogService {
     /**
      * 首页最多预览的图片数目
      */
-    private static final int MAX_PREVIEW_IMG_NUM = 3;
+    private static final int MAX_PREVIEW_IMG_NUM = 1;
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
