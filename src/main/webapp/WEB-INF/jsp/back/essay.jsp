@@ -92,7 +92,7 @@
                 var totalPage = 1;
                 $.ajax(
                     {
-                        url: "../api/essay/page",
+                        url: "../api/essay/page?back=true",
                         type: 'json',
                         method: "GET",
                         success: function (res) {

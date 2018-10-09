@@ -36,6 +36,12 @@ public class ApiController {
     @Value("${maxEssayNumPerPage}")
     public int Essay_NUM_PER_PAGE;
 
+    @Value("${backMaxBlogNumPerPage}")
+    public int Back_Blog_NUM_PER_PAGE;
+
+    @Value("${backMaxEssayNumPerPage}")
+    public int Back_Essay_NUM_PER_PAGE;
+
     @Autowired
     private IBlogService blogService;
 
@@ -47,6 +53,8 @@ public class ApiController {
         Map<String, Integer> result = new HashMap<>();
         try {
             String type = request.getParameter("type");
+            //后台的分页设置和前台不一样
+            boolean isBack = request.getParameter("back") != null;
             int totalBlogNum = -1;
             if (type == null) {  //所有博客
                 totalBlogNum = blogService.count();
@@ -64,8 +72,8 @@ public class ApiController {
                 log.warn("unknown page type, type=" + type);
             }
             if (totalBlogNum != -1) {
-                result.put("totalPage", totalBlogNum % Blog_NUM_PER_PAGE == 0 ?
-                        totalBlogNum / Blog_NUM_PER_PAGE : (totalBlogNum / Blog_NUM_PER_PAGE) + 1);
+                int num = isBack ? Back_Blog_NUM_PER_PAGE : Blog_NUM_PER_PAGE;
+                result.put("totalPage", totalBlogNum / num + (totalBlogNum % num == 0 ? 0 : 1));
             }
         } catch (Exception e) {
             log.error("error when get count of blogs.", e);
@@ -78,6 +86,8 @@ public class ApiController {
         Map<String, Integer> result = new HashMap<>();
         try {
             String type = request.getParameter("type");
+            //后台的分页设置和前台不一样
+            boolean isBack = request.getParameter("back") != null;
             int totalEssayNum = -1;
             if (type == null) {  //所有随笔
                 totalEssayNum = essayService.count();
@@ -90,8 +100,8 @@ public class ApiController {
                 log.warn("unknown page type, type=" + type);
             }
             if (totalEssayNum != -1) {
-                result.put("totalPage", totalEssayNum % Essay_NUM_PER_PAGE == 0 ?
-                        totalEssayNum / Essay_NUM_PER_PAGE : (totalEssayNum / Essay_NUM_PER_PAGE) + 1);
+                int num = isBack ? Back_Blog_NUM_PER_PAGE : Blog_NUM_PER_PAGE;
+                result.put("totalPage", totalEssayNum / num + (totalEssayNum % num == 0 ? 0 : 1));
             }
         } catch (Exception e) {
             log.error("error when get count of essay.", e);
