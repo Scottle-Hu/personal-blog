@@ -418,7 +418,7 @@ public class BlogServiceImpl implements IBlogService {
             //设置预览文字，不应该太长
             String pre = blog.getText();
             if (pre.length() > 100) {
-                blog.setText(pre.substring(0, 100));
+                blog.setText(pre.substring(0, 100).replace("<", "&lt;").replace(">", "&gt;"));
             }
         });
     }

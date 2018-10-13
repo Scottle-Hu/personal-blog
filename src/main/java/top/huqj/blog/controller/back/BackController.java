@@ -174,7 +174,7 @@ public class BackController {
                     blog.setHtmlContent(htmlContent);
                     String text = request.getParameter("text");
                     checkNotNull(text);
-                    blog.setText(text);
+                    blog.setText(text.replace("<", "&lt;").replace(">", "&gt;"));
                 } else if (contentType == BlogConstant.BLOG_TYPE_MD) {
                     String mdContent = request.getParameter("mdContent");
                     checkNotNull(mdContent);
