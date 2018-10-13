@@ -493,6 +493,8 @@ public class BlogServiceImpl implements IBlogService {
     @Override
     public List<CategoryAndBlogNum> getAllCategoryList() {
         List<Category> categoryList = categoryDao.findAll();
+        //按类别名称排序
+        categoryList.sort(Comparator.comparing(Category::getName));
         if (CollectionUtils.isEmpty(categoryList)) {
             return Collections.emptyList();
         }

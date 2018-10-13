@@ -227,12 +227,10 @@ public class BlogController {
     public String monthBlogPage(HttpServletRequest request) {
         try {
             String month = request.getParameter("period");
-            //转换中文编码格式
-            month = new String(month.getBytes("iso-8859-1"), "utf-8");
             if (StringUtils.isEmpty(month)) {
                 return gotoHome();
             }
-            request.setAttribute("month", month);
+            request.setAttribute("month", parseChineseNameOfMonth(month));
             String pageStr = request.getParameter("page");
             int page = 1;
             if (!StringUtils.isEmpty(pageStr)) {
@@ -265,12 +263,10 @@ public class BlogController {
     public String monthEssayPage(HttpServletRequest request) {
         try {
             String month = request.getParameter("period");
-            //转换中文编码格式
-            month = new String(month.getBytes("iso-8859-1"), "utf-8");
             if (StringUtils.isEmpty(month)) {
                 return gotoHome();
             }
-            request.setAttribute("month", month);
+            request.setAttribute("month", parseChineseNameOfMonth(month));
             String pageStr = request.getParameter("page");
             int page = 1;
             if (!StringUtils.isEmpty(pageStr)) {
@@ -301,6 +297,20 @@ public class BlogController {
      */
     private String gotoHome() {
         return "redirect:index";
+    }
+
+    /**
+     * 将数字形式的月份转换成中文格式
+     *
+     * @param month
+     * @return
+     */
+    private String parseChineseNameOfMonth(String month) {
+        if (month.charAt(4) == '0') {
+            return month.substring(0, 4) + "年" + month.charAt(5) + "月";
+        } else {
+            return month.substring(0, 4) + "年" + month.substring(4, 6) + "月";
+        }
     }
 
 }
