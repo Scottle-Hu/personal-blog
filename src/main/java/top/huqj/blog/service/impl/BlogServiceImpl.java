@@ -510,8 +510,11 @@ public class BlogServiceImpl implements IBlogService {
     @Override
     public List<MonthAndBlogNum> getAllMonthList() {
         Set<String> month2BlogKeys = redisManager.listKeysByPrefix(month2BlogIdsKeyPrefix);
+        //月份排序
+        List<String> month2BlogKeysList = new ArrayList<>(month2BlogKeys);
+        Collections.sort(month2BlogKeysList);
         List<MonthAndBlogNum> result = new ArrayList<>();
-        month2BlogKeys.forEach(e -> {
+        month2BlogKeysList.forEach(e -> {
             int num = (int) redisManager.getListLength(e);
             if (num > 0) {
                 String monthName = e.substring(e.indexOf("-") + 1, e.length());
