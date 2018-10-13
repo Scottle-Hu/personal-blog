@@ -60,6 +60,9 @@ public class BlogController {
                     log.error("error when parse param page.", e);
                 }
             }
+            if (page <= 0) {
+                page = 1;
+            }
             //根据分页信息获取最新博客列表，一页最多10篇
             Map<String, Integer> pageInfo = new HashMap<>();
             pageInfo.put(BlogConstant.PAGE_OFFSET, (page - 1) * Blog_NUM_PER_PAGE);
@@ -102,6 +105,9 @@ public class BlogController {
                 } catch (Exception e) {
                     log.error("error when parse param page.", e);
                 }
+            }
+            if (page <= 0) {
+                page = 1;
             }
             Map<String, Integer> pageInfo = new HashMap<>();
             pageInfo.put(BlogConstant.PAGE_OFFSET, (page - 1) * Essay_NUM_PER_PAGE);
@@ -204,6 +210,9 @@ public class BlogController {
                     log.error("error when parse param page.", e);
                 }
             }
+            if (page <= 0) {
+                page = 1;
+            }
             //根据类别和分页信息获取最新博客列表，一页最多10篇
             Map<String, Integer> pageInfo = new HashMap<>();
             pageInfo.put(BlogConstant.PAGE_OFFSET, (page - 1) * Blog_NUM_PER_PAGE);
@@ -240,6 +249,9 @@ public class BlogController {
                     log.error("error when parse param page.", e);
                 }
             }
+            if (page <= 0) {
+                page = 1;
+            }
             //根据类别和分页信息获取最新博客列表，一页最多10篇
             Map<String, Object> pageInfo = new HashMap<>();
             pageInfo.put(BlogConstant.PAGE_OFFSET, (page - 1) * Blog_NUM_PER_PAGE);
@@ -275,6 +287,9 @@ public class BlogController {
                 } catch (Exception e) {
                     log.error("error when parse param page.", e);
                 }
+            }
+            if (page <= 0) {
+                page = 1;
             }
             Map<String, Object> pageInfo = new HashMap<>();
             pageInfo.put(BlogConstant.PAGE_OFFSET, (page - 1) * Blog_NUM_PER_PAGE);

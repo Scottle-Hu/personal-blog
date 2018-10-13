@@ -258,6 +258,9 @@ public class BackController {
                     log.error("error when parse param page.", e);
                 }
             }
+            if (page <= 0) {
+                page = 1;
+            }
             Map<String, Integer> pageInfo = new HashMap<>();
             pageInfo.put(BlogConstant.PAGE_OFFSET, (page - 1) * Essay_NUM_PER_PAGE);
             pageInfo.put(BlogConstant.PAGE_NUM, Essay_NUM_PER_PAGE);
@@ -280,6 +283,9 @@ public class BackController {
                 } catch (Exception e) {
                     log.error("error when parse param page.", e);
                 }
+            }
+            if (page <= 0) {
+                page = 1;
             }
             Map<String, Integer> pageInfo = new HashMap<>();
             pageInfo.put(BlogConstant.PAGE_OFFSET, (page - 1) * Essay_NUM_PER_PAGE);

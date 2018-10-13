@@ -122,7 +122,7 @@
                         success: function (res) {
                             var result = eval(res);
                             totalPage = result.totalPage;
-                            if (totalPage < curPage) {  //当有人篡改page参数时
+                            if (totalPage < curPage || curPage < 1) {  //当有人篡改page参数时
                                 curPage = 1;
                             }
                             paintPageNavigator(curPage, totalPage, month);
@@ -143,14 +143,14 @@
                 if (curPage - delta > 2) {
                     liStr += '<li><a href="#">...</a></li>';
                 }
-                for (var i = curPage - delta; i <= curPage + delta; i++) {
+                for (var i = curPage - delta; i <= parseInt(curPage) + parseInt(delta); i++) {
                     if (i == curPage) {
                         liStr += '<li class="cur-page"><a href="#">' + curPage + '</a></li>';
                     } else if (i >= 1 && i <= totalPage) {
                         liStr += '<li><a href="month?period=' + month + '&page=' + i + '">' + i + '</a></li>';
                     }
                 }
-                if (curPage + delta + 1 < totalPage) {
+                if (parseInt(curPage) + delta + 1 < totalPage) {
                     liStr += '<li><a href="#">...</a></li>';
                 }
                 liStr += '<li class="wider"><a href="month?period=' + month + '&page=' + totalPage + '">尾页</a></li>';

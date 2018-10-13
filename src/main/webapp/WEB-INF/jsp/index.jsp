@@ -3,6 +3,7 @@
 <html>
 <head>
     <meta charset="UTF-8"/>
+    <meta name="baidu-site-verification" content="n8Zt8YXTNW"/>
     <title>胡启军的个人博客</title>
     <meta name="keywords" content="胡启军,个人博客,技术博客，胡启军_技术"/>
     <meta name="description" content="Hello，这里是胡启军的个人技术博客，记录一些技术学习、探索和思考，以及一些日常随笔，欢迎访问~"/>
@@ -51,8 +52,17 @@
         <span class="latest-span"><img src="image/list_icon.png"/><font
                 class="mini-title">&nbsp;&nbsp;最新博客</font></span>
         <div class="search-box">
-            <input type="text" id="search-text"/>
-            <input type="button" value="搜索"/>
+            <%--<input type="text" id="search-text"/>
+            <input type="button" value="搜索"/>--%>
+            <script type="text/javascript">(function () {
+                document.write(unescape('%3Cdiv id="bdcs"%3E%3C/div%3E'));
+                var bdcs = document.createElement('script');
+                bdcs.type = 'text/javascript';
+                bdcs.async = true;
+                bdcs.src = 'http://znsv.baidu.com/customer_search/api/js?sid=7271176614425701320' + '&plate_url=' + encodeURIComponent(window.location.href) + '&t=' + Math.ceil(new Date() / 3600000);
+                var s = document.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(bdcs, s);
+            })();</script>
         </div>
         <div class="clear"></div>
         <hr/>
@@ -105,7 +115,7 @@
                         success: function (res) {
                             var result = eval(res);
                             totalPage = result.totalPage;
-                            if (totalPage < curPage) {  //当有人篡改page参数时
+                            if (totalPage < curPage || curPage < 1) {  //当有人篡改page参数时
                                 curPage = 1;
                             }
                             paintPageNavigator(curPage, totalPage);
@@ -126,14 +136,14 @@
                 if (curPage - delta > 2) {
                     liStr += '<li><a href="#">...</a></li>';
                 }
-                for (var i = curPage - delta; i <= curPage + delta; i++) {
+                for (var i = curPage - delta; i <= parseInt(curPage) + parseInt(delta); i++) {
                     if (i == curPage) {
                         liStr += '<li class="cur-page"><a href="#">' + curPage + '</a></li>';
                     } else if (i >= 1 && i <= totalPage) {
                         liStr += '<li><a href="index?page=' + i + '">' + i + '</a></li>';
                     }
                 }
-                if (curPage + delta + 1 < totalPage) {
+                if (parseInt(curPage) + delta + 1 < totalPage) {
                     liStr += '<li><a href="#">...</a></li>';
                 }
                 liStr += '<li class="wider"><a href="index?page=' + totalPage + '">尾页</a></li>';
