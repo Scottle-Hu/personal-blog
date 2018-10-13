@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8"/>
     <title>胡启军的个人博客</title>
+    <meta name="keywords" content="胡启军,个人博客,技术博客，胡启军_技术"/>
+    <meta name="description" content="Hello，这里是胡启军的个人技术博客，记录一些技术学习、探索和思考，以及一些日常随笔，欢迎访问~"/>
     <link rel="stylesheet" href="css/style.css"/>
 </head>
 <script type="application/javascript" src="js/jquery.min.js"></script>
@@ -35,7 +37,8 @@
         <div class="clear"></div>
     </div>
     <div class="latest by">
-        <span class="latest-span"><img src="image/list_icon.png"/><font class="mini-title">&nbsp;&nbsp;时间：${month }</font></span>
+        <span class="latest-span"><img src="image/list_icon.png"/><font
+                class="mini-title">&nbsp;&nbsp;时间：${month }</font></span>
         <div class="clear"></div>
         <hr/>
         <ul>
