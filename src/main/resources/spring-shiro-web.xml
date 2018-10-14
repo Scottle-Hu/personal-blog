@@ -14,6 +14,12 @@
         <property name="realm" ref="myRealm"/>
     </bean>
 
+    <!-- 会话管理器 -->
+    <bean id="sessionManager" class="org.apache.shiro.web.session.mgt.DefaultWebSessionManager">
+        <!-- 设置超时时间 (2小时)-->
+        <property name="globalSessionTimeout" value="7200000"/>
+    </bean>
+
     <!-- 基于Form表单的身份验证过滤器 -->
     <bean id="formAuthenticationFilter"
           class="org.apache.shiro.web.filter.authc.FormAuthenticationFilter">

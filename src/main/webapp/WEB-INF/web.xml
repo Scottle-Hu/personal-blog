@@ -61,4 +61,9 @@
         <url-pattern>/</url-pattern>
     </servlet-mapping>
 
+    <!--设置会话超时时间，2小时-->
+    <session-config>
+        <session-timeout>120</session-timeout>
+    </session-config>
+
 </web-app>
