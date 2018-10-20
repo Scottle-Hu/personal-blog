@@ -67,6 +67,7 @@ public class EssayServiceImpl implements IEssayService {
             Essay essay = essayList.get(0);
             //设置显示时间
             essay.setPublishTimeStr(dateFormat.format(essay.getPublishTime()));
+            essay.setTitle(essay.getTitle().replace("<", "&lt;").replace(">", "&gt;"));
             return essay;
         }
         return null;
@@ -312,6 +313,7 @@ public class EssayServiceImpl implements IEssayService {
         essayList.forEach(essay -> {
             essay.setPublishTimeStr(dateFormat.format(essay.getPublishTime()));
             essay.setUpdateTimeStr(dateFormat.format(essay.getUpdateTime()));
+            essay.setTitle(essay.getTitle().replace("<", "&lt;").replace(">", "&gt;"));
             String pre = essay.getText();
             if (pre.length() > 100) {
                 essay.setText(pre.substring(0, 100));

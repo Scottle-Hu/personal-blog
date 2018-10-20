@@ -132,6 +132,7 @@ public class BlogServiceImpl implements IBlogService {
             Blog blog = blogs.get(0);
             //设置显示日期格式
             blog.setPublishTimeStr(dateFormat.format(blog.getPublishTime()));
+            blog.setTitle(blog.getTitle().replace("<", "&lt;").replace(">", "&gt;"));
             return blog;
         }
         return null;
@@ -411,6 +412,7 @@ public class BlogServiceImpl implements IBlogService {
         blogList.forEach(blog -> {
             blog.setPublishTimeStr(dateFormat.format(blog.getPublishTime()));
             blog.setUpdateTimeStr(dateFormat.format(blog.getUpdateTime()));
+            blog.setTitle(blog.getTitle().replace("<", "&lt;").replace(">", "&gt;"));
             if (!StringUtils.isEmpty(blog.getImgUrlList())) {
                 List<String> imgList = Arrays.asList(blog.getImgUrlList().split("\\|"));
                 blog.setImgUrls(imgList.subList(0, Math.min(MAX_PREVIEW_IMG_NUM, imgList.size())));
