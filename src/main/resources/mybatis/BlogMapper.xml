@@ -92,4 +92,8 @@
       UPDATE blog SET scan_num = scan_num + 1 WHERE id=#{id}
     </update>
 
+    <select id="findIdsByCategoryId" resultMap="stringMap" parameterType="Integer">
+      SELECT id FROM blog WHERE category_id=#{categoryId}
+    </select>
+
 </mapper>

@@ -36,6 +36,8 @@ public interface BlogDao {
     @Deprecated
     int countByCategoryId(int categoryId);
 
+    List<String> findIdsByCategoryId(int categoryId);
+
     /**
      * 获取当前最大的id
      * 因为数据库为空时会有问题，不能直接返回int
