@@ -60,7 +60,9 @@
                 /back/blog=authc
                 /back/essay=authc
                 /back/publish=authc
+                /back/edit=authc
                 /back/category=authc
+                /back/category/edit=authc
                 /back/about=authc
                 /back/message=authc
                 /back/account=authc

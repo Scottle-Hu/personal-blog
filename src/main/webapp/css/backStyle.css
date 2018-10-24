@@ -269,7 +269,7 @@ body {
 }
 
 .add-category-div {
-    position: absolute;
+    position: fixed;
     left: 40%;
     top: 40%;
     padding: 10px;
@@ -301,6 +301,22 @@ body {
 }
 
 .add-category-div #category-add-quit-btn {
+    width: 80px;
+    height: 30px;
+    background: red;
+    color: white;
+    border: none;
+}
+
+.add-category-div #category-edit-btn {
+    width: 80px;
+    height: 30px;
+    background: black;
+    color: white;
+    border: none;
+}
+
+.add-category-div #category-edit-quit-btn {
     width: 80px;
     height: 30px;
     background: red;

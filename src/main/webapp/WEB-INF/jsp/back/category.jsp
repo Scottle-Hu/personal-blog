@@ -57,7 +57,9 @@
                     <td>${category.blogNum }</td>
                     <td>
                         <button type="button" class="op-delete op-btn" opid="${category.category.id }">delete</button>
-                        <button type="button" class="op-edit op-btn" opid="${category.category.id }">edit</button>
+                        <button type="button" class="op-edit op-btn" opid="${category.category.id }"
+                                opname="${category.category.name }">edit
+                        </button>
                     </td>
                 </tr>
             </c:forEach>
@@ -65,8 +67,8 @@
         <br/>
         <button type="button" class="op-add op-btn">add</button>
 
-        <%--悬浮层--%>
-        <div class="add-category-div">
+        <%--添加悬浮层--%>
+        <div class="add-category-div add-category">
             <form method="post" action="category" id="category-add-form">
                 <input type="text" name="name" id="category-name" placeholder="category name"/>
                 <br/><br/>
@@ -75,16 +77,37 @@
             </form>
         </div>
 
+        <%--修改悬浮层--%>
+        <div class="add-category-div edit-category">
+            <form method="post" action="category/edit" id="category-edit-form">
+                <input type="hidden" name="id" id="category-id"/>
+                <input type="text" name="name" id="edit-category-name" placeholder="category name"/>
+                <br/><br/>
+                <input type="button" value="update" id="category-edit-btn"/>
+                <input type="button" value="quit" id="category-edit-quit-btn"/>
+            </form>
+        </div>
+
         <script type="application/javascript" src="../js/jquery.min.js"></script>
         <script type="application/javascript">
             $(document).ready(function () {
                 $(".add-category-div").hide();
                 $(".op-add").click(function () {
-                    $(".add-category-div").show();
+                    $(".add-category").show();
+                });
+                $(".op-edit").click(function () {
+                    var oldName = $(this).attr('opname');
+                    $("#edit-category-name").val(oldName);
+                    var id = $(this).attr("opid");
+                    $("#category-id").val(id);
+                    $(".edit-category").show();
                 });
                 $("#category-add-quit-btn").click(function () {
                     $("#category-name").val("");  //清空输入框
-                    $(".add-category-div").hide();
+                    $(".add-category").hide();
+                });
+                $("#category-edit-quit-btn").click(function () {
+                    $(".edit-category").hide();
                 });
                 $("#category-add-btn").click(function () {
                     var name = $("#category-name").val();
@@ -93,6 +116,14 @@
                         return false;
                     }
                     $("#category-add-form").submit();
+                });
+                $("#category-edit-btn").click(function () {
+                    var name = $("#edit-category-name").val();
+                    if (name == "") {
+                        alert("category name is blank!");
+                        return false;
+                    }
+                    $("#category-edit-form").submit();
                 });
                 //删除
                 $(".op-delete").click(function () {

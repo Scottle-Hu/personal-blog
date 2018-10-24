@@ -142,6 +142,69 @@ public class BackController {
     }
 
     /**
+     * 前往编辑文章界面
+     *
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/edit", method = RequestMethod.GET)
+    public String editArticlePage(HttpServletRequest request) {
+        try {
+            String type = request.getParameter("type");
+            String idStr = request.getParameter("id");
+            int id = Integer.parseInt(idStr);  //解析失败（为空或者非数字）直接抛异常
+            if (BlogConstant.BLOG_TYPE.equals(type)) {
+                request.setAttribute("type", 0);
+                Blog blog = blogService.findBlogById(id);
+                if (blog == null) {
+                    log.warn("try to edit nonexist blog, id=" + id);
+                    throw new Exception("no such blog");
+                }
+                request.setAttribute("blog", blog);
+            } else if (BlogConstant.ESSAY_TYPE.equals(type)) {
+                request.setAttribute("type", 1);
+                Essay essay = essayService.findById(id);
+                if (essay == null) {
+                    log.warn("try to edit nonexist essay. id=" + id);
+                    throw new Exception("no such essay");
+                }
+                request.setAttribute("essay", essay);
+            } else {
+                log.warn("unknown type + " + type);
+            }
+        } catch (Exception e) {
+            log.error("error set edit page.", e);
+        }
+        return "back/edit";
+    }
+
+    /**
+     * 编辑文章的提交
+     *
+     * @return
+     */
+    @RequestMapping(value = "/edit", method = RequestMethod.POST)
+    public String editArticle(HttpServletRequest request) {
+        try {
+            String type = request.getParameter("type");
+            String idStr = request.getParameter("id");
+            String title = request.getParameter("title");
+            if (BlogConstant.BLOG_TYPE.equals(type)) {
+//                sfsdgasgagf
+                return blogListPage(request);
+            } else if (BlogConstant.ESSAY_TYPE.equals(type)) {
+
+                return essayListPage(request);
+            } else {
+                log.warn("unknown type, type=" + type);
+            }
+        } catch (Exception e) {
+            log.error("error update article.", e);
+        }
+        return null;
+    }
+
+    /**
      * 提交发布的文章并返回文章列表页面
      *
      * @param request
@@ -330,6 +393,27 @@ public class BackController {
             log.error("error when add category.", e);
         }
         return categoryPage(request);
+    }
+
+    /**
+     * 修改类别名称
+     *
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/category/edit", method = RequestMethod.POST)
+    public String editCategory(HttpServletRequest request, Category category) {
+        try {
+            checkNotNull(category);
+            if (category.getId() <= 0) {
+                throw new ParameterMissingException("miss category name");
+            }
+            checkNotNull(category.getName());
+            categoryService.updateCategory(category);
+        } catch (Exception e) {
+            log.error("error update category name.", e);
+        }
+        return "redirect:/back/category";
     }
 
     @RequestMapping("/delete")

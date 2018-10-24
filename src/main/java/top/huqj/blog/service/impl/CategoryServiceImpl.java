@@ -10,6 +10,7 @@ import top.huqj.blog.model.Category;
 import top.huqj.blog.model.ext.CategoryAndBlogNum;
 import top.huqj.blog.service.ICategoryService;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -55,7 +56,11 @@ public class CategoryServiceImpl implements ICategoryService {
 
     @Override
     public void updateCategory(Category category) {
-
+        if (category == null) {
+            return;
+        }
+        category.setUpdateTime(new Date(System.currentTimeMillis()));
+        categoryDao.updateOne(category);
     }
 
     @Override
