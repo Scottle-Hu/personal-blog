@@ -96,4 +96,10 @@
       SELECT id FROM blog WHERE category_id=#{categoryId}
     </select>
 
+    <update id="updateOne" parameterType="Blog">
+        UPDATE blog SET title=#{title}, update_time=#{updateTime}, text=#{text},
+        html_content=#{htmlContent}, category_id=#{categoryId}, tags=#{tag}, md_content=#{mdContent},
+        img_urls=#{imgUrlList} WHERE id=#{id}
+    </update>
+
 </mapper>

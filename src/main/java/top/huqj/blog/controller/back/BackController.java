@@ -19,6 +19,7 @@ import top.huqj.blog.model.Essay;
 import top.huqj.blog.model.back.Admin;
 import top.huqj.blog.model.ext.CategoryAndBlogNum;
 import top.huqj.blog.service.*;
+import top.huqj.blog.utils.MarkDownUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
@@ -153,6 +154,7 @@ public class BackController {
             String type = request.getParameter("type");
             String idStr = request.getParameter("id");
             int id = Integer.parseInt(idStr);  //解析失败（为空或者非数字）直接抛异常
+            request.setAttribute("id", id);
             if (BlogConstant.BLOG_TYPE.equals(type)) {
                 request.setAttribute("type", 0);
                 Blog blog = blogService.findBlogById(id);
@@ -161,6 +163,7 @@ public class BackController {
                     throw new Exception("no such blog");
                 }
                 request.setAttribute("blog", blog);
+                request.setAttribute("categoryList", categoryDao.findAll());
             } else if (BlogConstant.ESSAY_TYPE.equals(type)) {
                 request.setAttribute("type", 1);
                 Essay essay = essayService.findById(id);
@@ -186,14 +189,54 @@ public class BackController {
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public String editArticle(HttpServletRequest request) {
         try {
+            int editType = BlogConstant.BLOG_TYPE_HTML;  //TODO 编辑方式，目前只支持html
             String type = request.getParameter("type");
             String idStr = request.getParameter("id");
+            int id = Integer.parseInt(idStr);
             String title = request.getParameter("title");
+            checkNotNull(title);
+            String htmlContent = null;
+            String text = null;
+            String mdContent = null;
+            if (editType == BlogConstant.BLOG_TYPE_HTML) {
+                htmlContent = request.getParameter("htmlContent");
+                text = request.getParameter("text");
+            } else if (editType == BlogConstant.BLOG_TYPE_MD) {
+                mdContent = request.getParameter("mdContent");
+                htmlContent = MarkDownUtil.md2html(mdContent);
+                text = MarkDownUtil.md2text(mdContent);
+            } else {
+                log.warn("unknown edit type: " + editType);
+                throw new Exception("unknown edit type.");
+            }
+            checkNotNull(htmlContent);
+            checkNotNull(text);
             if (BlogConstant.BLOG_TYPE.equals(type)) {
-//                sfsdgasgagf
+                Blog blog = new Blog();
+                blog.setId(id);
+                blog.setTitle(title);
+                blog.setHtmlContent(htmlContent);
+                blog.setText(text);
+                blog.setMdContent(mdContent);
+                String categoryIdStr = request.getParameter("categoryId");
+                checkNotNull(categoryIdStr);
+                blog.setCategoryId(Integer.parseInt(categoryIdStr));
+                String tag = request.getParameter("tag");
+                checkNotNull(tag);
+                blog.setTag(tag);
+                String isRecommend = request.getParameter("isRecommend");
+                checkNotNull(isRecommend);
+                blog.setRecommend(Boolean.parseBoolean(isRecommend));
+                blogService.updateOne(blog);
                 return blogListPage(request);
             } else if (BlogConstant.ESSAY_TYPE.equals(type)) {
-
+                Essay essay = new Essay();
+                essay.setId(id);
+                essay.setTitle(title);
+                essay.setHtmlContent(htmlContent);
+                essay.setText(text);
+                essay.setMdContent(mdContent);
+                essayService.updateOne(essay);
                 return essayListPage(request);
             } else {
                 log.warn("unknown type, type=" + type);

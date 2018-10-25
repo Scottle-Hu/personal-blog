@@ -117,7 +117,11 @@
                         window.location.href = "delete?type=blog&id=" + id;
                     }
                 });
-
+                //编辑
+                $(".op-edit").click(function () {
+                    var id = $(this).attr("opid");
+                    window.location.href = "edit?type=blog&id=" + id;
+                });
             });
 
             //画分页

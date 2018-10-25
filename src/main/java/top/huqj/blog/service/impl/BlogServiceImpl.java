@@ -19,8 +19,10 @@ import top.huqj.blog.service.IBlogService;
 import top.huqj.blog.utils.MarkDownUtil;
 
 import javax.annotation.PostConstruct;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author huqj
@@ -133,6 +135,8 @@ public class BlogServiceImpl implements IBlogService {
             //设置显示日期格式
             blog.setPublishTimeStr(dateFormat.format(blog.getPublishTime()));
             blog.setTitle(blog.getTitle().replace("<", "&lt;").replace(">", "&gt;"));
+            //设置是否是推荐博客,只有这一个地方设置了该属性！！！
+            blog.setRecommend(redisManager.getListValues(recommendBlogIdSetKey).contains(String.valueOf(blog.getId())));
             return blog;
         }
         return null;
@@ -292,7 +296,22 @@ public class BlogServiceImpl implements IBlogService {
                 break;
             }
             case UPDATE: {
-                //TODO
+                if (redisManager.getListValues(recommendBlogIdSetKey).contains(String.valueOf(blog.getId()))) {
+                    if (!blog.isRecommend()) {
+                        //原来是推荐文章，现在不是
+                        List<String> list = redisManager.getListValues(recommendBlogIdSetKey);
+                        list = list.stream().filter(_id -> {
+                            return !_id.equals(String.valueOf(blog.getId()));
+                        }).collect(Collectors.toList());
+                        redisManager.deleteListAllValue(recommendBlogIdSetKey);
+                        redisManager.addListValueBatch(recommendBlogIdSetKey, list);
+                    }
+                } else {
+                    if (blog.isRecommend()) {
+                        //原来不是推荐文章，现在是
+                        redisManager.addList(recommendBlogIdSetKey, String.valueOf(blog.getId()));
+                    }
+                }
                 break;
             }
         }
@@ -652,6 +671,33 @@ public class BlogServiceImpl implements IBlogService {
             }
         } catch (Exception e) {
             log.error("error when update scan num.", e);
+        }
+    }
+
+    @Override
+    public void updateOne(Blog blog) {
+        Blog old = findBlogById(blog.getId());
+        if (old == null) {
+            log.warn("try to update nonexist blog.");
+            return;
+        }
+        blog.setUpdateTime(new Timestamp(System.currentTimeMillis()));
+        blog.setImgUrlList(extractImgUrls(blog));
+        blogDao.updateOne(blog);
+        //更新redis
+        updateTopBlog(blog, BlogUpdateOperation.UPDATE);
+        int oldCid = old.getCategory().getId();
+        int newCid = blog.getCategoryId();
+        if (oldCid != newCid) {
+            //类别发生变化就更新
+            String oldKey = category2BlogIdsKeyPrefix + oldCid;
+            List<String> list = redisManager.getListValues(oldKey);
+            list = list.stream().filter(id -> {
+                return !id.equals(String.valueOf(blog.getId()));
+            }).collect(Collectors.toList());
+            redisManager.deleteListAllValue(oldKey);
+            redisManager.addListValueBatch(oldKey, list);
+            redisManager.addList(category2BlogIdsKeyPrefix + newCid, String.valueOf(blog.getId()));
         }
     }
 

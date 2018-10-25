@@ -95,11 +95,7 @@ public class RedisManager {
      * @return
      */
     public List<String> getListValues(String key) {
-        Long len = jedis.llen(key);
-        if (len == 0) {
-            return Collections.emptyList();
-        }
-        return jedis.lrange(key, 0, len);
+        return jedis.lrange(key, 0, -1);
     }
 
     /**

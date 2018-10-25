@@ -128,4 +128,9 @@ public interface IBlogService {
      */
     void scanOnce(int id);
 
+    /**
+     * 更新编辑
+     */
+    void updateOne(Blog blog);
+
 }

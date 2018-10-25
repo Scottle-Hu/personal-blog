@@ -52,4 +52,9 @@
         UPDATE essay SET scan_num = scan_num + 1 WHERE id=#{id}
     </update>
 
+    <update id="updateOne" parameterType="Essay">
+      UPDATE essay SET title=#{title}, update_time=#{updateTime},html_content=#{htmlContent},
+      text=#{text}, md_content=#{mdContent} WHERE id=#{id}
+    </update>
+
 </mapper>

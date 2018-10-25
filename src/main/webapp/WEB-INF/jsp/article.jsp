@@ -5,8 +5,7 @@
     <meta charset="UTF-8"/>
     <title><c:if test="${type == 0 }">${blog.title }</c:if><c:if
             test="${type == 1 }">${essay.title }</c:if>_胡启军个人博客</title>
-    <meta name="keywords" content="胡启军,个人博客,技术博客，胡启军_技术"/>
-    <meta name="description" content="Hello，这里是胡启军的个人技术博客，记录一些技术学习、探索和思考，以及一些日常随笔，欢迎访问~"/>
+    <meta name="keywords" content="胡启军,个人博客,技术博客, ${blog.title }"/>
     <link rel="stylesheet" href="css/style.css"/>
 </head>
 <body>

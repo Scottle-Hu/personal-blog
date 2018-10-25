@@ -188,6 +188,7 @@ public class EssayServiceImpl implements IEssayService {
 
     @Override
     public synchronized void updateOne(Essay essay) {
+        essay.setUpdateTime(new Timestamp(System.currentTimeMillis()));
         essayDao.updateOne(essay);
     }
 
