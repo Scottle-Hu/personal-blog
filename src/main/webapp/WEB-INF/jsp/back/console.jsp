@@ -40,8 +40,14 @@
             </a>
         </ul>
     </div>
-    <div class="main-board">
-        HEllo I am Main board!
+    <div class="main-board" style="width: 50%;">
+        <h2>Console Board</h2>
+        <hr/>
+        <ul>
+            <li>total blog num: ${totalBlogNum }</li>
+            <li>total essay num: ${totalEssayNum }</li>
+            <li>total category num: ${totalCategoryNum }</li>
+        </ul>
     </div>
 </div>
 </body>

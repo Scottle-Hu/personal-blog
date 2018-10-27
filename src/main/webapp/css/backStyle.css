@@ -91,7 +91,7 @@ body {
 }
 
 .left-menu {
-    position: relative;
+    position: fixed;
     float: left;
     background: green;
     width: 150px;
@@ -103,6 +103,7 @@ body {
     height: auto;
     padding: 20px;
     float: left;
+    margin-left: 150px;
 }
 
 #current {

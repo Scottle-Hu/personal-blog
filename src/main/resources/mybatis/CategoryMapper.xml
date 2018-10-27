@@ -32,4 +32,8 @@
         SELECT id, `name` FROM category
     </select>
 
+    <select id="count" resultType="Integer">
+      SELECT COUNT(*) FROM category
+    </select>
+
 </mapper>

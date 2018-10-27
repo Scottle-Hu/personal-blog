@@ -99,7 +99,13 @@ public class BackController {
 
     @RequestMapping("/console")
     public String consolePage(HttpServletRequest request) {
-        //TODO
+        try {
+            request.setAttribute("totalBlogNum", blogService.count());
+            request.setAttribute("totalEssayNum", essayService.count());
+            request.setAttribute("totalCategoryNum", categoryDao.count());
+        } catch (Exception e) {
+            log.error("error set console page.", e);
+        }
         return "back/console";
     }
 

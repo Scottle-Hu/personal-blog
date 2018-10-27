@@ -131,7 +131,7 @@
                 <input type="hidden" name="isRecommend" id="isRecommend"/>
                 <script type="text/plain" id="myEditor" style="width:1000px;height:500px;">${blog.htmlContent }</script>
                 <br/><br/>
-                <input type="button" class="publish-article" value="Publish" id="publish-btn"/>
+                <input type="button" class="publish-article" value="Edit" id="publish-btn"/>
              </form>
         </c:if>
 
@@ -148,7 +148,7 @@
                 <input type="hidden" name="mdContent" id="mdContent-2"/>
                 <script type="text/plain" id="myEditor" style="width:1000px;height:500px;">${essay.htmlContent }</script>
                 <br/><br/>
-                <input type="button" class="publish-article" value="Publish" id="publish-btn-2"/>
+                <input type="button" class="publish-article" value="Edit" id="publish-btn-2"/>
             </form>
         </c:if>
 

@@ -19,4 +19,6 @@ public interface CategoryDao {
 
     List<Category> findAll();
 
+    int count();
+
 }
