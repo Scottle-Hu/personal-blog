@@ -7,6 +7,12 @@
             test="${type == 1 }">${essay.title }</c:if>_胡启军个人博客</title>
     <meta name="keywords" content="胡启军,个人博客,技术博客, ${blog.title }"/>
     <link rel="stylesheet" href="css/style.css"/>
+    <%--代码显示样式--%>
+    <link href="umeditor/third-party/SyntaxHighlighter/shCoreDefault.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="umeditor/third-party/SyntaxHighlighter/shCore.js"></script>
+    <script type="text/javascript">
+        SyntaxHighlighter.all();
+    </script>
 </head>
 <body>
 <div class="head">

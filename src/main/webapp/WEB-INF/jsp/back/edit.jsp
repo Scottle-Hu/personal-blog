@@ -5,12 +5,11 @@
     <title>Edit</title>
     <link rel="stylesheet" href="../css/backStyle.css"/>
 </head>
-<!-- um编辑器 -->
-<link href="../umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
-<script type="text/javascript" src="../umeditor/third-party/jquery.min.js"></script>
-<script type="text/javascript" src="../umeditor/third-party/template.min.js"></script>
-<script type="text/javascript" charset="utf-8" src="../umeditor/umeditor.config.js"></script>
-<script type="text/javascript" charset="utf-8" src="../umeditor/umeditor.min.js"></script>
+<!-- ue编辑器 -->
+<link href="../umeditor/themes/default/css/ueditor.css" type="text/css" rel="stylesheet">
+<script type="text/javascript" src="../umeditor/third-party/jquery-1.10.2.js"></script>
+<script type="text/javascript" charset="utf-8" src="../umeditor/ueditor.config.js"></script>
+<script type="text/javascript" charset="utf-8" src="../umeditor/ueditor.all.js"></script>
 <script type="text/javascript" src="../umeditor/lang/zh-cn/zh-cn.js"></script>
 <%--提交文章--%>
 <script type="application/javascript">
@@ -21,7 +20,7 @@
             var tag = $("#tag").val();
             $("#isRecommend").val($("#recommendCheckBox").prop("checked"));
             var isRecommend = $("#isRecommend").val();
-            $("#htmlContent").val($("#myEditor").html());
+            $("#htmlContent").val(um.getContent());
             $("#text").val(um.getContentTxt());
             var htmlContent = $("#htmlContent").val();
             var text = $("#text").val();
@@ -156,7 +155,7 @@
 </div>
 <script type="application/javascript">
     //实例化编辑器
-    var um = UM.getEditor('myEditor');
+    var um = UE.getEditor('myEditor');
 </script>
 </body>
 </html>
