@@ -49,8 +49,8 @@
             </div>
         </c:if>
         <c:if test="${type == 1 }">
-            <div class="by-date by">
-                <span><img src="image/byDate_icon.png"/><font class="mini-title">&nbsp;&nbsp;按随笔日期</font></span>
+            <div class="by-type by" style="margin-top:10px;">
+                <span><img src="image/byDate_icon.png"/><font class="mini-title">&nbsp;&nbsp;随笔日期</font></span>
                 <hr/>
                 <ul>
                     <c:forEach items="${monthList }" var="month">
