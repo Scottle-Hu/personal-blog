@@ -8,8 +8,11 @@
     <meta name="keywords" content="胡启军,个人博客,技术博客, ${blog.title }"/>
     <link rel="stylesheet" href="css/style.css"/>
     <%--代码显示样式--%>
-    <link href="umeditor/third-party/SyntaxHighlighter/shCoreDefault.css" rel="stylesheet" type="text/css" />
+    <link href="umeditor/third-party/SyntaxHighlighter/shCoreDefault.css" rel="stylesheet" type="text/css"/>
     <script type="text/javascript" src="umeditor/third-party/SyntaxHighlighter/shCore.js"></script>
+    <%--接入QQ登录--%>
+    <script type="text/javascript" src="http://qzonestyle.gtimg.cn/qzone/openapi/qc_loader.js"
+            data-appid="1107904871" charset="utf-8"></script>
     <script type="text/javascript">
         SyntaxHighlighter.all();
     </script>
@@ -133,6 +136,37 @@
         </c:if>
     </div>
     <div class="clear"></div>
+    <span id="qqLoginBtn"></span>
+    <script type="text/javascript">
+        QC.Login({
+            btnId: "qqLoginBtn"	//插入按钮的节点id
+        });
+
+        function getUserInfo() {
+            var paras = {};
+            if (QC.Login.check()) {//如果已登录
+                QC.Login.getMe(function (openId, accessToken) {
+                    console.log(["当前登录用户的", "openId为：" + openId, "accessToken为：" + accessToken].join("\n"));
+                    paras["openId"] = openId;
+                    paras["accessToken"] = accessToken;
+                });
+                //这里可以调用自己的保存接口
+                //...
+            }
+            QC.api("get_user_info", paras)
+                .success(function (s) {//成功回调
+                    alert("获取用户信息成功！当前用户昵称为：" + s.data.nickname);
+                })
+                .error(function (f) {//失败回调
+                    alert("获取用户信息失败！");
+                })
+                .complete(function (c) {//完成请求回调
+                    alert("获取用户信息完成！");
+                });
+        }
+    </script>
+    <a href="javascript:QC.Login.signOut();" style="margin-left:6px;">退出</a>
+    <a href="javascript:getUserInfo();" style="margin-left:6px;">getInfo</a>
 </div>
 <center>
     <footer class="footer">
