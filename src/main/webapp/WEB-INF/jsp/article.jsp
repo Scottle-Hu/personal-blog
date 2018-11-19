@@ -8,7 +8,7 @@
     <meta name="keywords" content="胡启军,个人博客,技术博客, ${blog.title }"/>
     <link rel="stylesheet" href="css/style.css"/>
     <%--代码显示样式--%>
-    <link href="umeditor/third-party/SyntaxHighlighter/shCoreDefault.css" rel="stylesheet" type="text/css" />
+    <link href="umeditor/third-party/SyntaxHighlighter/shCoreDefault.css" rel="stylesheet" type="text/css"/>
     <script type="text/javascript" src="umeditor/third-party/SyntaxHighlighter/shCore.js"></script>
     <script type="text/javascript">
         SyntaxHighlighter.all();
@@ -130,6 +130,26 @@
                 <br/>
                 <br/>
             </div>
+        </c:if>
+    </div>
+    <%--评论区--%>
+    <div class="remark-div">
+        <span class="latest-span"><img src="image/remark.png"/><font
+                class="mini-title">&nbsp;&nbsp;所有评论</font></span>
+        <div class="clear"></div>
+        <hr/>
+        <%--未登录--%>
+        <c:if test="${userInfo == null}">
+            您尚未登录！选择登录方式登陆后方可评论~&nbsp;&nbsp;&nbsp;&nbsp;
+            <img src="image/github_icon.jpg" alt="github" title="github" class="oauth-login-logo"
+                 onclick="javascript:window.location.href = 'https://github.com/login/oauth/authorize?client_id=7cc6cce09d315f877b82&redirect_uri=http%3a%2f%2flocalhost%3a8080%2foauth%2fgithub&state='+window.location.href;"/>
+        </c:if>
+        <%--已经登录，可以发表评论--%>
+        <c:if test="${userInfo != null}">
+            - <img src="${userInfo.iconUrl }" class="user-icon"
+                   onclick="javascript:window.location.href='${userInfo._3rdPartyHomeUrl }';"/>
+            <span class="username">&nbsp;&nbsp;${userInfo.username }</span>
+            <span style="color: gray;font-size: small;">&nbsp;&nbsp;&nbsp;&nbsp;【您已登录，欢迎评论~】</span>
         </c:if>
     </div>
     <div class="clear"></div>

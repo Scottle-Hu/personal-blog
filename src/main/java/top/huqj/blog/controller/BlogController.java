@@ -10,14 +10,19 @@ import top.huqj.blog.constant.BlogConstant;
 import top.huqj.blog.model.Blog;
 import top.huqj.blog.model.Category;
 import top.huqj.blog.model.Essay;
+import top.huqj.blog.model.UserInfo;
 import top.huqj.blog.service.IBlogService;
 import top.huqj.blog.service.ICategoryService;
 import top.huqj.blog.service.IEssayService;
+import top.huqj.blog.service.IUserInfoService;
+import top.huqj.blog.service.impl.RedisManager;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * 主控制器
@@ -36,6 +41,12 @@ public class BlogController {
 
     @Autowired
     private IEssayService essayService;
+
+    @Autowired
+    private RedisManager redisManager;
+
+    @Autowired
+    private IUserInfoService userInfoService;
 
     @Value("${maxBlogNumPerPage}")
     public int Blog_NUM_PER_PAGE;
@@ -136,6 +147,9 @@ public class BlogController {
     @RequestMapping("/article")
     public String articlePage(HttpServletRequest request) {
         try {
+            findUserInfoFromCookie(request).ifPresent(userInfo -> {
+                request.setAttribute("userInfo", userInfo);
+            });
             String articleId = request.getParameter("id");
             String type = request.getParameter("type");
             int id = -1;
@@ -325,6 +339,30 @@ public class BlogController {
             return month.substring(0, 4) + "年" + month.charAt(5) + "月";
         } else {
             return month.substring(0, 4) + "年" + month.substring(4, 6) + "月";
+        }
+    }
+
+    /**
+     * 根据cookie判断浏览者是否登录
+     *
+     * @param request
+     * @return
+     */
+    private Optional<UserInfo> findUserInfoFromCookie(HttpServletRequest request) {
+        UserInfo userInfo = null;
+        for (Cookie cookie : request.getCookies()) {
+            String cName = cookie.getName();
+            if (cName.equals(BlogConstant.OAUTH_SESSION_ID)) {
+                String userInfoId = redisManager.getString(cookie.getValue());
+                if (userInfoId != null) {
+                    userInfo = userInfoService.findById(userInfoId);
+                }
+            }
+        }
+        if (userInfo == null) {
+            return Optional.empty();
+        } else {
+            return Optional.of(userInfo);
         }
     }
 
