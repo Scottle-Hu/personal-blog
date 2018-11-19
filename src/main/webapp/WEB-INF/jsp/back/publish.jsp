@@ -53,7 +53,7 @@
         $("#publish-btn-2").click(function() {
             var title = $("#title-2").val();
             var publishTimeStr = $("#publishTimeStr-2").val();
-            $("#htmlContent-2").val($("#myEditor2").html());
+            $("#htmlContent-2").val(um2.getContent());
             $("#text-2").val(um2.getContentTxt());
             var htmlContent = $("#htmlContent-2").val();
             var text = $("#text-2").val();
