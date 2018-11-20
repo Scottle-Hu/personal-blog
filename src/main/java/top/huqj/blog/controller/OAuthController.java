@@ -16,6 +16,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
@@ -73,7 +74,7 @@ public class OAuthController {
             //取得code
             String code = request.getParameter("code");
             //登陆前想要前往的url
-            String originUrl = request.getParameter("state");
+            String originUrl = URLDecoder.decode(request.getParameter("state"), "utf-8");
             //请求access token
             String accessTokenUrl = GITHUB_ACCESS_TOKEN_URL_ + code;
             log.info("access token url: " + accessTokenUrl);
@@ -99,6 +100,30 @@ public class OAuthController {
                     + originUrl.substring(originUrl.indexOf("/", originUrl.indexOf("://") + 3));
         } catch (Exception e) {
             log.error("error when oauth with github.", e);
+        }
+        return "redirect:/index";
+    }
+
+    /**
+     * 退出登录
+     *
+     * @param request
+     * @return
+     */
+    @RequestMapping("/logout")
+    public String logout(HttpServletRequest request) {
+        try {
+            String originUrl = URLDecoder.decode(request.getParameter("originUrl"), "utf-8");
+            for (Cookie cookie : request.getCookies()) {
+                if (cookie.getName().equals(BlogConstant.OAUTH_SESSION_ID)) {
+                    redisManager.deleteListAllValue(cookie.getValue());
+                    break;
+                }
+            }
+            return "redirect:"
+                    + originUrl.substring(originUrl.indexOf("/", originUrl.indexOf("://") + 3));
+        } catch (Exception e) {
+            log.error("error logout.", e);
         }
         return "redirect:/index";
     }

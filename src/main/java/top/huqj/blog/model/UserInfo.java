@@ -59,7 +59,7 @@ public class UserInfo {
         userInfo.set_3rdParty(OAuthThirdParty.GITHUB);
         userInfo.setEmail(map.get("email"));
         userInfo.setIconUrl(map.get("avatar_url"));
-        userInfo.set_3rdPartyHomeUrl(map.get("url"));
+        userInfo.set_3rdPartyHomeUrl(map.get("html_url"));
         return userInfo;
     }
 

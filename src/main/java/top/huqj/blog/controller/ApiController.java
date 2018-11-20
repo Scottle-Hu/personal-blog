@@ -4,18 +4,24 @@ import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import top.huqj.blog.constant.BlogConstant;
 import top.huqj.blog.model.Blog;
+import top.huqj.blog.model.Remark;
+import top.huqj.blog.model.UserInfo;
 import top.huqj.blog.service.IBlogService;
 import top.huqj.blog.service.IEssayService;
+import top.huqj.blog.service.IRemarkService;
+import top.huqj.blog.service.IUserInfoService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLDecoder;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +53,14 @@ public class ApiController {
 
     @Autowired
     private IEssayService essayService;
+
+    @Autowired
+    private IRemarkService remarkService;
+
+    @Autowired
+    private IUserInfoService userInfoService;
+
+    private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @RequestMapping("/blog/page")
     public Object getTotalPage(HttpServletRequest request) {
@@ -190,6 +204,36 @@ public class ApiController {
     }
 
     /**
+     * 用于ajax获取某篇博文章的评论列表，以html格式返回
+     *
+     * @param request
+     * @param response
+     */
+    @RequestMapping("/remarks")
+    public void writeRemarksByArticle(HttpServletRequest request, HttpServletResponse response) {
+        OutputStream out = null;
+        try {
+            String articleId = request.getParameter("articleId");
+            if (!StringUtils.isEmpty(articleId)) {
+                List<Remark> remarkList = remarkService.findByArticleId(Integer.parseInt(articleId));
+                out = response.getOutputStream();
+                out.write(buildRemarkListHtml(remarkList).getBytes("utf-8"));
+                out.flush();
+            }
+        } catch (Exception e) {
+            log.error("error find remarks.", e);
+        } finally {
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    log.error("error when close output stream.", e);
+                }
+            }
+        }
+    }
+
+    /**
      * 根据查询出来的博客列表画出html标签并返回给ajax请求
      * 示例见下面的注释
      *
@@ -235,6 +279,46 @@ public class ApiController {
             result.append(blog.getScanNum());
             result.append("）</small><hr/></div></a></li>\n");
         }
+        return result.toString();
+    }
+
+    /**
+     * 根据某篇文章的评论列表画出html代码
+     *
+     * @param remarkList
+     * @return
+     */
+    /*
+    <li>
+        <a href="http://www.baidu.com" target="_blank">
+            <img src="image/github_icon.jpg"/>&nbsp;&nbsp;Scottle-Hu
+        </a>
+        &nbsp;&nbsp;
+        <small>2018-11-20 12:34:34</small>
+        <br/>
+        <div>好文章！赞一个~~测试测试钱钱钱钱钱大幅上涨的gasgas</div>
+    </li>
+     */
+    private String buildRemarkListHtml(List<Remark> remarkList) {
+        StringBuilder result = new StringBuilder();
+        remarkList.forEach(remark -> {
+            UserInfo userInfo = userInfoService.findById(remark.getObserverId());
+            if (userInfo != null) {
+                result.append("<li>");
+                result.append("<a href=\"");
+                result.append(userInfo.get_3rdPartyHomeUrl());
+                result.append("\" target=\"_blank\"><img src=\"");
+                result.append(userInfo.getIconUrl());
+                result.append("\" />&nbsp;&nbsp;");
+                result.append(userInfo.getUsername());
+                result.append("</a>&nbsp;&nbsp;<small>");
+                result.append(dateFormat.format(remark.getPublishTime()));
+                result.append("</small><br/><div>");
+                result.append(remark.getContent());
+                result.append("</div>");
+                result.append("</li>");
+            }
+        });
         return result.toString();
     }
 
