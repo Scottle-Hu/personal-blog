@@ -6,18 +6,23 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import top.huqj.blog.constant.BlogConstant;
-import top.huqj.blog.model.Blog;
-import top.huqj.blog.model.Category;
-import top.huqj.blog.model.Essay;
-import top.huqj.blog.service.IBlogService;
-import top.huqj.blog.service.ICategoryService;
-import top.huqj.blog.service.IEssayService;
+import top.huqj.blog.exception.ParameterMissingException;
+import top.huqj.blog.model.*;
+import top.huqj.blog.service.*;
+import top.huqj.blog.service.impl.RedisManager;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * 主控制器
@@ -36,6 +41,15 @@ public class BlogController {
 
     @Autowired
     private IEssayService essayService;
+
+    @Autowired
+    private RedisManager redisManager;
+
+    @Autowired
+    private IUserInfoService userInfoService;
+
+    @Autowired
+    private IRemarkService remarkService;
 
     @Value("${maxBlogNumPerPage}")
     public int Blog_NUM_PER_PAGE;
@@ -136,6 +150,9 @@ public class BlogController {
     @RequestMapping("/article")
     public String articlePage(HttpServletRequest request) {
         try {
+            findUserInfoFromCookie(request).ifPresent(userInfo -> {
+                request.setAttribute("userInfo", userInfo);
+            });
             String articleId = request.getParameter("id");
             String type = request.getParameter("type");
             int id = -1;
@@ -306,6 +323,45 @@ public class BlogController {
     }
 
     /**
+     * 发表评论
+     *
+     * @param request
+     */
+    @RequestMapping(value = "/remark", method = RequestMethod.POST)
+    public void publishRemark(HttpServletRequest request, HttpServletResponse response) {
+        OutputStream out = null;
+        try {
+            Optional<UserInfo> userInfoOptional = findUserInfoFromCookie(request);
+            if (userInfoOptional.isPresent()) {
+                String articleId = request.getParameter("articleId");
+                checkNotNull(articleId);
+                String content = request.getParameter("content");
+                checkNotNull(content);
+                Remark remark = new Remark();
+                remark.setArticleId(Integer.parseInt(articleId));
+                remark.setContent(content);
+                remark.setObserverId(userInfoOptional.get().getId());
+                remark.setPublishTime(new Timestamp(System.currentTimeMillis()));
+                remarkService.insert(remark);
+                out = response.getOutputStream();
+                //给ajax回应，否则ajax以为是404!!
+                out.write("ok".getBytes("utf-8"));
+                out.flush();
+            }
+        } catch (Exception e) {
+            log.error("error publish remark.", e);
+        } finally {
+            try {
+                if (out != null) {
+                    out.close();
+                }
+            } catch (IOException e) {
+                log.error("error close out.", e);
+            }
+        }
+    }
+
+    /**
      * 用于跳转到home
      *
      * @return
@@ -325,6 +381,50 @@ public class BlogController {
             return month.substring(0, 4) + "年" + month.charAt(5) + "月";
         } else {
             return month.substring(0, 4) + "年" + month.substring(4, 6) + "月";
+        }
+    }
+
+    /**
+     * 根据cookie判断浏览者是否登录
+     *
+     * @param request
+     * @return
+     */
+    private Optional<UserInfo> findUserInfoFromCookie(HttpServletRequest request) {
+        if (request == null) {
+            return Optional.empty();
+        }
+        UserInfo userInfo = null;
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null || cookies.length == 0) {
+            return Optional.empty();
+        }
+        for (Cookie cookie : cookies) {
+            String cName = cookie.getName();
+            if (cName.equals(BlogConstant.OAUTH_SESSION_ID)) {
+                String userInfoId = redisManager.getString(cookie.getValue());
+                if (userInfoId != null) {
+                    userInfo = userInfoService.findById(userInfoId);
+                }
+            }
+        }
+        if (userInfo == null) {
+            return Optional.empty();
+        } else {
+            return Optional.of(userInfo);
+        }
+    }
+
+    /**
+     * 检查必要参数是否为空，若是则抛出异常
+     *
+     * @param t
+     * @param <T>
+     * @throws ParameterMissingException
+     */
+    private <T> void checkNotNull(T t) throws ParameterMissingException {
+        if (t == null) {
+            throw new ParameterMissingException("neccessary parameter missed.");
         }
     }
 

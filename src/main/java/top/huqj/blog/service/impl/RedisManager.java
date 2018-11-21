@@ -158,5 +158,13 @@ public class RedisManager {
         jedis.hdel(hashName, key);
     }
 
+    public void setWithExpireTime(String keyName, String value, int expire) {
+        jedis.set(keyName, value);
+        jedis.expire(keyName, expire);
+    }
+
+    public String getString(String key) {
+        return jedis.get(key);
+    }
 
 }

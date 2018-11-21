@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.huqj.blog.dao.UserInfoDao">
+
+    <resultMap type="UserInfo" id="userInfoMap">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="realName" column="real_name"/>
+        <result property="iconUrl" column="icon_url"/>
+        <result property="_3rdPartyHomeUrl" column="home_url"/>
+        <result property="_3rdParty" column="third_party"/>
+        <result property="email" column="email"/>
+    </resultMap>
+
+    <select id="findById" parameterType="java.lang.String" resultMap="userInfoMap">
+        SELECT * FROM userInfo WHERE id=#{_param}
+    </select>
+
+    <insert id="insertOne" parameterType="UserInfo">
+        INSERT INTO userInfo VALUES (#{id},#{username},#{realName},#{email},#{iconUrl},#{_3rdPartyHomeUrl},#{_3rdParty})
+    </insert>
+
+    <select id="count" resultType="Integer">
+        SELECT COUNT(*) FROM userInfo;
+    </select>
+
+    <select id="countById" resultType="Integer" parameterType="String">
+        SELECT COUNT(*) FROM userInfo WHERE id=#{_param};
+    </select>
+
+</mapper>

@@ -8,10 +8,17 @@
     <meta name="keywords" content="胡启军,个人博客,技术博客, ${blog.title }"/>
     <link rel="stylesheet" href="css/style.css"/>
     <%--代码显示样式--%>
-    <link href="umeditor/third-party/SyntaxHighlighter/shCoreDefault.css" rel="stylesheet" type="text/css" />
+    <link href="umeditor/third-party/SyntaxHighlighter/shCoreDefault.css" rel="stylesheet" type="text/css"/>
     <script type="text/javascript" src="umeditor/third-party/SyntaxHighlighter/shCore.js"></script>
+    <script type="application/javascript" src="js/jquery.min.js"></script>
     <script type="text/javascript">
         SyntaxHighlighter.all();
+        var id;
+        $(document).ready(function () {
+            var url = window.location.href;
+            id = url.substring(url.indexOf("id=") + 3, url.length);
+            getRemarks(id);
+        });
     </script>
 </head>
 <body>
@@ -106,12 +113,12 @@
                 <br/>
                 <b>上一篇:</b><c:if test="${previousBlog != null }">
                 <a href="article?id=${previousBlog.id }">${previousBlog.title }</a></c:if>
-                <c:if test="${previousBlog == null }"><a href="#" disabled="true">没有了</a></c:if>
+                <c:if test="${previousBlog == null }"><a disabled="true">没有了</a></c:if>
                 <br/>
                 <br/>
                 <b>下一篇:</b><c:if test="${nextBlog != null }">
                 <a href="article?id=${nextBlog.id }">${nextBlog.title }</a></c:if>
-                <c:if test="${nextBlog == null }"><a href="#" disabled="true">没有了</a></c:if>
+                <c:if test="${nextBlog == null }"><a disabled="true">没有了</a></c:if>
                 <br/>
                 <br/>
             </div>
@@ -121,16 +128,98 @@
                 <br/>
                 <b>上一篇:</b><c:if test="${previousEssay != null }">
                 <a href="article?type=essay&id=${previousEssay.id }">${previousEssay.title }</a></c:if>
-                <c:if test="${previousEssay == null }"><a href="#" disabled="true">没有了</a></c:if>
+                <c:if test="${previousEssay == null }"><a disabled="true">没有了</a></c:if>
                 <br/>
                 <br/>
                 <b>下一篇:</b><c:if test="${nextEssay != null }">
                 <a href="article?type=essay&id=${nextEssay.id }">${nextEssay.title }</a></c:if>
-                <c:if test="${nextEssay == null }"><a href="#" disabled="true">没有了</a></c:if>
+                <c:if test="${nextEssay == null }"><a disabled="true">没有了</a></c:if>
                 <br/>
                 <br/>
             </div>
         </c:if>
+    </div>
+    <%--评论区--%>
+    <div class="remark-div">
+        <span class="latest-span"><img src="image/remark.png"/><font
+                class="mini-title">&nbsp;&nbsp;所有评论</font></span>
+        <div class="clear"></div>
+        <hr/>
+        <%--未登录--%>
+        <c:if test="${userInfo == null}">
+            您尚未登录！选择登录方式登录后方可评论~&nbsp;&nbsp;&nbsp;&nbsp;
+            <img src="image/github_icon.jpg" alt="github" title="github" class="oauth-login-logo"
+                 onclick="javascript:window.location.href = 'https://github.com/login/oauth/authorize?client_id=7cc6cce09d315f877b82&redirect_uri=http%3a%2f%2fwww.huqj.top%2foauth%2fgithub&state='+UrlEncode(window.location.href);"/>
+        </c:if>
+        <%--已经登录，可以发表评论--%>
+        <c:if test="${userInfo != null}">
+            - <img src="${userInfo.iconUrl }" class="user-icon"
+                   onclick="javascript:window.location.href='${userInfo._3rdPartyHomeUrl }';"/>
+            <span class="username">&nbsp;&nbsp;${userInfo.username }</span>
+            <span style="color: gray;font-size: small;">&nbsp;&nbsp;&nbsp;&nbsp;【您已登录，欢迎评论~】
+                <a style="cursor: pointer;text-decoration: underline;color: blue;"
+                   onclick="javascript:window.location.href='/oauth/logout?originUrl='+UrlEncode(window.location.href);">退出登录</a>
+            </span>
+            <br/><br/>
+            <textarea id="remark-text"></textarea>
+            <br/>
+            <button type="button" class="remark-btn" onclick="publishRemark()">发表评论</button>
+        </c:if>
+        <hr/>
+        <%--评论数据--%>
+        <ul class="remark-list"></ul>
+        <script type="application/javascript">
+            //获取评论html
+            function getRemarks(id) {
+                $.ajax(
+                    {
+                        url: "/api/remarks?articleId=" + id,
+                        type: 'json',
+                        method: "GET",
+                        success: function (res) {
+                            //结果是一部分html标签
+                            $(".remark-list").html(res);
+                        },
+                        error: function () {
+                            console.error("error when send ajax request to get remarks.")
+                            alert("评论信息请求失败！");
+                        }
+                    }
+                );
+            }
+
+            //发表评论
+            function publishRemark() {
+                var content = $("#remark-text").val();
+                if (content == null || content == "") {
+                    alert("评论内容不能为空哦~");
+                    return false;
+                }
+                $.ajax(
+                    {
+                        url: "/remark",
+                        type: 'json',
+                        method: "POST",
+                        dataType: "json",
+                        data: {
+                            content: content,
+                            articleId: id
+                        },
+                        success: function (res) {
+                            $("#remark-text").val("");
+                            alert("评论成功！");
+                            getRemarks(id);  //刷新评论内容
+                        },
+                        error: function () {
+                            console.error("error when send ajax to remark.");
+                            $("#remark-text").val("");
+                            getRemarks(id);  //刷新评论内容
+                        }
+                    }
+                );
+            }
+        </script>
+        <br/>
     </div>
     <div class="clear"></div>
 </div>
@@ -142,4 +231,64 @@
     </footer>
 </center>
 </body>
+
+<script>
+    function UrlEncode(str) {
+        return transform(str);
+    }
+
+    function transform(s) {
+        var hex = '';
+        var i, j, t;
+
+        j = 0;
+        for (i = 0; i < s.length; i++) {
+            t = hexfromdec(s.charCodeAt(i));
+            if (t == '25') {
+                t = '';
+            }
+            hex += '%' + t;
+        }
+        return hex;
+    }
+
+    function hexfromdec(num) {
+        if (num > 65535) {
+            return ("err!")
+        }
+        first = Math.round(num / 4096 - .5);
+        temp1 = num - first * 4096;
+        second = Math.round(temp1 / 256 - .5);
+        temp2 = temp1 - second * 256;
+        third = Math.round(temp2 / 16 - .5);
+        fourth = temp2 - third * 16;
+        return ("" + getletter(third) + getletter(fourth));
+    }
+
+    function getletter(num) {
+        if (num < 10) {
+            return num;
+        }
+        else {
+            if (num == 10) {
+                return "A"
+            }
+            if (num == 11) {
+                return "B"
+            }
+            if (num == 12) {
+                return "C"
+            }
+            if (num == 13) {
+                return "D"
+            }
+            if (num == 14) {
+                return "E"
+            }
+            if (num == 15) {
+                return "F"
+            }
+        }
+    }
+</script>
 </html>

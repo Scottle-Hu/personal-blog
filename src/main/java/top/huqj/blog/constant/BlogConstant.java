@@ -35,4 +35,6 @@ public class BlogConstant {
 
     public static String ACCOUNT_TYPE = "account";
 
+    public static String OAUTH_SESSION_ID = "_huqj_oauth_session_id_";
+
 }

@@ -46,7 +46,7 @@
         /*随笔编辑处理*/
         $("#publish-btn-2").click(function() {
             var title = $("#title-2").val();
-            $("#htmlContent-2").val($("#myEditor").html());
+            $("#htmlContent-2").val(um.getContent());
             $("#text-2").val(um.getContentTxt());
             var htmlContent = $("#htmlContent-2").val();
             var text = $("#text-2").val();
