@@ -37,25 +37,41 @@ public class RedisManager {
             log.error("error when connect to redis", e);
             //fast fail
             log.error("Application exited!");
-            System.exit(1);
+            System.exit(0);
         }
     }
 
     public Set<String> listKeysByPrefix(String prefix) {
-        if (prefix == null) {
-            return Collections.emptySet();
+        try {
+            if (prefix == null) {
+                return Collections.emptySet();
+            }
+            return jedis.keys(prefix + "*");
+        } catch (Exception e) {
+            log.error("jedis error", e);
+            init();
         }
-        return jedis.keys(prefix + "*");
+        return null;
     }
 
     public void set(String key, String value) {
-        set(key, value, -1);
+        try {
+            set(key, value, -1);
+        } catch (Exception e) {
+            log.error("jedis error ", e);
+            init();
+        }
     }
 
     public void set(String key, String value, int expire) {
-        jedis.set(key, value);
-        if (expire > 0) {
-            jedis.expire(key, expire);
+        try {
+            jedis.set(key, value);
+            if (expire > 0) {
+                jedis.expire(key, expire);
+            }
+        } catch (Exception e) {
+            log.error("jedis error.", e);
+            init();
         }
     }
 
@@ -66,7 +82,12 @@ public class RedisManager {
      * @param value
      */
     public void addList(String listKey, String value) {
-        jedis.rpush(listKey, value);
+        try {
+            jedis.rpush(listKey, value);
+        } catch (Exception e) {
+            log.error("jedis error.", e);
+            init();
+        }
     }
 
     /**
@@ -76,7 +97,12 @@ public class RedisManager {
      * @param value
      */
     public void addListOnHead(String listKey, String value) {
-        jedis.lpush(listKey, value);
+        try {
+            jedis.lpush(listKey, value);
+        } catch (Exception e) {
+            log.error("jedis error.", e);
+            init();
+        }
     }
 
     /**
@@ -85,7 +111,12 @@ public class RedisManager {
      * @param listKey
      */
     public void removeListTail(String listKey) {
-        jedis.rpop(listKey);
+        try {
+            jedis.rpop(listKey);
+        } catch (Exception e) {
+            log.error("jedis error.", e);
+            init();
+        }
     }
 
     /**
@@ -95,7 +126,13 @@ public class RedisManager {
      * @return
      */
     public List<String> getListValues(String key) {
-        return jedis.lrange(key, 0, -1);
+        try {
+            return jedis.lrange(key, 0, -1);
+        } catch (Exception e) {
+            log.error("jedis error.", e);
+            init();
+        }
+        return null;
     }
 
     /**
@@ -106,15 +143,27 @@ public class RedisManager {
      * @return
      */
     public Optional<String> getByListIndex(String key, int index) {
-        Long len = jedis.llen(key);
-        if (index < 0 || index >= len) {
-            return Optional.empty();
+        try {
+            Long len = jedis.llen(key);
+            if (index < 0 || index >= len) {
+                return Optional.empty();
+            }
+            return Optional.of(jedis.lindex(key, index));
+        } catch (Exception e) {
+            log.error("jedis error.", e);
+            init();
         }
-        return Optional.of(jedis.lindex(key, index));
+        return Optional.empty();
     }
 
     public long getListLength(String key) {
-        return jedis.llen(key);
+        try {
+            return jedis.llen(key);
+        } catch (Exception e) {
+            log.error("jedis error.", e);
+            init();
+        }
+        return 0;
     }
 
     /**
@@ -123,7 +172,12 @@ public class RedisManager {
      * @param key
      */
     public void deleteListAllValue(String key) {
-        jedis.del(key);
+        try {
+            jedis.del(key);
+        } catch (Exception e) {
+            log.error("jedis error.", e);
+            init();
+        }
     }
 
     /**
@@ -133,38 +187,70 @@ public class RedisManager {
      * @param values
      */
     public void addListValueBatch(String listKey, List<String> values) {
-        if (CollectionUtils.isEmpty(values)) {
-            return;
+        try {
+            if (CollectionUtils.isEmpty(values)) {
+                return;
+            }
+            jedis.rpush(listKey, values.toArray(new String[values.size()]));
+        } catch (Exception e) {
+            log.error("jedis error.", e);
+            init();
         }
-        jedis.rpush(listKey, values.toArray(new String[values.size()]));
     }
 
     public Optional<String> getHashValueByKey(String hashName, String key) {
-        if (!jedis.exists(hashName)) {
-            return Optional.empty();
+        try {
+            if (!jedis.exists(hashName)) {
+                return Optional.empty();
+            }
+            String value = jedis.hget(hashName, key);
+            if (value == null) {
+                return Optional.empty();
+            }
+            return Optional.of(value);
+        } catch (Exception e) {
+            log.error("jedis error.", e);
+            init();
         }
-        String value = jedis.hget(hashName, key);
-        if (value == null) {
-            return Optional.empty();
-        }
-        return Optional.of(value);
+        return Optional.empty();
     }
 
     public void setHash(String hashName, String key, String value) {
-        jedis.hset(hashName, key, value);
+        try {
+            jedis.hset(hashName, key, value);
+        } catch (Exception e) {
+            log.error("jedis error.", e);
+            init();
+        }
     }
 
     public void removeHashKey(String hashName, String key) {
-        jedis.hdel(hashName, key);
+        try {
+            jedis.hdel(hashName, key);
+        } catch (Exception e) {
+            log.error("jedis error.", e);
+            init();
+        }
     }
 
     public void setWithExpireTime(String keyName, String value, int expire) {
-        jedis.set(keyName, value);
-        jedis.expire(keyName, expire);
+        try {
+            jedis.set(keyName, value);
+            jedis.expire(keyName, expire);
+        } catch (Exception e) {
+            log.error("jedis error.", e);
+            init();
+        }
     }
 
     public String getString(String key) {
-        return jedis.get(key);
+        try {
+            return jedis.get(key);
+        } catch (Exception e) {
+            log.error("jedis error.", e);
+            init();
+        }
+        return null;
     }
 
 }
