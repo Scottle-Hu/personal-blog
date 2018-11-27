@@ -231,8 +231,11 @@ public class EssayServiceImpl implements IEssayService {
     @Override
     public List<MonthAndEssayNum> getAllMonthAndEssayNum() {
         Set<String> month2EssayKeys = redisManager.listKeysByPrefix(month2essayListKeyPrefix);
+        //给月份排个序
+        List<String> monthList = new ArrayList<>(month2EssayKeys);
+        Collections.sort(monthList);
         List<MonthAndEssayNum> result = new ArrayList<>();
-        month2EssayKeys.forEach(e -> {
+        monthList.forEach(e -> {
             int num = (int) redisManager.getListLength(e);
             if (num > 0) {
                 String monthName = e.substring(e.indexOf("-") + 1, e.length());
