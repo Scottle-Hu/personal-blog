@@ -9,21 +9,58 @@
     <link rel="stylesheet" href="css/style.css"/>
 </head>
 <script type="application/javascript" src="js/jquery.min.js"></script>
+<script type="application/javascript">
+    /*导航栏滚动到顶部后fix*/
+    $(function () {
+        var elm = $('.nav-bar');
+        var font = $('.head ul li a');
+        var curNav = $('#current');
+        var startPos = $(elm).offset().top;
+        $.event.add(window, "scroll", function () {
+            var p = $(window).scrollTop();
+            if ((p) > startPos) {  //到顶部
+                $(elm).css('position', 'fixed');
+                $(elm).css('top', '0px');
+                //修改背景色
+                $(elm).css('background', 'black');
+                $(font).css('color', 'white');
+            } else { //拉回来
+                $(elm).css('position', 'relative');
+                //背景色改回来
+                $(elm).css('background', 'white');
+                $(font).css('color', 'black');
+            }
+            $(curNav).css('color', 'red');
+        });
+    });
+</script>
 <body>
 <div class="head">
-    <a href="index"><h1><img src="image/logo.jpg" class="logo" alt=""/>&nbsp;&nbsp;&nbsp;HuQJ's Blog</h1></a>
-    <ul>
-        <li><a href="index">首页</a></li>
-        <li><a href="blog">博客</a></li>
-        <li><a href="essay" id="current">随笔</a></li>
-        <li><a href="about">关于我</a></li>
-        <li><a href="contact">联系我</a></li>
-    </ul>
+    <header class="main-header">
+        <div class="header-box">
+            <a href="index">
+                <img src="image/logo.jpg" class="logo" alt=""/>
+            </a>
+        </div>
+        <div class="header-branding">
+            <span>HuQJ's Blog</span>
+        </div>
+    </header>
+    <div class="nav-bar">
+        <ul>
+            <li><a href="index">首页</a></li>
+            <li><a href="blog">博客</a></li>
+            <li><a href="essay" id="current">随笔</a></li>
+            <li><a href="share">分享</a></li>
+            <li><a href="about">关于我</a></li>
+            <li><a href="contact">联系我</a></li>
+        </ul>
+    </div>
 </div>
 <div class="clear"></div>
 <div class="main">
     <div class="main-left">
-        <div class="by-type by" style="margin-top:10px;">
+        <div class="by-category by">
             <span><img src="image/byDate_icon.png"/><font class="mini-title">&nbsp;&nbsp;随笔日期</font></span>
             <hr/>
             <ul>
@@ -52,11 +89,11 @@
                             <small>${essay.publishTimeStr }</small>
                             <small style="float:right;">浏览（${essay.scanNum }）</small>
                         </div>
+                        <div class="blog-split"></div>
                     </a>
                 </li>
             </c:forEach>
         </ul>
-        <hr/>
         <div class="page">
             <ul id="pageUl">
             </ul>
@@ -64,6 +101,7 @@
     </div>
     <div class="clear"></div>
 </div>
+<br/>
 <center>
     <footer class="footer">
         <p>&copy;2018 huqj.top 版权所有</p>

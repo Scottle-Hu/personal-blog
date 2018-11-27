@@ -42,54 +42,90 @@
         document.getElementById("init").click();
     });
 </script>
+<script type="application/javascript">
+    /*导航栏滚动到顶部后fix*/
+    $(function () {
+        var elm = $('.nav-bar');
+        var font = $('.head ul li a');
+        var curNav = $('#current');
+        var startPos = $(elm).offset().top;
+        $.event.add(window, "scroll", function () {
+            var p = $(window).scrollTop();
+            if ((p) > startPos) {  //到顶部
+                $(elm).css('position', 'fixed');
+                $(elm).css('top', '0px');
+                //修改背景色
+                $(elm).css('background', 'black');
+                $(font).css('color', 'white');
+            } else { //拉回来
+                $(elm).css('position', 'relative');
+                //背景色改回来
+                $(elm).css('background', 'white');
+                $(font).css('color', 'black');
+            }
+            $(curNav).css('color', 'red');
+        });
+    });
+</script>
 <body>
 <div class="head">
-    <a href="index"><h1><img src="image/logo.jpg" class="logo" alt=""/>&nbsp;&nbsp;&nbsp;HuQJ's Blog</h1></a>
-    <ul>
-        <li><a href="index">首页</a></li>
-        <li><a href="blog" id="current">博客</a></li>
-        <li><a href="essay">随笔</a></li>
-        <li><a href="about">关于我</a></li>
-        <li><a href="contact">联系我</a></li>
-    </ul>
+    <header class="main-header">
+        <div class="header-box">
+            <a href="index">
+                <img src="image/logo.jpg" class="logo" alt=""/>
+            </a>
+        </div>
+        <div class="header-branding">
+            <span>HuQJ's Blog</span>
+        </div>
+    </header>
+    <div class="nav-bar">
+        <ul>
+            <li><a href="index">首页</a></li>
+            <li><a href="blog" id="current">博客</a></li>
+            <li><a href="essay">随笔</a></li>
+            <li><a href="share">分享</a></li>
+            <li><a href="about">关于我</a></li>
+            <li><a href="contact">联系我</a></li>
+        </ul>
+    </div>
+</div>
+<div class="main">
+    <div class="main-left">
+        <div class="by-category by">
+            <span><img src="image/byType_icon.png"/><font class="mini-title">&nbsp;&nbsp;所有博客分类</font></span>
+            <hr/>
+            <div>
+                <c:forEach items="${categoryList }" var="category">
+                    <a href="category?id=${category.category.id }">
+                        <span class="class-item">${category.category.name }(${category.blogNum })</span>
+                    </a>
+                </c:forEach>
+            </div>
+            <div class="clear"></div>
+        </div>
+        <%--<div class="by-date by">
+            <div id="calendar" class="calendar"></div>
+        </div>--%>
+        <div class="clear"></div>
+    </div>
+    <div class="latest by">
+        <ul class="sort-blog">
+            <li url="api/blog/top/new" class="cur" id="init">最新博客</li>
+            <li url="api/blog/top/scan">浏览最多</li>
+            <li url="api/blog/top/remark">评论最多</li>
+            <li url="api/blog/recommend">博主推荐</li>
+        </ul>
+        <div class="clear"></div>
+        <hr/>
+        <br/>
+        <ul class="blog-list" id="blog-list">
+        </ul>
+    </div>
+    <%--<div class="clear"></div>--%>
 </div>
 <div class="clear"></div>
-<div class="main">
-    <div class="row-container">
-        <div class="row-left">
-            <h3 style="color:black;">所有博客类别</h3>
-            <hr/>
-            <c:forEach items="${categoryList }" var="category">
-                <a href="category?id=${category.category.id }"><span
-                        class="class-item">${category.category.name }(${category.blogNum })</span></a>
-            </c:forEach>
-        </div>
-        <div id="calendar" class="calendar"></div>
-    </div>
-    <div class="clear"></div>
-    <br/>
-    <hr/>
-    <ul class="sort-blog">
-        <li url="api/blog/top/new" class="cur" id="init">最新博客</li>
-        <li url="api/blog/top/scan">浏览最多</li>
-        <li url="api/blog/top/remark">评论最多</li>
-        <li url="api/blog/recommend">博主推荐</li>
-    </ul>
-    <div class="clear"></div>
-    <br/>
-    <ul class="blog-list" id="blog-list">
-    </ul>
-    <%--<div class="page">
-        <ul>
-            <li class="wider"><a href="#">首页</a></li>
-            <li class="cur-page"><a href="#">1</a></li>
-            <li><a href="#">2</a></li>
-            <li><a href="#">3</a></li>
-            <li class="wider"><a href="#">尾页</a></li>
-        </ul>
-    </div>--%>
-    <div class="clear"></div>
-</div>
+<br/>
 <center>
     <footer class="footer">
         <p>&copy;2018 huqj.top 版权所有</p>

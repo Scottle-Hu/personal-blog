@@ -20,17 +20,54 @@
             getRemarks(id);
         });
     </script>
+    <script type="application/javascript">
+        /*导航栏滚动到顶部后fix*/
+        $(function () {
+            var elm = $('.nav-bar');
+            var font = $('.head ul li a');
+            var curNav = $('#current');
+            var startPos = $(elm).offset().top;
+            $.event.add(window, "scroll", function () {
+                var p = $(window).scrollTop();
+                if ((p) > startPos) {  //到顶部
+                    $(elm).css('position', 'fixed');
+                    $(elm).css('top', '0px');
+                    //修改背景色
+                    $(elm).css('background', 'black');
+                    $(font).css('color', 'white');
+                } else { //拉回来
+                    $(elm).css('position', 'relative');
+                    //背景色改回来
+                    $(elm).css('background', 'white');
+                    $(font).css('color', 'black');
+                }
+                $(curNav).css('color', 'red');
+            });
+        });
+    </script>
 </head>
 <body>
 <div class="head">
-    <a href="index"><h1><img src="image/logo.jpg" class="logo" alt=""/>&nbsp;&nbsp;&nbsp;HuQJ's Blog</h1></a>
-    <ul>
-        <li><a href="index">首页</a></li>
-        <li><a href="blog" <c:if test="${type == 0}">id="current"</c:if>>博客</a></li>
-        <li><a href="essay" <c:if test="${type == 1}">id="current"</c:if>>随笔</a></li>
-        <li><a href="about">关于我</a></li>
-        <li><a href="contact">联系我</a></li>
-    </ul>
+    <header class="main-header">
+        <div class="header-box">
+            <a href="index">
+                <img src="image/logo.jpg" class="logo" alt=""/>
+            </a>
+        </div>
+        <div class="header-branding">
+            <span>HuQJ's Blog</span>
+        </div>
+    </header>
+    <div class="nav-bar">
+        <ul>
+            <li><a href="index">首页</a></li>
+            <li><a href="blog" <c:if test="${type == 0}">id="current"</c:if>>博客</a></li>
+            <li><a href="essay" <c:if test="${type == 1}">id="current"</c:if>>随笔</a></li>
+            <li><a href="share">分享</a></li>
+            <li><a href="about">关于我</a></li>
+            <li><a href="contact">联系我</a></li>
+        </ul>
+    </div>
 </div>
 <div class="clear"></div>
 <div class="main">
@@ -62,7 +99,7 @@
             </div>
         </c:if>
         <c:if test="${type == 1 }">
-            <div class="by-type by" style="margin-top:10px;">
+            <div class="by-category by">
                 <span><img src="image/byDate_icon.png"/><font class="mini-title">&nbsp;&nbsp;随笔日期</font></span>
                 <hr/>
                 <ul>
@@ -76,7 +113,7 @@
         </c:if>
         <div class="clear"></div>
     </div>
-    <div class="latest by">
+    <div class="latest by" style="min-width:800px;max-width:900px;">
         <span class="latest-span"><img src="image/blog_show_icon.png"/><font class="mini-title">&nbsp;&nbsp;<c:if
                 test="${type == 0 }">博客</c:if><c:if test="${type == 1 }">随笔</c:if>内容</font></span>
         <div class="clear"></div>
@@ -138,91 +175,93 @@
                 <br/>
             </div>
         </c:if>
-    </div>
-    <%--评论区--%>
-    <div class="remark-div">
+        <div class="blog-split"></div>
+        <%--评论区--%>
+        <div class="remark-div">
         <span class="latest-span"><img src="image/remark.png"/><font
                 class="mini-title">&nbsp;&nbsp;所有评论</font></span>
-        <div class="clear"></div>
-        <hr/>
-        <%--未登录--%>
-        <c:if test="${userInfo == null}">
-            您尚未登录！选择登录方式登录后方可评论~&nbsp;&nbsp;&nbsp;&nbsp;
-            <img src="image/github_icon.jpg" alt="github" title="github" class="oauth-login-logo"
-                 onclick="javascript:window.location.href = 'https://github.com/login/oauth/authorize?client_id=7cc6cce09d315f877b82&redirect_uri=http%3a%2f%2fwww.huqj.top%2foauth%2fgithub&state='+UrlEncode(window.location.href);"/>
-        </c:if>
-        <%--已经登录，可以发表评论--%>
-        <c:if test="${userInfo != null}">
-            - <img src="${userInfo.iconUrl }" class="user-icon"
-                   onclick="javascript:window.location.href='${userInfo._3rdPartyHomeUrl }';"/>
-            <span class="username">&nbsp;&nbsp;${userInfo.username }</span>
-            <span style="color: gray;font-size: small;">&nbsp;&nbsp;&nbsp;&nbsp;【您已登录，欢迎评论~】
+            <div class="clear"></div>
+            <hr/>
+            <%--未登录--%>
+            <c:if test="${userInfo == null}">
+                您尚未登录！选择登录方式登录后方可评论~&nbsp;&nbsp;&nbsp;&nbsp;
+                <img src="image/github_icon.jpg" alt="github" title="github" class="oauth-login-logo"
+                     onclick="javascript:window.location.href = 'https://github.com/login/oauth/authorize?client_id=7cc6cce09d315f877b82&redirect_uri=http%3a%2f%2fwww.huqj.top%2foauth%2fgithub&state='+UrlEncode(window.location.href);"/>
+            </c:if>
+            <%--已经登录，可以发表评论--%>
+            <c:if test="${userInfo != null}">
+                - <img src="${userInfo.iconUrl }" class="user-icon"
+                       onclick="javascript:window.location.href='${userInfo._3rdPartyHomeUrl }';"/>
+                <span class="username">&nbsp;&nbsp;${userInfo.username }</span>
+                <span style="color: gray;font-size: small;">&nbsp;&nbsp;&nbsp;&nbsp;【您已登录，欢迎评论~】
                 <a style="cursor: pointer;text-decoration: underline;color: blue;"
                    onclick="javascript:window.location.href='/oauth/logout?originUrl='+UrlEncode(window.location.href);">退出登录</a>
             </span>
-            <br/><br/>
-            <textarea id="remark-text"></textarea>
-            <br/>
-            <button type="button" class="remark-btn" onclick="publishRemark()">发表评论</button>
-        </c:if>
-        <hr/>
-        <%--评论数据--%>
-        <ul class="remark-list"></ul>
-        <script type="application/javascript">
-            //获取评论html
-            function getRemarks(id) {
-                $.ajax(
-                    {
-                        url: "/api/remarks?articleId=" + id,
-                        type: 'json',
-                        method: "GET",
-                        success: function (res) {
-                            //结果是一部分html标签
-                            $(".remark-list").html(res);
-                        },
-                        error: function () {
-                            console.error("error when send ajax request to get remarks.")
-                            alert("评论信息请求失败！");
+                <br/><br/>
+                <textarea id="remark-text"></textarea>
+                <br/>
+                <button type="button" class="remark-btn" onclick="publishRemark()">发表评论</button>
+            </c:if>
+            <hr/>
+            <%--评论数据--%>
+            <ul class="remark-list"></ul>
+            <script type="application/javascript">
+                //获取评论html
+                function getRemarks(id) {
+                    $.ajax(
+                        {
+                            url: "/api/remarks?articleId=" + id,
+                            type: 'json',
+                            method: "GET",
+                            success: function (res) {
+                                //结果是一部分html标签
+                                $(".remark-list").html(res);
+                            },
+                            error: function () {
+                                console.error("error when send ajax request to get remarks.")
+                                alert("评论信息请求失败！");
+                            }
                         }
-                    }
-                );
-            }
-
-            //发表评论
-            function publishRemark() {
-                var content = $("#remark-text").val();
-                if (content == null || content == "") {
-                    alert("评论内容不能为空哦~");
-                    return false;
+                    );
                 }
-                $.ajax(
-                    {
-                        url: "/remark",
-                        type: 'json',
-                        method: "POST",
-                        dataType: "json",
-                        data: {
-                            content: content,
-                            articleId: id
-                        },
-                        success: function (res) {
-                            $("#remark-text").val("");
-                            alert("评论成功！");
-                            getRemarks(id);  //刷新评论内容
-                        },
-                        error: function () {
-                            console.error("error when send ajax to remark.");
-                            $("#remark-text").val("");
-                            getRemarks(id);  //刷新评论内容
-                        }
+
+                //发表评论
+                function publishRemark() {
+                    var content = $("#remark-text").val();
+                    if (content == null || content == "") {
+                        alert("评论内容不能为空哦~");
+                        return false;
                     }
-                );
-            }
-        </script>
-        <br/>
+                    $.ajax(
+                        {
+                            url: "/remark",
+                            type: 'json',
+                            method: "POST",
+                            dataType: "json",
+                            data: {
+                                content: content,
+                                articleId: id
+                            },
+                            success: function (res) {
+                                $("#remark-text").val("");
+                                alert("评论成功！");
+                                getRemarks(id);  //刷新评论内容
+                            },
+                            error: function () {
+                                console.error("error when send ajax to remark.");
+                                $("#remark-text").val("");
+                                getRemarks(id);  //刷新评论内容
+                            }
+                        }
+                    );
+                }
+            </script>
+            <br/>
+        </div>
     </div>
     <div class="clear"></div>
 </div>
+<br/>
 <center>
     <footer class="footer">
         <p>&copy;2018 huqj.top 版权所有</p>

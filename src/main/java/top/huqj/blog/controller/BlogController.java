@@ -147,6 +147,12 @@ public class BlogController {
         return "about";
     }
 
+    @RequestMapping("/share")
+    public String sharePage(HttpServletRequest request) {
+        //TODO
+        return "share";
+    }
+
     @RequestMapping("/article")
     public String articlePage(HttpServletRequest request) {
         try {

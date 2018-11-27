@@ -253,6 +253,7 @@ public class ApiController {
      <small style="float:right;">浏览（123）</small>
      <hr/>
      </div>
+     <div class="blog-split"/>
      </a>
      </li>
      */
@@ -277,7 +278,7 @@ public class ApiController {
             result.append(blog.getPublishTimeStr());
             result.append("</small><small style=\"float:right;\">浏览（");
             result.append(blog.getScanNum());
-            result.append("）</small><hr/></div></a></li>\n");
+            result.append("）</small><hr/></div><div class=\"blog-split\"/></a></li>\n");
         }
         return result.toString();
     }

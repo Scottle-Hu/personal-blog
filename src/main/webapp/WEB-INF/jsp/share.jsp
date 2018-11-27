@@ -32,6 +32,18 @@
             }
             $(curNav).css('color', 'red');
         });
+
+        //test,别让页脚跑到上面来了
+        var foot = $('.footer');
+        var footTop = $(foot).offset().top;
+        console.log(footTop);
+        console.log($(foot).height());
+        console.log($(window).height());
+        if (footTop + $(foot).height() < $(window).height()) {
+            $(foot).css('position', 'fixed');
+            $(foot).css('width', '100%');
+            $(foot).css('bottom', '0');
+        }
     });
 </script>
 <body>
@@ -51,51 +63,21 @@
             <li><a href="index">首页</a></li>
             <li><a href="blog">博客</a></li>
             <li><a href="essay">随笔</a></li>
-            <li><a href="share">分享</a></li>
+            <li><a href="share" id="current">分享</a></li>
             <li><a href="about">关于我</a></li>
-            <li><a href="contact" id="current">联系我</a></li>
+            <li><a href="contact">联系我</a></li>
         </ul>
     </div>
 </div>
 <div class="clear"></div>
 <div class="main">
     <div class="latest" style="min-width:900px;max-width: 1100px;padding: 20px;">
-        <h3>联系方式</h3>
-        <ul class="contact-info">
-            <li>邮箱：2477889605@qq.com</li>
-            <li>TEL：13277988636</li>
-            <li>QQ：2477889605</li>
-        </ul>
+        <div class="row-container experience">
+            <h3>资源分享页面开发中~敬请期待</h3>
+            <ul>
+            </ul>
+        </div>
         <hr/>
-        <div class="twoDCode">
-            <h3>微信</h3>
-            <img src="image/wechat.png" width=250px>
-        </div>
-        <div class="message">
-            <h3>发送消息</h3>
-            <div class="rowElem">
-                <input type="text" value="Name:" name="name" id="name"
-                       onBlur="if(this.value=='') this.value='Name:'"
-                       onFocus="if(this.value =='Name:' ) this.value=''"/>
-            </div>
-            <div class="rowElem">
-                <input type="Email" value="E-mail:" name="email" id="email"
-                       onBlur="if(this.value=='') this.value='E-mail:'"
-                       onFocus="if(this.value =='E-mail:' ) this.value=''"/>
-            </div>
-            <div class="rowElem">
-                <input type="text" value="Phone:" name="phone" id="phone"
-                       onBlur="if(this.value=='') this.value='Phone:'"
-                       onFocus="if(this.value =='Phone:' ) this.value=''"/>
-            </div>
-            <div class="rowElem2">
-						<textarea rows="20" cols="70" name="message" id="message"
-                                  onBlur="if(this.value=='') this.value='Message:'"
-                                  onFocus="if(this.value =='Message:' ) this.value=''">Message:</textarea>
-            </div>
-            <button type="button">提交</button>
-            <button type="button">清空</button>
-        </div>
         <div class="clear"></div>
     </div>
 </div>

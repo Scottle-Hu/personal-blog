@@ -1,57 +1,99 @@
 body {
-    margin: 0px;
-    background: url("../image/bg-5.jpg");
-    background-size: 100% 100%;
+    margin: 0;
+    padding: 0;
+    background: #e7eee0;
 }
 
-.main {
-    margin: 0px auto;
-    padding: 20px;
-    background: white;
-    width: 1100px;
-    border: none;
-    border-radius: 20px;
-    -webkit-border-radius: 20px;
-    -moz-border-radius: 20px;
+/*顶部banner背景图*/
+.main-header {
+    background-image: url(/image/banner.jpg);
+    background-repeat: repeat;
+    background-size: 100% 40%;
+    -moz-background-size: 100% 100%;
+    background-attachment: fixed;
+    position: relative;
+    text-align: center;
+    line-height: 0;
+    height: 180px;
+    width: 100%;
 }
 
-.head {
-    margin: 10px auto;
-    background: black;
+.main-header .header-box {
+    position: relative;
+    margin: 0 auto;
+    width: 200px;
+}
+
+.main-header .header-branding {
+    position: relative;
+    margin: 0 auto;
+    padding-top: 30px;
+}
+
+.main-header .header-branding span {
+    position: relative;
+    margin-top: 50px;
+    font-weight: bold;
+    font-size: 25px;
     color: white;
-    width: 1100px;
+    font-family: Castellar;
 }
 
-.head h1 {
-    float: left;
-    color: white;
+.logo {
+    margin-top: 30px;
+    width: 84px;
+    height: 84px;
+    border-radius: 42px;
+    -webkit-border-radius: 42px;
+    -moz-border-radius: 42px;
+}
+
+/*导航栏*/
+.nav-bar {
+    background: #ffffff;
+    height: 40px;
+    width: 100%;
+    text-align: center;
+    padding-top: 15px;
+    border-bottom: solid silver 1px;
+    z-index: 1;
 }
 
 .head ul {
-    float: right;
+    display: table;
     list-style: none;
-    margin-top: 45px;
-    margin-right: 50px;
+    position: relative;
+    margin: 0 auto;
 }
 
 .head ul li {
     float: left;
-    font-size: 20px;
-    margin-right: 20px;
+    font-size: 16px;
+    margin-right: 55px;
 }
 
 .head ul li a {
     text-decoration: none;
-    color: white;
+    color: black;
 }
 
-.logo {
-    width: 70px;
-    height: 70px;
-    border-radius: 35px;
-    -webkit-border-radius: 35px;
-    -moz-border-radius: 35px;
-    vertical-align: middle;
+/*博客列表和侧边栏*/
+.main {
+    position: relative;
+    margin: 0px auto;
+    display: table;
+    padding-top: 30px;
+}
+
+.main hr {
+    border: 1px #e3e3e3 solid;
+}
+
+.blog-split {
+    height: 20px;
+    width: 110%;
+    background: #e7eee0;
+    margin-left: -20px;
 }
 
 .clear {
@@ -62,49 +104,50 @@ body {
     color: red;
 }
 
+/*页脚*/
 .footer {
+    padding: 10px;
     color: white;
+    background: black;
 }
 
 .footer p a {
     text-decoration: none;
     margin-right: 10px;
-    color: lightblue;
+    color: lightgreen;
 }
 
 .main-left {
-    width: 250px;
+    min-width: 250px;
+    max-width: 300px;
     float: left;
 }
 
 .latest {
-    width: 800px;
+    min-width: 250px;
+    max-width: 800px;
     margin-left: 30px;
-    background: #e3e3e3;
+    background: #ffffff;
     float: left;
-    border-radius: 10px;
-    -webkit-border-radius: 10px;
-    -moz-border-radius: 10px;
-    padding: 6px;
+    /*padding: 6px;*/
     padding-top: 10px;
 }
 
 .by-category {
-    border-radius: 5px;
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    background: #e3e3e3;
+    background: #ffffff;
     padding: 6px;
     padding-top: 10px;
 }
 
 .latest .latest-span {
     float: left;
+    margin-left: 6px;
 }
 
 .by ul {
     list-style: none;
-    margin-left: -10px;
+    margin-left: 20px;
+    padding: 0px;
 }
 
 .by ul li {
@@ -113,23 +156,25 @@ body {
 
 .by ul li a {
     text-decoration: none;
+    color: #6b6b6b;
+}
+
+.by ul li :hover {
     color: blue;
 }
 
 .by p img {
-    /*width:18px;
-    height:18px;*/
     vertical-align: middle;
 }
 
 .search-box {
-    float: right;
-    margin-right: 20px;
+    margin-bottom: 10px;
+    margin-top: 10px;
 }
 
 .search-box #search-text {
     height: 26px;
-    border: 1px solid lightgreen;
+    border: 1px solid gray;
     vertical-align: middle;
     background: white;
     color: black;
@@ -137,9 +182,6 @@ body {
 
 .search-box input {
     height: 25px;
-    border-radius: 5px;
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
     background: black;
     color: white;
     font-size: 14px;
@@ -149,10 +191,7 @@ body {
 
 .by-date {
     margin-top: 20px;
-    border-radius: 5px;
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    background: #e3e3e3;
+    background: #ffffff;
     padding: 6px;
     padding-top: 10px;
 }
@@ -166,14 +205,10 @@ body {
     background: white;
     padding: 10px;
     padding-top: 1px;
-    border-radius: 10px;
-    -webkit-border-radius: 10px;
-    -moz-border-radius: 10px;
     margin-left: -10px;
     margin-right: 20px;
     margin-bottom: 10px;
     overflow: hidden;
-
 }
 
 .blog p {
@@ -187,8 +222,7 @@ body {
 }
 
 .blog hr {
-    height: 0px;
-    border: 1px solid #e3e3e3;
+    border: 1px #e3e3e3 solid;
 }
 
 .page ul .wider {
@@ -220,22 +254,20 @@ body {
 }
 
 .row-container {
-    width: 1100px;
+    min-width: 250px;
+    max-width: 1000px;
     margin-top: 10px;
     padding: 0px;
 }
 
-.row-left {
-    float: left;
-    width: 750px;
-}
-
-.row-left .class-item {
+.class-item {
     background: silver;
     border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
     color: black;
-    font-size: 18px;
-    padding: 8px;
+    font-size: 15px;
+    padding: 5px;
     margin-right: 10px;
     margin-top: 10px;
     float: left;
@@ -245,15 +277,17 @@ body {
     background: gray;
 }
 
+.sort-blog ul {
+    padding: 0px;
+}
+
 .sort-blog li {
     float: left;
     padding: 5px;
     font-size: 17px;
     color: white;
     background: black;
-    border: solid 1px white;
-    border-radius: 5px;
-    margin-right: 5px;
+    border: solid 1px gray;
     cursor: pointer;
 }
 
@@ -342,15 +376,13 @@ body {
 }
 
 .remark-div {
-    float: right;
-    width: 800px;
-    background: #e3e3e3;
-    border-radius: 10px;
-    -webkit-border-radius: 10px;
-    -moz-border-radius: 10px;
+    /*float: right;*/
+    /*min-width: 800px;
+    max-width: 900px;*/
+    background: #ffffff;
     padding: 6px;
     padding-top: 10px;
-    margin-top: 10px;
+    margin-top: 20px;
     margin-right: 8px;
 }
 
@@ -403,7 +435,7 @@ body {
 }
 
 .remark-list li {
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 }
 
 .remark-list li img {
@@ -420,7 +452,7 @@ body {
     margin-left: 45px;
     border: 1px solid white;
     padding: 10px;
-    background: white;
+    background: #e3e3e3;
     width: 600px;
 }
 
