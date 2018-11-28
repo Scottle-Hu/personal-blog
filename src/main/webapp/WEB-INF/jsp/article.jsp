@@ -6,8 +6,7 @@
             test="${type == 1 }">${essay.title }</c:if>_胡启军个人博客</title>
     <meta charset="UTF-8"/>
     <meta name="keywords" content="胡启军,个人博客,技术博客, ${blog.title }"/>
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
     <meta http-equiv="Cache-Control" content="no-siteapp">
     <meta name="renderer" content="webkit|ie-comp|ie-stand">
@@ -164,7 +163,7 @@
         </c:if>
         <div class="clear"></div>
     </div>
-    <div class="latest by article-div" id="article-div">
+    <div class="latest by article-div">
         <span class="latest-span"><img src="image/blog_show_icon.png"/><font class="mini-title">&nbsp;&nbsp;<c:if
                 test="${type == 0 }">博客</c:if><c:if test="${type == 1 }">随笔</c:if>内容</font></span>
         <div class="clear"></div>
@@ -229,8 +228,9 @@
         <div class="blog-split"></div>
         <%--评论区--%>
         <div class="remark-div">
-        <span class="latest-span"><img src="image/remark.png"/><font
-                class="mini-title">&nbsp;&nbsp;所有评论</font></span>
+            <span class="latest-span"><img src="image/remark.png"/>
+                <span class="mini-title">&nbsp;&nbsp;所有评论</span>
+            </span>
             <div class="clear"></div>
             <hr/>
             <%--未登录--%>
@@ -310,40 +310,56 @@
             <br/>
         </div>
     </div>
-    <div class="clear"></div>
+</div>
+<div class="clear"></div>
 </div>
 <%--切换成移动端的时候在底部显示--%>
 <div class="m-bottom">
-    <div class="bottom">
-        <span><img src="image/search_icon.png"/><font class="mini-title">&nbsp;&nbsp;站内搜索</font></span>
-        <hr/>
-        <div class="search-box">
-            <input type="text" id="search-text-bottom" placeholder=" 输入关键词搜索"/>
-            <input type="button" value="搜索"/>
+    <c:if test="${type == 0}">
+        <div class="bottom">
+            <span><img src="image/search_icon.png"/><font class="mini-title">&nbsp;&nbsp;站内搜索</font></span>
+            <hr/>
+            <div class="search-box">
+                <input type="text" id="search-text-bottom" placeholder=" 输入关键词搜索"/>
+                <input type="button" value="搜索"/>
+            </div>
         </div>
-    </div>
-    <div class="bottom">
-        <span><img src="image/byType_icon.png"/><font class="mini-title">&nbsp;&nbsp;按博客类别</font></span>
-        <hr/>
-        <ul>
-            <c:forEach items="${categoryList }" var="category">
-                <li>
-                    <a href="category?id=${category.category.id }">${category.category.name }(${category.blogNum })</a>
-                </li>
-            </c:forEach>
-        </ul>
-    </div>
-    <div class="bottom">
-        <span><img src="image/byDate_icon.png"/><font class="mini-title">&nbsp;&nbsp;按博客日期</font></span>
-        <hr/>
-        <ul>
-            <c:forEach items="${monthList }" var="month">
-                <li>
-                    <a href="month?period=${month.monthStr }">${month.publishTime }(${month.blogNum })</a>
-                </li>
-            </c:forEach>
-        </ul>
-    </div>
+        <div class="bottom">
+            <span><img src="image/byType_icon.png"/><font class="mini-title">&nbsp;&nbsp;按博客类别</font></span>
+            <hr/>
+            <ul>
+                <c:forEach items="${categoryList }" var="category">
+                    <li>
+                        <a href="category?id=${category.category.id }">${category.category.name }(${category.blogNum })</a>
+                    </li>
+                </c:forEach>
+            </ul>
+        </div>
+        <div class="bottom">
+            <span><img src="image/byDate_icon.png"/><font class="mini-title">&nbsp;&nbsp;按博客日期</font></span>
+            <hr/>
+            <ul>
+                <c:forEach items="${monthList }" var="month">
+                    <li>
+                        <a href="month?period=${month.monthStr }">${month.publishTime }(${month.blogNum })</a>
+                    </li>
+                </c:forEach>
+            </ul>
+        </div>
+    </c:if>
+    <c:if test="${type == 1}">
+        <div class="bottom">
+            <span><img src="image/byDate_icon.png"/><font class="mini-title">&nbsp;&nbsp;随笔日期</font></span>
+            <hr/>
+            <ul>
+                <c:forEach items="${monthList }" var="month">
+                    <li>
+                        <a href="monthessay?period=${month.primitiveMonthStr }">${month.month }(${month.num })</a>
+                    </li>
+                </c:forEach>
+            </ul>
+        </div>
+    </c:if>
 </div>
 <br/>
 <center>

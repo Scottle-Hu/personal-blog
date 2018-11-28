@@ -1,8 +1,18 @@
 body {
-    margin: 0;
+    outline: 0;
     padding: 0;
+    margin: 0;
+    border: 0;
     background: #e7eee0;
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
 }
+
+/*
+html, body {
+    width: -moz-fit-content;
+}*/
 
 /*顶部banner背景图*/
 .main-header {
@@ -15,7 +25,6 @@ body {
     text-align: center;
     line-height: 0;
     height: 180px;
-    width: 100%;
 }
 
 .main-header .header-box {
@@ -70,8 +79,8 @@ body {
     cursor: pointer;
 }
 
-.header {
-    overflow: hidden;
+.head {
+    width: 100%;
 }
 
 .head ul {
@@ -430,7 +439,7 @@ body {
     padding: 6px;
     padding-top: 10px;
     margin-top: 20px;
-    margin-right: 8px;
+    /*margin-right: 8px;*/
 }
 
 .oauth-login-logo {
@@ -500,7 +509,7 @@ body {
     border: 1px solid white;
     padding: 10px;
     background: #e3e3e3;
-    width: 600px;
+    width: 75%;
 }
 
 .remark-list li small {
@@ -562,6 +571,7 @@ body {
 
     .main {
         width: 100%;
+        box-sizing: border-box;
     }
 
     .main-left {
@@ -569,8 +579,8 @@ body {
     }
 
     .latest {
+        position: relative;
         float: none;
-        display: table;
         margin: 0 auto;
         width: 95%;
         overflow: hidden;
@@ -658,25 +668,20 @@ body {
         margin-left: 10px;
     }
 
+    .article {
+        font-size: 20px !important;
+    }
+
     .article-wrap img {
         position: relative !important;
-        width: 60% !important;
+        width: 70% !important;
         height: auto !important;
-        margin: 0 auto !important;
     }
 
     /*调整代码块宽度*/
-    .article-wrap .syntaxhighlighter {
-        position: relative !important;
-        width: 95% !important;
-        overflow: auto !important;
-    }
+   /* .article-wrap .syntaxhighlighter {
+        width: 10px !important;
+        overflow: hidden !important;
+    }*/
 
 }
-
-/*
-@media screen and (max-width: 330px) {
-    .latest {
-        width: 290px;
-    }
-}*/
