@@ -242,31 +242,33 @@ public class ApiController {
      */
     /*
      <li>
-     <a href="#">
-     <div class="blog">
-     <h4>使用vmware搭建centos虚拟机集群记录</h4>
-     <p>因为课程任务需要搭建服务器集群，然后尝试分布式程序来进行聚类分析......</p>
-     <img src="image/logo.jpg"/>
-     <img src="image/list_icon.png"/>
-     <br/><br/>
-     <small>2018-03-21 10:34</small>
-     <small style="float:right;">浏览（123）</small>
-     <hr/>
-     </div>
-     <div class="blog-split"/>
-     </a>
-     </li>
+        <a href="article?id=${blog.id }">
+            <div class="blog">
+                <h3>${blog.title }</h3>
+                <p>${blog.text }</p>
+                <div class="m-blog-img">
+                    <c:forEach items="${blog.imgUrls }" var="img">
+                        <img src="${img }"/>
+                    </c:forEach>
+                </div>
+                <hr/>
+                <small>${blog.publishTimeStr }</small>
+                <small style="float:right;">浏览（${blog.scanNum }）</small>
+            </div>
+            <div class="blog-split"></div>
+        </a>
+    </li>
      */
     private String buildHtmlByBlogList(List<Blog> blogList) {
         StringBuilder result = new StringBuilder();
         for (Blog blog : blogList) {
             result.append("<li><a href=\"article?id=");
             result.append(blog.getId());
-            result.append("\"><div class=\"blog\"><h4>");
+            result.append("\"><div class=\"blog\"><h3>");
             result.append(blog.getTitle());
-            result.append("</h4><p>");
+            result.append("</h3><p>");
             result.append(blog.getText());
-            result.append("</p>");
+            result.append("</p><div class=\"m-blog-img\">");
             if (!CollectionUtils.isEmpty(blog.getImgUrls())) {
                 for (String imgUrl : blog.getImgUrls()) {
                     result.append("<img src=\"");
@@ -274,11 +276,11 @@ public class ApiController {
                     result.append("\"/>");
                 }
             }
-            result.append("<br/><br/><small>");
+            result.append("</div><hr/><small>");
             result.append(blog.getPublishTimeStr());
             result.append("</small><small style=\"float:right;\">浏览（");
             result.append(blog.getScanNum());
-            result.append("）</small><hr/></div><div class=\"blog-split\"/></a></li>\n");
+            result.append("）</small></div><div class=\"blog-split\"/></a></li>\n");
         }
         return result.toString();
     }
