@@ -12,6 +12,7 @@ import top.huqj.blog.exception.ParameterMissingException;
 import top.huqj.blog.model.*;
 import top.huqj.blog.service.*;
 import top.huqj.blog.service.impl.RedisManager;
+import top.huqj.blog.service.lucene.Searcher;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -19,10 +20,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.Timestamp;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * 主控制器
@@ -51,11 +50,18 @@ public class BlogController {
     @Autowired
     private IRemarkService remarkService;
 
+    @Autowired
+    private Searcher luceneSearcher;
+
     @Value("${maxBlogNumPerPage}")
     public int Blog_NUM_PER_PAGE;
 
     @Value("${maxEssayNumPerPage}")
     public int Essay_NUM_PER_PAGE;
+
+    private static final int MAX_PREVIEW_IMG_NUM = 1;
+
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @RequestMapping("/")
     public String homePage(HttpServletRequest request) {
@@ -367,6 +373,33 @@ public class BlogController {
         }
     }
 
+    @RequestMapping("/search")
+    public String searchResult(HttpServletRequest request) {
+        try {
+            String query = request.getParameter("q");
+//            query = new String(query.getBytes("iso-8859-1"), "utf-8");
+            if (!StringUtils.isEmpty(query)) {
+                if (query.length() > 20) {  //限制搜索字符数
+                    query = query.substring(0, 20);
+                }
+                List<Blog> blogs = luceneSearcher.topBlogIds(query);
+                postProcessBlogList(blogs);
+                //搜索结果
+                request.setAttribute("blogList", blogs);
+                request.setAttribute("resultNum", blogs.size());
+                request.setAttribute("query", query);
+
+                //侧边栏通用信息
+                request.setAttribute("categoryList", blogService.getAllCategoryList());
+                request.setAttribute("monthList", blogService.getAllMonthList());
+            }
+        } catch (Exception e) {
+            log.error("error when search.", e);
+            gotoHome();
+        }
+        return "search";
+    }
+
     /**
      * 用于跳转到home
      *
@@ -432,6 +465,28 @@ public class BlogController {
         if (t == null) {
             throw new ParameterMissingException("neccessary parameter missed.");
         }
+    }
+
+    /**
+     * 设置日期字符串和图片列表
+     *
+     * @param blogList
+     */
+    private void postProcessBlogList(List<Blog> blogList) {
+        blogList.forEach(blog -> {
+            blog.setPublishTimeStr(dateFormat.format(blog.getPublishTime()));
+            blog.setUpdateTimeStr(dateFormat.format(blog.getUpdateTime()));
+            blog.setTitle(blog.getTitle().replace("<", "&lt;").replace(">", "&gt;"));
+            if (!StringUtils.isEmpty(blog.getImgUrlList())) {
+                List<String> imgList = Arrays.asList(blog.getImgUrlList().split("\\|"));
+                blog.setImgUrls(imgList.subList(0, Math.min(MAX_PREVIEW_IMG_NUM, imgList.size())));
+            }
+            //设置预览文字，不应该太长
+            String pre = blog.getText();
+            if (pre.length() > 100) {
+                blog.setText(pre.substring(0, 100).replace("<", "&lt;").replace(">", "&gt;"));
+            }
+        });
     }
 
 }

@@ -16,6 +16,7 @@ import top.huqj.blog.model.Category;
 import top.huqj.blog.model.ext.CategoryAndBlogNum;
 import top.huqj.blog.model.ext.MonthAndBlogNum;
 import top.huqj.blog.service.IBlogService;
+import top.huqj.blog.service.lucene.Indexer;
 import top.huqj.blog.utils.MarkDownUtil;
 
 import javax.annotation.PostConstruct;
@@ -39,6 +40,9 @@ public class BlogServiceImpl implements IBlogService {
 
     @Autowired
     private RedisManager redisManager;
+
+    @Autowired
+    private Indexer luceneIndexer;
 
     /**
      * redis中存储最新博客id的列表名称
@@ -169,6 +173,10 @@ public class BlogServiceImpl implements IBlogService {
         updateTopBlog(blog, BlogUpdateOperation.ADD);
 
         blogDao.insertOne(blog);
+
+        //添加到lucene
+        luceneIndexer.addDocumentIndex(blog);
+
         TOTAL_BLOG_NUM++;
     }
 
@@ -181,6 +189,10 @@ public class BlogServiceImpl implements IBlogService {
         }
         //从数据库删除
         blogDao.deleteOne(id);
+
+        //从lucene删除索引
+        luceneIndexer.removeDocumentIndex(id);
+
         //更新redis
         if (blog.getCategory() == null) {
             log.error("this blog has no category. id=" + id);
@@ -684,6 +696,10 @@ public class BlogServiceImpl implements IBlogService {
         blog.setUpdateTime(new Timestamp(System.currentTimeMillis()));
         blog.setImgUrlList(extractImgUrls(blog));
         blogDao.updateOne(blog);
+
+        //更新lucene
+        luceneIndexer.updateDocumentIndex(blog);
+
         //更新redis
         updateTopBlog(blog, BlogUpdateOperation.UPDATE);
         int oldCid = old.getCategory().getId();

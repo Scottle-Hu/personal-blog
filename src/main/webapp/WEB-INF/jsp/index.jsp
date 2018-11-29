@@ -68,6 +68,30 @@
             }
         });
 
+        /*搜索*/
+        $("#search-btn").click(function () {
+            var query = $("#search-text").val();
+            if (query == null || query == "") {
+                alert("请输入搜索关键词");
+                return false;
+            }
+            window.location.href = "search?q=" + query;
+        });
+        $("#search-btn-bottom").click(function () {
+            var query = $("#search-text-bottom").val();
+            if (query == null || query == "") {
+                alert("请输入搜索关键词");
+                return false;
+            }
+            window.location.href = "search?q=" + query;
+        });
+
+        $(document).keydown(function (event) {
+            if (event.keyCode == 13) {
+                $("#search-btn").click();
+            }
+        });
+
     });
 </script>
 <body>
@@ -117,7 +141,7 @@
             <hr/>
             <div class="search-box">
                 <input type="text" id="search-text" placeholder=" 输入关键词搜索"/>
-                <input type="button" value="搜索"/>
+                <input type="button" value="搜索" id="search-btn"/>
             </div>
             <div class="clear"></div>
         </div>
@@ -246,8 +270,8 @@
         <span><img src="image/search_icon.png"/><font class="mini-title">&nbsp;&nbsp;站内搜索</font></span>
         <hr/>
         <div class="search-box">
-            <input type="text" id="search-text-bottom" placeholder=" 输入关键词搜索"/>
-            <input type="button" value="搜索"/>
+            <input type="text" id="search-text-bottom" placeholder=" 输入关键词搜索" name="q"/>
+            <input type="button" value="搜索" id="search-btn-bottom"/>
         </div>
     </div>
     <div class="bottom">

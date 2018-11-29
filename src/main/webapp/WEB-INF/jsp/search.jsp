@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta charset="UTF-8"/>
-    <title>胡启军的个人博客</title>
+    <title>搜索结果_胡启军的个人博客</title>
     <meta name="keywords" content="胡启军,个人博客,技术博客，胡启军_技术"/>
     <meta name="description" content="Hello，这里是胡启军的个人技术博客，记录一些技术学习、探索和思考，以及一些日常随笔，欢迎访问~"/>
     <meta name="viewport"
@@ -67,6 +67,30 @@
             }
         });
 
+        /*搜索*/
+        $("#search-btn").click(function () {
+            var query = $("#search-text").val();
+            if (query == null || query == "") {
+                alert("请输入搜索关键词");
+                return false;
+            }
+            window.location.href = "search?q=" + query;
+        });
+        $("#search-btn-bottom").click(function () {
+            var query = $("#search-text-bottom").val();
+            if (query == null || query == "") {
+                alert("请输入搜索关键词");
+                return false;
+            }
+            window.location.href = "search?q=" + query;
+        });
+
+        $(document).keydown(function (event) {
+            if (event.keyCode == 13) {
+                $("#search-btn").click();
+            }
+        });
+
     });
 </script>
 <body>
@@ -112,6 +136,15 @@
 <div class="main">
     <div class="main-left">
         <div class="by-category by">
+            <span><img src="image/search_icon.png"/><font class="mini-title">&nbsp;&nbsp;站内搜索</font></span>
+            <hr/>
+            <div class="search-box">
+                <input type="text" id="search-text" placeholder=" 输入关键词搜索" value="${query }"/>
+                <input type="button" value="搜索" id="search-btn"/>
+            </div>
+            <div class="clear"></div>
+        </div>
+        <div class="by-date by">
             <span><img src="image/byType_icon.png"/><font class="mini-title">&nbsp;&nbsp;按博客类别</font></span>
             <hr/>
             <ul>
@@ -135,9 +168,9 @@
         </div>
         <div class="clear"></div>
     </div>
-    <div class="latest by">
+    <div class="latest by" style="min-width: 750px;">
         <span class="latest-span"><img src="image/list_icon.png"/><font
-                class="mini-title">&nbsp;&nbsp;类别：${category.name }</font></span>
+                class="mini-title">&nbsp;&nbsp;搜索结果（共找到${resultNum }条结果）</font></span>
         <div class="clear"></div>
         <hr/>
         <ul>
@@ -161,99 +194,19 @@
                 </li>
             </c:forEach>
         </ul>
-        <div class="page">
-            <ul id="pageUl">
-            </ul>
-        </div>
-        <script type="application/javascript" src="js/jquery.min.js"></script>
-        <script type="application/javascript">
-            $(document).ready(function () {
-                var url = window.location.href;
-                var pageIndex = url.indexOf("page=");
-                var curPage = 1;
-                if (pageIndex != -1) {
-                    var endIndex;
-                    var t = url.indexOf("&", pageIndex);
-                    if (t != -1) {
-                        endIndex = t;
-                    } else {
-                        endIndex = url.length;
-                    }
-                    curPage = url.substring(pageIndex + 5, Math.min(url.length, endIndex));
-                }
-                var idIndex = url.indexOf("id=");
-                var id = -1;
-                if (idIndex == -1) {
-                    alert("类别id为空！");
-                } else {
-                    var endIndex;
-                    var t = url.indexOf("&", idIndex);
-                    if (t != -1) {
-                        endIndex = t;
-                    } else {
-                        endIndex = url.length;
-                    }
-                    id = url.substring(idIndex + 3, Math.min(url.length, endIndex));
-                }
-                if (id == -1) {
-                    alert("获取类别id出错！");
-                }
-                //ajax取得该类别总页面数目
-                var totalPage = 1;
-                $.ajax(
-                    {
-                        url: "api/blog/page",
-                        type: 'json',
-                        method: "GET",
-                        dataType: "json",
-                        data: {
-                            "type": "category",
-                            "categoryId": id
-                        },
-                        success: function (res) {
-                            var result = eval(res);
-                            totalPage = result.totalPage;
-                            if (totalPage < curPage || curPage < 1) {  //当有人篡改page参数时
-                                curPage = 1;
-                            }
-                            paintPageNavigator(curPage, totalPage, id);
-                        },
-                        error: function () {
-                            console.error("error when send ajax request to get total page num.")
-                            paintPageNavigator(curPage, 0, id);
-                        }
-                    }
-                );
-
-            });
-
-            //画分页
-            function paintPageNavigator(curPage, totalPage, id) {
-                var delta = 1;  //当前页前后显示的页数，可调节
-                var liStr = '<li class="wider"><a href="category?id=' + id + '">首页</a></li> ';
-                if (curPage - delta > 2) {
-                    liStr += '<li><a href="#">...</a></li>';
-                }
-                for (var i = curPage - delta; i <= parseInt(curPage) + parseInt(delta); i++) {
-                    if (i == curPage) {
-                        liStr += '<li class="cur-page"><a href="#">' + curPage + '</a></li>';
-                    } else if (i >= 1 && i <= totalPage) {
-                        liStr += '<li><a href="category?id=' + id + '&page=' + i + '">' + i + '</a></li>';
-                    }
-                }
-                if (parseInt(curPage) + delta + 1 < totalPage) {
-                    liStr += '<li><a href="#">...</a></li>';
-                }
-                liStr += '<li class="wider"><a href="category?id=' + id + '&page=' + totalPage + '">尾页</a></li>';
-                $("#pageUl").html(liStr);
-            }
-
-        </script>
     </div>
     <div class="clear"></div>
 </div>
 <%--切换成移动端的时候在底部显示--%>
 <div class="m-bottom">
+    <div class="bottom">
+        <span><img src="image/search_icon.png"/><font class="mini-title">&nbsp;&nbsp;站内搜索</font></span>
+        <hr/>
+        <div class="search-box">
+            <input type="text" id="search-text-bottom" placeholder=" 输入关键词搜索" value="${query }"/>
+            <input type="button" value="搜索"/>
+        </div>
+    </div>
     <div class="bottom">
         <span><img src="image/byType_icon.png"/><font class="mini-title">&nbsp;&nbsp;按博客类别</font></span>
         <hr/>

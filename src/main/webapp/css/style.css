@@ -3,7 +3,7 @@ body {
     padding: 0;
     margin: 0;
     border: 0;
-    background: #e7eee0;
+    background: #eeeeee;
     position: relative;
     width: 100%;
     box-sizing: border-box;
@@ -465,7 +465,7 @@ html, body {
 
 #remark-text {
     resize: none;
-    width: 700px;
+    width: 80%;
     height: 120px;
     border-radius: 10px;
     -webkit-border-radius: 10px;
@@ -679,9 +679,9 @@ html, body {
     }
 
     /*调整代码块宽度*/
-   /* .article-wrap .syntaxhighlighter {
-        width: 10px !important;
-        overflow: hidden !important;
-    }*/
+    /* .article-wrap .syntaxhighlighter {
+         width: 10px !important;
+         overflow: hidden !important;
+     }*/
 
 }

@@ -37,4 +37,15 @@ public class BlogConstant {
 
     public static String OAUTH_SESSION_ID = "_huqj_oauth_session_id_";
 
+    /**
+     * lucene field相关
+     */
+    public static String LUCENE_ID = "id";
+    public static String LUCENE_CONTENT = "content";
+
+    /**
+     * lucene搜索结果最大个数
+     */
+    public static int LUCENE_MAX_RESULT_NUM = 15;
+
 }

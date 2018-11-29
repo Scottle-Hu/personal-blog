@@ -317,14 +317,6 @@
 <div class="m-bottom">
     <c:if test="${type == 0}">
         <div class="bottom">
-            <span><img src="image/search_icon.png"/><font class="mini-title">&nbsp;&nbsp;站内搜索</font></span>
-            <hr/>
-            <div class="search-box">
-                <input type="text" id="search-text-bottom" placeholder=" 输入关键词搜索"/>
-                <input type="button" value="搜索"/>
-            </div>
-        </div>
-        <div class="bottom">
             <span><img src="image/byType_icon.png"/><font class="mini-title">&nbsp;&nbsp;按博客类别</font></span>
             <hr/>
             <ul>
