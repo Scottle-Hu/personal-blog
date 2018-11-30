@@ -166,7 +166,7 @@ body {
 }
 
 .tab {
-    width: 100%;
+    width: 1200px;
     height: auto;
     padding: 5px;
     background: lightgreen;
@@ -339,4 +339,32 @@ body {
     background: red;
     color: white;
     border: none;
+}
+
+/*md编辑器相关*/
+.md {
+    width: 1200px;
+    padding: 0;
+    margin: 0;
+}
+
+.md-content {
+    float: left;
+    width: 50%;
+    height: 80%;
+    resize: none;
+    background: #333333;
+    color: white;
+    font-size: 18px;
+    padding: 5px;
+}
+
+.html-show {
+    float: left;
+    width: 50%;
+    height: 80%;
+    padding: 5px;
+    overflow: auto;
+    background: white;
+    box-sizing: border-box;
 }

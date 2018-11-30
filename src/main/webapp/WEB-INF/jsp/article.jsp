@@ -21,6 +21,7 @@
     <meta name="verify" content="all"/>
 
     <link rel="icon" href="image/logo.jpg" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="css/github.css"/>
     <link rel="stylesheet" href="css/style.css"/>
     <%--代码显示样式--%>
     <link href="umeditor/third-party/SyntaxHighlighter/shCoreDefault.css" rel="stylesheet" type="text/css"/>

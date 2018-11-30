@@ -1,7 +1,6 @@
 package top.huqj.blog.service.lucene;
 
 import lombok.extern.log4j.Log4j;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryparser.classic.QueryParser;
@@ -14,6 +13,7 @@ import org.apache.lucene.util.Version;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.wltea.analyzer.lucene.IKAnalyzer;
 import top.huqj.blog.constant.BlogConstant;
 import top.huqj.blog.model.Blog;
 import top.huqj.blog.service.IBlogService;
@@ -55,7 +55,7 @@ public class Searcher {
             directory = FSDirectory.open(new File(indexDir));
             searcher = new IndexSearcher(IndexReader.open(directory));
             queryParser = new QueryParser(Version.LUCENE_40,
-                    BlogConstant.LUCENE_CONTENT, new StandardAnalyzer(Version.LUCENE_40));
+                    BlogConstant.LUCENE_CONTENT, new IKAnalyzer());
         } catch (Exception e) {
             log.error("error init lucene indexSearcher.", e);
         }

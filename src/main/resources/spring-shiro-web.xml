@@ -53,7 +53,6 @@
         <property name="filterChainDefinitions">
             <!--配置各个页面是否需要验证权限-->
             <value>
-                /back=anon
                 /back/login=anon
                 /back/console=authc
                 /back/check=authc
@@ -68,6 +67,7 @@
                 /back/account=authc
                 /back/account/add=authc
                 /back/delete=authc
+                /api/upload=authc
                 /back/logout=logout
             </value>
         </property>

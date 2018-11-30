@@ -6,7 +6,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import top.huqj.blog.constant.BlogConstant;
 import top.huqj.blog.model.Blog;
 import top.huqj.blog.model.Remark;
@@ -18,10 +21,10 @@ import top.huqj.blog.service.IUserInfoService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +51,9 @@ public class ApiController {
     @Value("${backMaxEssayNumPerPage}")
     public int Back_Essay_NUM_PER_PAGE;
 
+    @Value("${maxImageSize}")
+    public int Max_Image_Size;
+
     @Autowired
     private IBlogService blogService;
 
@@ -61,6 +67,12 @@ public class ApiController {
     private IUserInfoService userInfoService;
 
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+    private static SimpleDateFormat dirDateFormat = new SimpleDateFormat("yyyyMMdd");
+
+    private String uploadRootPath =
+            ApiController.class.getClassLoader().getResource("").getPath()
+                    + "../../umeditor/jsp/upload/image/";
 
     @RequestMapping("/blog/page")
     public Object getTotalPage(HttpServletRequest request) {
@@ -231,6 +243,64 @@ public class ApiController {
                 }
             }
         }
+    }
+
+    /**
+     * ajax上传图片
+     *
+     * @param file
+     * @return
+     */
+    @RequestMapping(value = "/upload", method = RequestMethod.POST)
+    public Object uploadImage(@RequestParam("image") MultipartFile file) {
+        Map<String, String> res = new HashMap<>();
+        OutputStream out = null;
+        InputStream in = null;
+        try {
+            //判断图片大小是否超标
+            if (file.getSize() > Max_Image_Size) {
+                res.put("status", "error");
+                res.put("reason", "图片过大，无法上传！");
+                return res;
+            }
+            //写文件
+            in = file.getInputStream();
+            String date = dirDateFormat.format(new Date());
+            String suffix = date + "/" + System.currentTimeMillis() + ".png";
+            String path = uploadRootPath + suffix;
+            File parentDir = new File(uploadRootPath + "/" + date);
+            if (!parentDir.exists()) {
+                parentDir.mkdir();
+            }
+            out = new FileOutputStream(path);
+            byte[] buff = new byte[1024];
+            int len = -1;
+            while ((len = in.read(buff)) > 0) {
+                out.write(buff, 0, len);
+            }
+            res.put("path", "/umeditor/jsp/upload/image/" + suffix);
+            res.put("status", "success");
+        } catch (Exception e) {
+            log.error("error upload image.", e);
+            res.put("status", "error");
+            res.put("reason", "无法上传图片");
+        } finally {  //关闭输入输出流
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    log.error("error close output stream.");
+                }
+            }
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (Exception e) {
+                    log.error("error close input stream.");
+                }
+            }
+        }
+        return res;
     }
 
     /**

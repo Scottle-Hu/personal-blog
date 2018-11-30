@@ -155,14 +155,12 @@ public class BlogServiceImpl implements IBlogService {
             throw new CategoryNotFoundException("error: can not find category");
         }
         blog.setCategory(category);
-        //如果是markdown语法写的博客，需要转换格式存储，如果使用ue编辑器会在前端提取text
-        if (blog.getType() == BlogConstant.BLOG_TYPE_MD) {
-            String md = blog.getMdContent();
-            blog.setText(MarkDownUtil.md2text(md));
-            blog.setHtmlContent(MarkDownUtil.md2html(md));
-        }
         //提取图片链接
         blog.setImgUrlList(extractImgUrls(blog));
+        //如果是markdown语法写的博客，需要抽取纯文本用于显示摘要，如果使用ue编辑器会在前端提取text
+        if (blog.getType() == BlogConstant.BLOG_TYPE_MD) {
+            blog.setText(MarkDownUtil.html2text(blog.getHtmlContent()));
+        }
         //添加类别与博客id的对应
         redisManager.addListOnHead(category2BlogIdsKeyPrefix + blog.getCategoryId(), String.valueOf(blog.getId()));
         //添加时间与博客id的对应

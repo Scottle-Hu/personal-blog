@@ -13,6 +13,7 @@ import top.huqj.blog.model.Blog;
 import top.huqj.blog.model.Essay;
 import top.huqj.blog.model.ext.MonthAndEssayNum;
 import top.huqj.blog.service.IEssayService;
+import top.huqj.blog.utils.MarkDownUtil;
 
 import javax.annotation.PostConstruct;
 import java.sql.Timestamp;
@@ -75,6 +76,10 @@ public class EssayServiceImpl implements IEssayService {
 
     @Override
     public synchronized void insertOne(Essay essay) {
+        //如果是md编辑器，则设置纯文本摘要
+        if (essay.getType() == BlogConstant.BLOG_TYPE_MD) {
+            essay.setText(MarkDownUtil.html2text(essay.getHtmlContent()));
+        }
         essayDao.insertOne(essay);
         updateMonth2Essay(essay.getPublishTime(), essay.getId(), BlogUpdateOperation.ADD);
         updateBrotherEssayHash(essay.getId(), BlogUpdateOperation.ADD);

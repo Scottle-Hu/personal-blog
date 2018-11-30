@@ -65,22 +65,15 @@ public class BlogController {
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    private Set<String> cannotReplace = new HashSet<>();
+    /**
+     * 设置高亮显示的时候不能替换
+     */
+    private String cannotReplace = "<span class=\"search-key\"></span>";
 
-    //触发ansj初始化，设置不能替换的字符串(标签冲突)<span class="search-key"></span>
+    //触发ansj初始化
     @PostConstruct
     private void initAnsj() {
         AnsjUtil.segment("");
-        cannotReplace.add(" ");
-        cannotReplace.add("span");
-        cannotReplace.add("class");
-        cannotReplace.add("=");
-        cannotReplace.add("search");
-        cannotReplace.add("key");
-        cannotReplace.add("<");
-        cannotReplace.add(">");
-        cannotReplace.add("/");
-        cannotReplace.add("-");
     }
 
     @RequestMapping("/")

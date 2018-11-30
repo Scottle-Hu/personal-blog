@@ -186,6 +186,11 @@ html, body {
     padding: 0px;
 }
 
+/*为了不让文章中的列表样式消失*/
+.article ul {
+    list-style: inherit;
+}
+
 .by ul li {
     margin-bottom: 5px;
 }

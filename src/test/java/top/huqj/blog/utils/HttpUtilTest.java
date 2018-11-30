@@ -1,6 +1,7 @@
 package top.huqj.blog.utils;
 
 import org.junit.Test;
+import top.huqj.blog.controller.ApiController;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +23,11 @@ public class HttpUtilTest {
         System.out.println(response);
         assert response.size() == 3;
         assert response.get("error") != null;
+    }
+
+    @Test
+    public void testGetResourcePath() {
+        System.out.println(ApiController.class.getClassLoader().getResource("top").getPath());
     }
 
 }

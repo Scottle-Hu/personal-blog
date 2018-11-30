@@ -78,5 +78,7 @@
         <property name="securityManager" ref="securityManager"/>
     </bean>
 
+    <!--文件上传解析器-->
+    <bean class="org.springframework.web.multipart.commons.CommonsMultipartResolver" id="multipartResolver"/>
 
 </beans>

@@ -195,22 +195,20 @@ public class BackController {
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public String editArticle(HttpServletRequest request) {
         try {
-            int editType = BlogConstant.BLOG_TYPE_HTML;  //TODO 编辑方式，目前只支持html
+            int editType = Integer.parseInt(request.getParameter("contentType"));
             String type = request.getParameter("type");
             String idStr = request.getParameter("id");
             int id = Integer.parseInt(idStr);
             String title = request.getParameter("title");
             checkNotNull(title);
-            String htmlContent = null;
+            String htmlContent = request.getParameter("htmlContent");
             String text = null;
             String mdContent = null;
             if (editType == BlogConstant.BLOG_TYPE_HTML) {
-                htmlContent = request.getParameter("htmlContent");
                 text = request.getParameter("text");
             } else if (editType == BlogConstant.BLOG_TYPE_MD) {
                 mdContent = request.getParameter("mdContent");
-                htmlContent = MarkDownUtil.md2html(mdContent);
-                text = MarkDownUtil.md2text(mdContent);
+                text = MarkDownUtil.html2text(htmlContent);
             } else {
                 log.warn("unknown edit type: " + editType);
                 throw new Exception("unknown edit type.");
@@ -262,7 +260,7 @@ public class BackController {
     @RequestMapping(value = "/publish", method = RequestMethod.POST)
     public String publishArticlePost(HttpServletRequest request) {
         try {
-            int contentType = BlogConstant.BLOG_TYPE_HTML;  //TODO 目前未实现markdown
+            int contentType = Integer.parseInt(request.getParameter("contentType"));
             int articleType = Integer.parseInt(request.getParameter("type"));
             if (articleType == BlogConstant.BLOG_TYPE_ID) {
                 Blog blog = new Blog();
@@ -280,10 +278,10 @@ public class BackController {
                 String categoryId = request.getParameter("categoryId");
                 checkNotNull(categoryId);
                 blog.setCategoryId(Integer.parseInt(categoryId));
+                String htmlContent = request.getParameter("htmlContent");
+                blog.setHtmlContent(htmlContent);
+                checkNotNull(htmlContent);
                 if (contentType == BlogConstant.BLOG_TYPE_HTML) {
-                    String htmlContent = request.getParameter("htmlContent");
-                    checkNotNull(htmlContent);
-                    blog.setHtmlContent(htmlContent);
                     String text = request.getParameter("text");
                     checkNotNull(text);
                     blog.setText(text.replace("<", "&lt;").replace(">", "&gt;"));
@@ -323,10 +321,10 @@ public class BackController {
                     }
                 }
                 essay.setPublishTime(new Timestamp(publishDate.getTime()));
+                String htmlContent = request.getParameter("htmlContent-2");
+                checkNotNull(htmlContent);
+                essay.setHtmlContent(htmlContent);
                 if (contentType == BlogConstant.BLOG_TYPE_HTML) {
-                    String htmlContent = request.getParameter("htmlContent-2");
-                    checkNotNull(htmlContent);
-                    essay.setHtmlContent(htmlContent);
                     String text = request.getParameter("text-2");
                     checkNotNull(text);
                     essay.setText(text);

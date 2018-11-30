@@ -38,7 +38,7 @@ public class Essay {
     private String htmlContent;
 
     /**
-     * 文章内容的记录方式。0：图文编辑器  1:markdown
+     * 文章内容的记录方式。1：图文编辑器  0:markdown
      */
     private int type;
 
