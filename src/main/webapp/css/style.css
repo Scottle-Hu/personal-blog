@@ -117,7 +117,7 @@ html, body {
 .blog-split {
     height: 20px;
     width: 110%;
-    background: #e7eee0;
+    background: #eeeeee;
     margin-left: -20px;
 }
 
@@ -519,6 +519,10 @@ html, body {
 .remark-list li a {
     text-decoration: none;
     color: black;
+}
+
+.search-key {
+    color: red;
 }
 
 /*响应式布局相关*/

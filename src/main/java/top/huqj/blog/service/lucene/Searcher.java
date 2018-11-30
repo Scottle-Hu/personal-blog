@@ -47,7 +47,7 @@ public class Searcher {
     /**
      * 更新索引的时间间隔，也就是修改索引后的生效时间
      */
-    private long interval = 1000 * 60;
+    private long interval = 1000 * 60 * 30;
 
     @PostConstruct
     public void init() {

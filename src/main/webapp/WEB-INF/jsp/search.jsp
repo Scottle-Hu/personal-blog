@@ -169,14 +169,17 @@
         <div class="clear"></div>
     </div>
     <div class="latest by" style="min-width: 750px;">
-        <span class="latest-span"><img src="image/list_icon.png"/><font
-                class="mini-title">&nbsp;&nbsp;搜索结果（共找到${resultNum }条结果）</font></span>
+        <span class="latest-span">
+            <img src="image/list_icon.png"/>
+            <font class="mini-title">&nbsp;&nbsp;搜索结果（共找到${resultNum }条结果）</font>
+            <small>耗时${cost }ms</small>
+        </span>
         <div class="clear"></div>
         <hr/>
         <ul>
             <c:forEach items="${blogList }" var="blog">
                 <li>
-                    <a href="article?id=${blog.id }">
+                    <a href="article?id=${blog.id }" target="_blank">
                         <div class="blog">
                             <h3>${blog.title }</h3>
                             <p>${blog.text }</p>

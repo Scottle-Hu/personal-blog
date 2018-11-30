@@ -13,7 +13,9 @@ import top.huqj.blog.model.*;
 import top.huqj.blog.service.*;
 import top.huqj.blog.service.impl.RedisManager;
 import top.huqj.blog.service.lucene.Searcher;
+import top.huqj.blog.utils.AnsjUtil;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -62,6 +64,12 @@ public class BlogController {
     private static final int MAX_PREVIEW_IMG_NUM = 1;
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+    //触发ansj初始化
+    @PostConstruct
+    private void initAnsj() {
+        AnsjUtil.segment("");
+    }
 
     @RequestMapping("/")
     public String homePage(HttpServletRequest request) {
@@ -382,8 +390,10 @@ public class BlogController {
                 if (query.length() > 20) {  //限制搜索字符数
                     query = query.substring(0, 20);
                 }
+                long start = System.currentTimeMillis();
                 List<Blog> blogs = luceneSearcher.topBlogIds(query);
-                postProcessBlogList(blogs);
+                request.setAttribute("cost", (System.currentTimeMillis() - start));
+                postProcessBlogList(blogs, query);
                 //搜索结果
                 request.setAttribute("blogList", blogs);
                 request.setAttribute("resultNum", blogs.size());
@@ -472,7 +482,7 @@ public class BlogController {
      *
      * @param blogList
      */
-    private void postProcessBlogList(List<Blog> blogList) {
+    private void postProcessBlogList(List<Blog> blogList, String query) {
         blogList.forEach(blog -> {
             blog.setPublishTimeStr(dateFormat.format(blog.getPublishTime()));
             blog.setUpdateTimeStr(dateFormat.format(blog.getUpdateTime()));
@@ -486,7 +496,23 @@ public class BlogController {
             if (pre.length() > 100) {
                 blog.setText(pre.substring(0, 100).replace("<", "&lt;").replace(">", "&gt;"));
             }
+            Set<String> segment = AnsjUtil.segment(query);
+            blog.setTitle(addHighlight(blog.getTitle(), segment));
+            blog.setText(addHighlight(blog.getText(), segment));
         });
+    }
+
+    /**
+     * 关键词高亮显示
+     *
+     * @param str
+     * @return
+     */
+    private String addHighlight(String str, Set<String> segment) {
+        for (String k : segment) {
+            str = str.replace(k, "<span class=\"search-key\">" + k + "</span>");
+        }
+        return str;
     }
 
 }
