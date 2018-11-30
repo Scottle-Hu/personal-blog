@@ -63,4 +63,22 @@ public class UserInfo {
         return userInfo;
     }
 
+    /**
+     * 从qq返回的用户信息构建一个用户
+     *
+     * @param map
+     * @return
+     */
+    public static UserInfo buildFromQQ(Map<String, String> map) {
+        UserInfo userInfo = new UserInfo();
+        userInfo.setId(map.get("id"));
+        userInfo.setUsername(map.get("nickname"));
+        userInfo.setRealName(null);
+        userInfo.set_3rdParty(OAuthThirdParty.QQ);
+        userInfo.setEmail(null);
+        userInfo.setIconUrl(map.get("figureurl_1"));
+        userInfo.set_3rdPartyHomeUrl("https://user.qzone.qq.com");  //TODO 暂时获取不到qq空间
+        return userInfo;
+    }
+
 }

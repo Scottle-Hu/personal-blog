@@ -238,6 +238,8 @@
                 您尚未登录！选择登录方式登录后方可评论~&nbsp;&nbsp;&nbsp;&nbsp;
                 <img src="image/github_icon.jpg" alt="github" title="github" class="oauth-login-logo"
                      onclick="javascript:window.location.href = 'https://github.com/login/oauth/authorize?client_id=7cc6cce09d315f877b82&redirect_uri=http%3a%2f%2fwww.huqj.top%2foauth%2fgithub&state='+UrlEncode(window.location.href);"/>
+                <img src="image/qq_icon.png" alt="qq" title="qq" class="oauth-login-logo" style="border-radius: 0;"
+                     onclick="javascript:window.location.href = 'https://graph.qq.com/oauth2.0/authorize?response_type=code&client_id=101529384&redirect_uri=http%3a%2f%2fwww.huqj.top%2foauth%2fqq&state='+UrlEncode(window.location.href);"/>
             </c:if>
             <%--已经登录，可以发表评论--%>
             <c:if test="${userInfo != null}">

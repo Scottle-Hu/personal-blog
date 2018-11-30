@@ -65,10 +65,22 @@ public class BlogController {
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    //触发ansj初始化
+    private Set<String> cannotReplace = new HashSet<>();
+
+    //触发ansj初始化，设置不能替换的字符串(标签冲突)<span class="search-key"></span>
     @PostConstruct
     private void initAnsj() {
         AnsjUtil.segment("");
+        cannotReplace.add(" ");
+        cannotReplace.add("span");
+        cannotReplace.add("class");
+        cannotReplace.add("=");
+        cannotReplace.add("search");
+        cannotReplace.add("key");
+        cannotReplace.add("<");
+        cannotReplace.add(">");
+        cannotReplace.add("/");
+        cannotReplace.add("-");
     }
 
     @RequestMapping("/")
@@ -509,8 +521,13 @@ public class BlogController {
      * @return
      */
     private String addHighlight(String str, Set<String> segment) {
+        boolean first = true;
         for (String k : segment) {
+            if (!first && cannotReplace.contains(k)) {
+                continue;
+            }
             str = str.replace(k, "<span class=\"search-key\">" + k + "</span>");
+            first = false;
         }
         return str;
     }

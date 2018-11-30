@@ -97,7 +97,41 @@ public class HttpUtil {
             HttpEntity entity = response.getEntity();
             String content = EntityUtils.toString(entity);
             content = new String(content.getBytes("iso-8859-1"), "utf-8");
+            /*
+            兼容qq的返回数据格式：
+            callback(
+            {
+            client_id: "101529384",
+            openid: "8B61D4DB1215EA80480E504064B0345E"
+            }
+            )
+             */
+            if (content.startsWith("callback(")) {
+                content = content.substring(content.indexOf("{"), content.lastIndexOf("}") + 1);
+            }
             return mapper.readValue(content, Map.class);
+        } catch (Exception e) {
+            log.error("error when send GET request to get response. url=" + url, e);
+        } finally {
+            //关闭资源
+            client.getConnectionManager().shutdown();
+        }
+        return null;
+    }
+
+    public static String getPlainTextRequest(String url) {
+        HttpClient client = new DefaultHttpClient();
+        try {
+            //构造一级请求的url
+            HttpGet get = new HttpGet(url);
+            //设置请求头信息，防止中文乱码
+            get.setHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
+            get.setHeader("Accept", "application/vnd.github.v3+json");
+            HttpResponse response = client.execute(get);
+            HttpEntity entity = response.getEntity();
+            String content = EntityUtils.toString(entity);
+            content = new String(content.getBytes("iso-8859-1"), "utf-8");
+            return content;
         } catch (Exception e) {
             log.error("error when send GET request to get response. url=" + url, e);
         } finally {

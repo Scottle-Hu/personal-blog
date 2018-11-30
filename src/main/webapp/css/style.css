@@ -446,6 +446,7 @@ html, body {
     cursor: pointer;
     border-radius: 20px;
     vertical-align: middle;
+    margin-right: 10px;
 }
 
 .user-icon {

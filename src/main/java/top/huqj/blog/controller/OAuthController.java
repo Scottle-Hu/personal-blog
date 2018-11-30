@@ -4,6 +4,7 @@ import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import sun.misc.BASE64Encoder;
 import top.huqj.blog.constant.BlogConstant;
@@ -59,6 +60,24 @@ public class OAuthController {
     @Value("${oauth.userinfo.github.url}")
     private String GITHUB_USER_INFO_URL_;
 
+    /**
+     * qqhuoqu access token的url，末尾需要加上code
+     */
+    @Value("${oauth.accesstoken.qq.url}")
+    private String QQ_ACCESS_TOKEN_URL_;
+
+    /**
+     * qq获取用户id的url，后面需要加上access token
+     */
+    @Value("${oauth.me.qq.url}")
+    private String QQ_ME_URL_;
+
+    /**
+     * qq获取用户信息的url，后面需要加上access token和用户id(&openid=&access_token=)
+     */
+    @Value("${oauth.userinfo.qq.url}")
+    private String QQ_USER_INFO_URL;
+
     @Autowired
     private IUserInfoService userInfoService;
 
@@ -100,6 +119,59 @@ public class OAuthController {
                     + originUrl.substring(originUrl.indexOf("/", originUrl.indexOf("://") + 3));
         } catch (Exception e) {
             log.error("error when oauth with github.", e);
+        }
+        return "redirect:/index";
+    }
+
+    /**
+     * qq登录回调处理l
+     *
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping("/qq")
+    public String qqOauth(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            String code = request.getParameter("code");
+            String originUrl = URLDecoder.decode(request.getParameter("state"), "utf-8");
+            if (!StringUtils.isEmpty(code) && !StringUtils.isEmpty(originUrl)) {
+                String accessTokenUrl = QQ_ACCESS_TOKEN_URL_ + code;  //换取access token
+                String accessTokenResponse = HttpUtil.getPlainTextRequest(accessTokenUrl);
+                if (!StringUtils.isEmpty(accessTokenResponse)) {
+                    String accessToken = accessTokenResponse
+                            .substring(accessTokenResponse.indexOf("access_token=") + 13, accessTokenResponse.indexOf("&"));
+                    //获取用户openid
+                    String userIdUrl = QQ_ME_URL_ + accessToken;
+                    Map<String, String> userIdMap = HttpUtil.getRequest(userIdUrl);
+                    if (userIdMap != null && userIdMap.get("openid") != null) {
+                        String qqUserId = "qq_" + userIdMap.get("openid");
+                        //TODO 注意这会导致信息的过时，之后需要改成记录上次登陆时间，定时更新，github也是
+                        UserInfo qqUser = userInfoService.findById(qqUserId);
+                        if (qqUser == null) {
+                            String userInfoUrl = QQ_USER_INFO_URL +
+                                    "&openid=" + userIdMap.get("openid") + "&access_token=" + accessToken;
+                            Map<String, String> qqUserInfoMap = HttpUtil.getRequest(userInfoUrl);
+                            qqUserInfoMap.put("id", qqUserId);
+                            log.info("user info: " + qqUserInfoMap);
+                            qqUser = UserInfo.buildFromQQ(qqUserInfoMap);
+                            userInfoService.insert(qqUser);
+                        }
+                        String key = SESSION_PREFIX + md5(qqUser.getId() + qqUser.getUsername() + qqUser.getRealName());
+                        redisManager.setWithExpireTime(key, qqUser.getId(), SESSION_EXPIRE);
+                        Cookie cookie = new Cookie(BlogConstant.OAUTH_SESSION_ID, key);
+                        cookie.setMaxAge(SESSION_EXPIRE);
+                        cookie.setPath("/");
+                        response.addCookie(cookie);
+                    }
+                } else {
+                    log.warn("can not get access token.");
+                }
+                return "redirect:"
+                        + originUrl.substring(originUrl.indexOf("/", originUrl.indexOf("://") + 3));
+            }
+        } catch (Exception e) {
+            log.error("error when oauth with qq.", e);
         }
         return "redirect:/index";
     }
