@@ -3,9 +3,9 @@
 <html>
 <head>
     <title><c:if test="${type == 0 }">${blog.title }</c:if><c:if
-            test="${type == 1 }">${essay.title }</c:if>_胡启军个人博客</title>
+            test="${type == 1 }">${essay.title }</c:if>_QijunHu个人博客</title>
     <meta charset="UTF-8"/>
-    <meta name="keywords" content="胡启军,个人博客,技术博客, ${blog.title }"/>
+    <meta name="keywords" content="QijunHu,个人博客,技术博客, ${blog.title }"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
     <meta http-equiv="Cache-Control" content="no-siteapp">
@@ -30,10 +30,11 @@
     <script type="text/javascript">
         SyntaxHighlighter.all();
         var id;
+        var type = ${type}
         $(document).ready(function () {
             var url = window.location.href;
             id = url.substring(url.indexOf("id=") + 3, url.length);
-            getRemarks(id);
+            getRemarks(id, type);
         });
     </script>
     <script type="application/javascript">
@@ -261,10 +262,10 @@
             <ul class="remark-list"></ul>
             <script type="application/javascript">
                 //获取评论html
-                function getRemarks(id) {
+                function getRemarks(id, type) {
                     $.ajax(
                         {
-                            url: "/api/remarks?articleId=" + id,
+                            url: "/api/remarks?articleId=" + id + "&articleType=" + type,
                             type: 'json',
                             method: "GET",
                             success: function (res) {
@@ -294,17 +295,18 @@
                             dataType: "json",
                             data: {
                                 content: content,
-                                articleId: id
+                                articleId: id,
+                                articleType: type
                             },
                             success: function (res) {
                                 $("#remark-text").val("");
                                 alert("评论成功！");
-                                getRemarks(id);  //刷新评论内容
+                                getRemarks(id, type);  //刷新评论内容
                             },
                             error: function () {
                                 console.error("error when send ajax to remark.");
                                 $("#remark-text").val("");
-                                getRemarks(id);  //刷新评论内容
+                                getRemarks(id, type);  //刷新评论内容
                             }
                         }
                     );

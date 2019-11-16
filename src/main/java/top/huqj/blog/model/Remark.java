@@ -25,6 +25,11 @@ public class Remark {
     private int articleId;
 
     /**
+     * 评论对象类型：0:博客, 1:随笔
+     */
+    private int articleType;
+
+    /**
      * 评论者id
      */
     private String observerId;

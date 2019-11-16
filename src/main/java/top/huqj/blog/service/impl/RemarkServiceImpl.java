@@ -30,8 +30,8 @@ public class RemarkServiceImpl implements IRemarkService {
     }
 
     @Override
-    public List<Remark> findByArticleId(int articleId) {
-        return remarkDao.findByArticleId(articleId);
+    public List<Remark> findByArticleId(int articleId, int articleType) {
+        return remarkDao.findByArticleId(articleId,articleType);
     }
 
     @Override
@@ -40,8 +40,8 @@ public class RemarkServiceImpl implements IRemarkService {
     }
 
     @Override
-    public int countByArticleId(int articleId) {
-        return remarkDao.countByArticleId(articleId);
+    public int countByArticleId(int articleId, int articleType) {
+        return remarkDao.countByArticleId(articleId, articleType);
     }
 
     @Override

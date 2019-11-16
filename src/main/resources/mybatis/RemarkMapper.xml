@@ -9,6 +9,7 @@
         <result property="content" column="content"/>
         <result property="articleId" column="article_id"/>
         <result property="observerId" column="observer_id"/>
+        <result property="articleType" column="article_type"/>
         <result property="publishTime" column="publish_time"/>
     </resultMap>
 
@@ -16,20 +17,16 @@
         SELECT * FROM remark WHERE id=#{id}
     </select>
 
-    <select id="findByArticleId" parameterType="java.lang.Integer" resultMap="remarkMap">
-        SELECT * FROM remark WHERE article_id=#{articleId}
+    <select id="findByArticleId" resultMap="remarkMap">
+        SELECT * FROM remark WHERE article_id=#{articleId} AND article_type=#{articleType}
     </select>
 
     <insert id="insertOne" parameterType="Remark">
-        INSERT INTO remark VALUES (NULL,#{content},#{articleId},#{observerId},#{publishTime})
+        INSERT INTO remark VALUES (NULL,#{content},#{articleId},#{articleType},#{observerId},#{publishTime})
     </insert>
 
     <select id="countByArticleId" resultType="Integer">
-        SELECT COUNT(*) FROM remark WHERE article_id=#{articleId};
-    </select>
-
-    <select id="countById" resultType="Integer" parameterType="String">
-        SELECT COUNT(*) FROM userInfo WHERE id=#{_param};
+        SELECT COUNT(*) FROM remark WHERE article_id=#{articleId} AND article_type=#{articleType};
     </select>
 
     <delete id="deleteById" parameterType="Integer">

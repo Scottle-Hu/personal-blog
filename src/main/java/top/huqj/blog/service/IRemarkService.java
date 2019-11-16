@@ -11,11 +11,11 @@ public interface IRemarkService {
 
     Remark findById(int id);
 
-    List<Remark> findByArticleId(int articleId);
+    List<Remark> findByArticleId(int articleId, int articleType);
 
     void insert(Remark remark);
 
-    int countByArticleId(int articleId);
+    int countByArticleId(int articleId, int articleType);
 
     void deleteById(int id);
 

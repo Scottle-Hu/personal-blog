@@ -225,9 +225,10 @@ public class ApiController {
     public void writeRemarksByArticle(HttpServletRequest request, HttpServletResponse response) {
         OutputStream out = null;
         try {
-            String articleId = request.getParameter("articleId");
+            int articleId = Integer.parseInt(request.getParameter("articleId"));
+            int articleType = Integer.parseInt(request.getParameter("articleType"));
             if (!StringUtils.isEmpty(articleId)) {
-                List<Remark> remarkList = remarkService.findByArticleId(Integer.parseInt(articleId));
+                List<Remark> remarkList = remarkService.findByArticleId(articleId, articleType);
                 out = response.getOutputStream();
                 out.write(buildRemarkListHtml(remarkList).getBytes("utf-8"));
                 out.flush();
@@ -390,6 +391,8 @@ public class ApiController {
                 result.append(remark.getContent());
                 result.append("</div>");
                 result.append("</li>");
+            } else {
+                log.warn("found remark with no user. remark id=" + remark.getId());
             }
         });
         return result.toString();

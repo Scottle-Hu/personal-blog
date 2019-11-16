@@ -359,11 +359,13 @@ public class BlogController {
             Optional<UserInfo> userInfoOptional = findUserInfoFromCookie(request);
             if (userInfoOptional.isPresent()) {
                 String articleId = request.getParameter("articleId");
+                String articleType = request.getParameter("articleType");
                 checkNotNull(articleId);
                 String content = request.getParameter("content");
                 checkNotNull(content);
                 Remark remark = new Remark();
                 remark.setArticleId(Integer.parseInt(articleId));
+                remark.setArticleType(Integer.parseInt(articleType));
                 remark.setContent(content);
                 remark.setObserverId(userInfoOptional.get().getId());
                 remark.setPublishTime(new Timestamp(System.currentTimeMillis()));

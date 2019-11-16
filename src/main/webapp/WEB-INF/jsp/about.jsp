@@ -2,10 +2,10 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <html>
 <head>
-    <title>胡启军的个人博客</title>
+    <title>QijunHu的个人博客</title>
     <meta charset="UTF-8"/>
-    <meta name="keywords" content="胡启军,个人博客,技术博客，胡启军_技术"/>
-    <meta name="description" content="Hello，这里是胡启军的个人技术博客，记录一些技术学习、探索和思考，以及一些日常随笔，欢迎访问~"/>
+    <meta name="keywords" content="QijunHu,个人博客,技术博客，QijunHu_技术"/>
+    <meta name="description" content="Hello，这里是QijunHu的个人技术博客，记录一些技术学习、探索和思考，以及一些日常随笔，欢迎访问~"/>
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
@@ -114,7 +114,7 @@
         <h3>基本信息</h3>
         <ul>
             <li>
-                <b>姓名</b>：胡启军
+                <b>姓名</b>：QijunHu
             </li>
             <li>
                 <b>英文名</b>：Charles
@@ -148,8 +148,9 @@
     <div class="row-container experience">
         <h3>工作经历</h3>
         <ul>
-            <li>2018.4~2018.10 网易有道实习 计算广告组后台研发</li>
-            <li>2017.12~2018.3 科大讯飞武汉研发中心实习 从事后台开发</li>
+            <li>2019.7~至今 网易有道 后台研发</li>
+            <li>2018.4~2018.10 网易有道实习 后台研发</li>
+            <li>2017.12~2018.3 科大讯飞武汉研发中心实习 后台开发实习</li>
         </ul>
     </div>
     <hr/>
@@ -174,7 +175,7 @@
     <div class="row-container experience">
         <h3>参与项目</h3>
         <ul>
-            <li>2018.4~2018.10 网易有道计算广告组 广告投放系统</li>
+            <li>2018.4~2018.10 网易有道 广告系统</li>
             <li>2017.12~2018.3 科大讯飞智能汽车事业部 奇瑞汽车车载4S店保养系统</li>
         </ul>
     </div>
