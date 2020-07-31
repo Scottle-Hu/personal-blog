@@ -41,7 +41,9 @@ public class Indexer {
             Directory directory = FSDirectory.open(new File(indexDir));
             indexWriter = new IndexWriter(directory,
                     new IndexWriterConfig(Version.LUCENE_40, new IKAnalyzer()));
-            indexWriter.commit();  //如果没有这个，在索引库为空的情况下会抛异常
+            //如果没有这个，在索引库为空的情况下会抛异常
+            indexWriter.commit();
+            log.info("init lucene index success.");
         } catch (Exception e) {
             log.error("lucene error init indexWriter.", e);
         }
@@ -59,7 +61,9 @@ public class Indexer {
             document.add(new TextField(BlogConstant.LUCENE_CONTENT,
                     blog.getTitle() + blog.getText(), Field.Store.NO));
             indexWriter.addDocument(document);
-            indexWriter.commit();  //提交修改
+            //提交修改
+            indexWriter.commit();
+            log.info("add lucene index success.");
         } catch (IOException e) {
             log.error("error add new blog document to lucene.blog id=" + blog.getId(), e);
         }
@@ -74,6 +78,7 @@ public class Indexer {
         try {
             indexWriter.deleteDocuments(new Term(BlogConstant.LUCENE_ID, String.valueOf(id)));
             indexWriter.commit();
+            log.info("delete lucene index success.");
         } catch (Exception e) {
             log.error("error remove lucene index by blog id. blog id=" + id, e);
         }
@@ -92,6 +97,7 @@ public class Indexer {
                     blog.getTitle() + blog.getText(), Field.Store.NO));
             indexWriter.updateDocument(new Term(BlogConstant.LUCENE_ID, String.valueOf(blog.getId())), document);
             indexWriter.commit();
+            log.info("update lucene index success.");
         } catch (Exception e) {
             log.error("error update lucene index, blog id=" + blog.getId(), e);
         }

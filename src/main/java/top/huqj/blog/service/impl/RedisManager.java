@@ -32,7 +32,7 @@ public class RedisManager {
     @PostConstruct
     private void init() {
         try {
-            jedis = new Jedis(redisHost, port);
+            jedis = new Jedis(redisHost, port, 1800);
         } catch (Exception e) {
             log.error("error when connect to redis", e);
             //fast fail
